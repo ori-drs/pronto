@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pronto_estimator_core)
 
 if (NOT COMMAND pods_use_pkg_config_packages)
   include(cmake/pods.cmake)
 endif()
+
+project(pronto_estimator_core)
 
 find_package(catkin REQUIRED COMPONENTS
 )
