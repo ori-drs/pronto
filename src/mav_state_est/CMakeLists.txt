@@ -8,7 +8,8 @@ add_library(${LIBRARY_NAME} lcm_front_end.cpp
   sensor_handlers.cpp
   update_history.cpp)
 
+include_directories(${catkin_INCLUDE_DIRS})
 add_dependencies(${LIBRARY_NAME} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${LIBRARY_NAME} ${catkin_LIBRARIES})
 pods_use_pkg_config_packages(${LIBRARY_NAME} eigen3
- bot2-core gtk+-2.0 bot2-frames lcmtypes_pronto eigen-utils)
+ bot2-core gtk+-2.0 bot2-frames eigen-utils)

@@ -7,6 +7,8 @@ endif()
 project(pronto_estimator_core)
 
 find_package(catkin REQUIRED COMPONENTS
+  pronto_lcmtypes
+  bot_core_lcmtypes
 )
 
 catkin_package(
