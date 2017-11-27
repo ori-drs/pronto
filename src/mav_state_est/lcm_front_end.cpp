@@ -145,7 +145,7 @@ void LCMFrontEnd::publishState(const RBIS & state, const RBIM & cov)
 {
   if (publish_pose) {
     //publish the pose msg
-    rigid_body::pose_t pose_msg = state.getPose();
+    eigen_utils::pose_t pose_msg = state.getPose();
     lcm_pub->publish(pose_channel, &pose_msg);
   }
 
