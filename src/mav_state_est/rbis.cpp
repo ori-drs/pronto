@@ -1,4 +1,5 @@
 #include "mav_state_est/rbis.hpp"
+#include <eigen_utils/eigen_rigidbody.hpp>
 
 using namespace eigen_utils;
 using namespace Eigen;
@@ -263,43 +264,5 @@ void ekfSmoothingStep(const RBIS & next_state_pred, const RBIM & next_cov_pred, 
   RBIS smooth_innov = RBIS(L * smooth_resid.vec);
 
   cur_state.addState(smooth_innov);
-}
-
-pronto_filter_state_t * rbisCreateFilterStateMessage(const RBIS & state, const RBIM & cov)
-{
-  pronto_filter_state_t * msg = (pronto_filter_state_t *) malloc(sizeof(pronto_filter_state_t));
-
-  msg->utime = state.utime;
-
-  msg->num_states = RBIS::rbis_num_states;
-  msg->num_cov_elements = msg->num_states * msg->num_states;
-  quaternionToBotDouble(msg->quat, state.quat);
-
-  msg->state = (double *) malloc(msg->num_states * sizeof(double));
-  msg->cov = (double *) malloc(msg->num_cov_elements * sizeof(double));
-
-  Map<RBIS::VectorNd>(msg->state) = state.vec;
-  Map<RBIM>(msg->cov) = cov;
-
-  return msg;
-}
-
-pronto::filter_state_t rbisCreateFilterStateMessageCPP(const RBIS & state, const RBIM & cov)
-{
-  pronto::filter_state_t msg;
-  msg.utime = state.utime;
-
-  msg.num_states = RBIS::rbis_num_states;
-  msg.num_cov_elements = msg.num_states * msg.num_states;
-  quaternionToBotDouble(msg.quat, state.quat);
-
-  msg.state = vector<double>(msg.num_states);
-  msg.cov = vector<double>(msg.num_cov_elements);
-
-  Map<RBIS::VectorNd>(&msg.state[0]) = state.vec;
-  Map<RBIM>(&msg.cov[0]) = cov;
-
-  return msg;
-
 }
 }

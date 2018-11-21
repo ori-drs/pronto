@@ -4,10 +4,10 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <eigen_utils/eigen_utils.hpp>
-#include <lcmtypes/bot_core_ins_t.h>
-#include <lcmtypes/pronto_indexed_measurement_t.h>
-#include <lcmtypes/pronto_filter_state_t.h>
-#include <lcmtypes/pronto/filter_state_t.hpp>
+// #include <lcmtypes/bot_core_ins_t.h>
+// #include <lcmtypes/pronto_indexed_measurement_t.h>
+// #include <lcmtypes/pronto_filter_state_t.h>
+// #include <lcmtypes/pronto/filter_state_t.hpp>
 #include <bot_lcmgl_client/lcmgl.h>
 
 
@@ -55,27 +55,27 @@ public:
     assert(vec.rows() == rbis_num_states);
   }
 
-  RBIS(const pronto_filter_state_t * msg) :
-      RigidBodyState(Eigen::Map<const Eigen::VectorXd>(msg->state, msg->num_states))
-  {
-    if (msg->num_states != rbis_num_states) {
-      fprintf(stderr, "error, constructed RBIS from rbis_filter_state_t of wrong size\n");
-    }
+  //RBIS(const pronto_filter_state_t * msg) :
+  //    RigidBodyState(Eigen::Map<const Eigen::VectorXd>(msg->state, msg->num_states))
+  //{
+  //  if (msg->num_states != rbis_num_states) {
+  //    fprintf(stderr, "error, constructed RBIS from rbis_filter_state_t of wrong size\n");
+  //  }
+  //
+  //  eigen_utils::botDoubleToQuaternion(quat, msg->quat);
+  //  this->utime = msg->utime;
+  //}
 
-    eigen_utils::botDoubleToQuaternion(quat, msg->quat);
-    this->utime = msg->utime;
-  }
-
-  RBIS(const pronto::filter_state_t & msg) :
-      RigidBodyState(Eigen::Map<const Eigen::VectorXd>(&msg.state[0], msg.num_states))
-  {
-    if (msg.num_states != rbis_num_states) {
-      fprintf(stderr, "error, constructed RBIS from rbis_filter_state_t of wrong size\n");
-    }
-
-    eigen_utils::botDoubleToQuaternion(quat, msg.quat);
-    this->utime = msg.utime;
-  }
+  //RBIS(const pronto::filter_state_t & msg) :
+  //    RigidBodyState(Eigen::Map<const Eigen::VectorXd>(&msg.state[0], msg.num_states))
+  //{
+  //  if (msg.num_states != rbis_num_states) {
+  //    fprintf(stderr, "error, constructed RBIS from rbis_filter_state_t of wrong size\n");
+  //  }
+  //
+  //  eigen_utils::botDoubleToQuaternion(quat, msg.quat);
+  //  this->utime = msg.utime;
+  //}
 
   /**
    * copy everything from rigid body state and biases are set to 0
@@ -148,9 +148,9 @@ void rbisApplyDelta(const RBIS & prior_state, const RBIM & prior_cov, const RBIS
 void ekfSmoothingStep(const RBIS & next_state_pred, const RBIM & next_cov_pred, const RBIS & next_state,
     const RBIM & next_state_cov, double dt, RBIS & cur_state, RBIM & cur_cov);
 
-pronto_filter_state_t * rbisCreateFilterStateMessage(const RBIS & state, const RBIM & cov);
+// pronto_filter_state_t * rbisCreateFilterStateMessage(const RBIS & state, const RBIM & cov);
 
-pronto::filter_state_t rbisCreateFilterStateMessageCPP(const RBIS & state, const RBIM & cov);
+ // pronto::filter_state_t rbisCreateFilterStateMessageCPP(const RBIS & state, const RBIM & cov);
 
 }
 #endif

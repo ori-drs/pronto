@@ -1,5 +1,4 @@
-#ifndef MAV_STATE_ESTIMATOR_LCMFRONT_HPP_
-#define MAV_STATE_ESTIMATOR_LCMFRONT_HPP_
+#pragma once
 
 #include <lcm/lcm-cpp.hpp>
 #include <bot_core/bot_core.h>
@@ -12,59 +11,23 @@
 #include <Eigen/Dense>
 
 #include <lcmtypes/bot_core/utime_t.hpp>
+#include <lcmtypes/pronto/filter_state_t.hpp>
 
 //TODO remove when front end is templated on FilterState and Update
-#include "rbis.hpp"
-#include "rbis_update_interface.hpp"
-#include "mav_state_est.hpp"
+#include "mav_state_est/rbis.hpp"
+#include "mav_state_est/rbis_update_interface.hpp"
+#include "mav_state_est/mav_state_est.hpp"
+#include "mav_state_est/sensor_handler_interface.hpp"
+
+
+// this forward declaration is necessary because there is a circular dependency
+// between SensorHandler and LCMFrontEnd
+template<class lcmType, class SensorHandlerClass>
+class SensorHandler;
 
 namespace MavStateEst {
-
-class SensorHandlerInterface {
-public:
-  virtual ~SensorHandlerInterface()
-  {
-  }
-};
-
-class LCMFrontEnd;
-
-template<class lcmType, class SensorHandlerClass>
-class SensorHandler: public SensorHandlerInterface {
-public:
-  typedef RBISUpdateInterface * (SensorHandlerClass::*HandlerFunction)(const lcmType* msg, MavStateEstimator* state_estimator);
-
-  SensorHandler(LCMFrontEnd * _lcm_front, const std::string & _sensor_prefix, HandlerFunction _handler_function,
-      SensorHandlerClass * handler_class);
-  void lcm_message_handler(const lcm::ReceiveBuffer* rbuf, const std::string& channel,
-      const lcmType * msg);
-  ~SensorHandler();
-
-private:
-  void loadParams(BotParam * param);
-
-  //front end pointer
-  LCMFrontEnd * lcm_front;
-
-  //sensor subscription
-  SensorHandlerClass* handler;
-  HandlerFunction handler_function;
-  lcm::Subscription * lcm_subscription;
-
-  //sensor handling variables
-  std::string channel;
-  std::string sensor_prefix;
-  int64_t utime_delay; //TODO make some of these private so inherited classes don't get confused?
-  bool publish_head_on_message;
-  bool roll_forward_on_receive;
-  int downsample_factor;
-  int counter;
-};
-
 class LCMFrontEnd {
-protected:
 public:
-
   /**
    * Constructor initializes all the static variables
    *
@@ -74,24 +37,19 @@ public:
    * @param[in]  param_override_str    override param string
    * @param[in]  begin_timestamp lcm logfile message timestamp to start from. 0= start (ie from unixtime=0)
    */
-  LCMFrontEnd(const std::string & in_log_fname, const std::string & out_log_fname = "",
-      const std::string & param_fname = "", const std::string & param_override_str = "",
-      const std::string & begin_timestamp = "0", double processing_rate = 1.0);
+  LCMFrontEnd(const std::string & in_log_fname,
+              const std::string & out_log_fname = "",
+              const std::string & param_fname = "",
+              const std::string & param_override_str = "",
+              const std::string & begin_timestamp = "0",
+              double processing_rate = 1.0);
+
   ~LCMFrontEnd();
 
   template<class lcmType, class SensorHandlerClass>
   void addSensor(const std::string & sensor_prefix,
       RBISUpdateInterface * (SensorHandlerClass::*_handler_method)(const lcmType* msg, MavStateEstimator* state_estimator),
-      SensorHandlerClass * handler_class)
-  {
-    if (!isActive(sensor_prefix)) {
-      fprintf(stderr, "Sensor \"%s\" inactive, not subscribing\n", sensor_prefix.c_str());
-      return;
-    }
-
-    sensor_handlers[sensor_prefix] = new SensorHandler<lcmType, SensorHandlerClass>(this, sensor_prefix,
-        _handler_method, handler_class);
-  }
+      SensorHandlerClass * handler_class);
 
   void setStateEstimator(MavStateEstimator * _state_estimator);
   void run();
@@ -121,88 +79,43 @@ public:
   MavStateEstimator * state_estimator;
 
   bool exit_estimator; // mfallon added. when true, stops estimation
+private:
+  pronto::filter_state_t rbisCreateFilterStateMessageCPP(const RBIS & state,
+                                                         const RBIM & cov) const
+  {
+    pronto::filter_state_t msg;
+    msg.utime = state.utime;
+
+    msg.num_states = RBIS::rbis_num_states;
+    msg.num_cov_elements = msg.num_states * msg.num_states;
+    eigen_utils::quaternionToBotDouble(msg.quat, state.quat);
+
+    msg.state = std::vector<double>(msg.num_states);
+    msg.cov = std::vector<double>(msg.num_cov_elements);
+
+    Eigen::Map<RBIS::VectorNd>(&msg.state[0]) = state.vec;
+    Eigen::Map<RBIM>(&msg.cov[0]) = cov;
+
+    return msg;
+
+  }
 };
+} // namespace MavStateEst
 
+#include "mav_state_est/sensor_handler.hpp"
+
+namespace MavStateEst {
 template<class lcmType, class SensorHandlerClass>
-SensorHandler<lcmType, SensorHandlerClass>::SensorHandler(LCMFrontEnd * _lcm_front, const std::string & _sensor_prefix,
-    HandlerFunction _handler_function, SensorHandlerClass * handler_class) :
-    handler(handler_class), handler_function(_handler_function), lcm_front(_lcm_front), sensor_prefix(_sensor_prefix)
-{
-  loadParams(_lcm_front->param);
+void LCMFrontEnd::addSensor(const std::string & sensor_prefix,
+    RBISUpdateInterface * (SensorHandlerClass::*_handler_method)(const lcmType* msg, MavStateEstimator* state_estimator),
+                            SensorHandlerClass * handler_class){
+      if (!isActive(sensor_prefix)) {
+        fprintf(stderr, "Sensor \"%s\" inactive, not subscribing\n", sensor_prefix.c_str());
+        return;
+      }
 
-  lcm_subscription = lcm_front->lcm_recv->subscribe(
-      channel, &SensorHandler<lcmType, SensorHandlerClass>::lcm_message_handler , this);
-  fprintf(stderr, "subscribed to %s for sensor \"%s\"\n", channel.c_str(), sensor_prefix.c_str());
+      sensor_handlers[sensor_prefix] = new SensorHandler<lcmType, SensorHandlerClass>(this, sensor_prefix,
+          _handler_method, handler_class);
 }
 
-template<class lcmType, class SensorHandlerClass>
-void SensorHandler<lcmType, SensorHandlerClass>::lcm_message_handler(const lcm::ReceiveBuffer* rbuf,
-    const std::string& channel,
-    const lcmType * msg)
-{
-  if (lcm_front->state_estimator == NULL) {
-    return;
-  }
-
-  if (counter++ % downsample_factor != 0)
-    return;
-
-//  (subs->handler->*subs->handlerMethod)
-//  RBIS head_state;
-//  RBIM head_cov;
-//  lcm_front->state_estimator->getHeadState(head_state, head_cov);
-
-  RBISUpdateInterface * update = (handler->*handler_function)(msg, lcm_front->state_estimator);
-  if (update != NULL) {
-    update->utime -= utime_delay;
-    lcm_front->state_estimator->addUpdate(update, roll_forward_on_receive);
-  }
-
-  if (lcm_front->init_message_channel != "" && lcm_front->init_complete_channel != "" && channel == lcm_front->init_message_channel) {
-      // send a message informing the world that we have just performed a reset
-      bot_core::utime_t init_complete_msg;
-
-      RBIS head_state;
-      RBIM head_cov;
-
-      lcm_front->state_estimator->getHeadState(head_state, head_cov);
-
-      init_complete_msg.utime = head_state.utime;
-
-      lcm_front->lcm_pub->publish(lcm_front->init_complete_channel, &init_complete_msg);
-  }
-
-  if (lcm_front->lcm_pub != lcm_front->lcm_recv && lcm_front->republish_sensors) {
-    lcm_front->lcm_pub->publish(channel, msg);
-  }
-  if (publish_head_on_message) {
-    lcm_front->publishHead();
-  }
-}
-
-template<class lcmType, class SensorHandlerClass>
-SensorHandler<lcmType, SensorHandlerClass>::~SensorHandler()
-{
-  if (lcm_subscription != NULL) {
-    lcm_front->lcm_recv->unsubscribe(lcm_subscription);
-  }
-}
-
-template<class lcmType, class SensorHandlerClass>
-void SensorHandler<lcmType, SensorHandlerClass>::loadParams(BotParam * param)
-{
-  std::string param_prefix = "state_estimator." + sensor_prefix;
-  downsample_factor = bot_param_get_int_or_fail(param, (param_prefix + ".downsample_factor").c_str());
-  roll_forward_on_receive = bot_param_get_boolean_or_fail(param,
-      (param_prefix + ".roll_forward_on_receive").c_str());
-  char * chan = bot_param_get_str_or_fail(param, (param_prefix + ".channel").c_str());
-  channel = chan;
-  free(chan);
-  utime_delay = bot_param_get_int_or_fail(param, (param_prefix + ".utime_offset").c_str());
-  publish_head_on_message = bot_param_get_boolean_or_fail(param, (param_prefix + ".publish_head_on_message").c_str());
-}
-
-} //namespace
-
-#endif
-
+} // namespace MavStateEst

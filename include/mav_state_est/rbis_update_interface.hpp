@@ -123,8 +123,8 @@ public:
  * measurement computed indirectly as a function of the state - requires
  * measurement Jacobian matrix (specifically for optic flow in this case)
  */
-#include <lcmtypes/pronto_optical_flow_t.h>
-#include <lcm/lcm.h>
+// #include <lcmtypes/pronto_optical_flow_t.h>
+// #include <lcm/lcm.h>
 class RBISOpticalFlowMeasurement: public RBISUpdateInterface {
 
 private:

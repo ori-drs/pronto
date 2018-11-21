@@ -154,8 +154,8 @@ void RBISInitializer::initialize(RBIS & state, RBIM & cov)
   state = init_state;
   cov = init_cov;
 
-  pronto::filter_state_t fs_msg = rbisCreateFilterStateMessageCPP(state, cov);
-  lcm_front->lcm_pub->publish(init_message_channel, &fs_msg);
+  // pronto::filter_state_t fs_msg = rbisCreateFilterStateMessageCPP(state, cov);
+  // lcm_front->lcm_pub->publish(init_message_channel, &fs_msg);
 
 }
 
@@ -163,11 +163,15 @@ bool InitMessageHandler::processMessageInit(const pronto::filter_state_t * msg,
       const std::map<std::string, bool> & sensors_initialized, const RBIS & default_state,
       const RBIM & default_cov, RBIS & init_state, RBIM & init_cov)
 {
-  init_state = RBIS(*msg);
-  Eigen::Map<const MatrixXd> cov_map(&msg->cov[0], msg->num_states, msg->num_states);
-  init_cov = cov_map;
-  fprintf(stderr, "Initialized using message\n");
-  return true;
+    Eigen::Quaterniond init_quat;
+    eigen_utils::botDoubleToQuaternion(init_quat, msg->quat);
+    init_state = RBIS(Eigen::Map<const Eigen::VectorXd>(&msg->state[0], msg->num_states),
+                      init_quat);
+    init_state.utime = msg->utime;
+    Eigen::Map<const MatrixXd> cov_map(&msg->cov[0], msg->num_states, msg->num_states);
+    init_cov = cov_map;
+    fprintf(stderr, "Initialized using message\n");
+    return true;
 }
 
 /**
@@ -177,9 +181,13 @@ bool InitMessageHandler::processMessageInit(const pronto::filter_state_t * msg,
 RBISUpdateInterface * InitMessageHandler::processMessage(const pronto::filter_state_t * msg, MavStateEstimator* state_estimator)
 {
   Eigen::Map<const MatrixXd> cov_map(&msg->cov[0], msg->num_states, msg->num_states);
-  RBIM init_cov = cov_map;
+  Eigen::Quaterniond quat;
+  eigen_utils::botDoubleToQuaternion(quat, msg->quat);
+  RBIS state = RBIS(Eigen::Map<const Eigen::VectorXd>(&msg->state[0], msg->num_states),
+                    quat);
+  state.utime = msg->utime;
 
-  return new RBISResetUpdate(RBIS(*msg), cov_map, RBISUpdateInterface::init_message, msg->utime);
+  return new RBISResetUpdate(state, cov_map, RBISUpdateInterface::init_message, msg->utime);
 
 }
 

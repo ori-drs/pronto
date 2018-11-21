@@ -9,10 +9,11 @@
 
 namespace MavStateEst {
 
-MavStateEstimator::MavStateEstimator(RBISResetUpdate * init_state, BotParam * param) :
-    history(init_state)
+MavStateEstimator::MavStateEstimator(RBISResetUpdate * init_state,
+                                     const uint64_t& history_span) :
+    history(init_state),
+    utime_history_span(history_span)
 {
-  utime_history_span = bot_param_get_int_or_fail(param, "state_estimator.utime_history_span");
   init_state->updateFilter(RBIS(), RBIM::Zero(), 0); //apply update from zero... should reset the state
   unprocessed_updates_start = history.updateMap.end();
 
