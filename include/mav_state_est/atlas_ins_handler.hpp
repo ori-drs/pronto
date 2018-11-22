@@ -18,6 +18,8 @@ public:
                                  const RBIM & default_cov,
                                  RBIS & init_state,
                                  RBIM & init_cov);
+protected:
+    bool atlasMessagePreprocess(const bot_core::kvh_raw_imu_batch_t * msg);
 private:
     //////////// Members Particular to Atlas:
     double prev_utime_atlas; // cached previous time

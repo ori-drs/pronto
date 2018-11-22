@@ -24,6 +24,9 @@ MavStateEstimator::MavStateEstimator(RBISResetUpdate * init_state,
 
 MavStateEstimator::~MavStateEstimator()
 {
+    // the updateHistory class is taking care of memory deallocation of the
+    // list of measurement pointers. Nothing to do here.
+
 }
 
 void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)

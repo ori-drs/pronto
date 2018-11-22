@@ -107,8 +107,8 @@ private:
 namespace MavStateEst {
 template<class lcmType, class SensorHandlerClass>
 void LCMFrontEnd::addSensor(const std::string & sensor_prefix,
-    RBISUpdateInterface * (SensorHandlerClass::*_handler_method)(const lcmType* msg, MavStateEstimator* state_estimator),
-                            SensorHandlerClass * handler_class){
+    RBISUpdateInterface * (SensorHandlerClass::*_handler_method)(const lcmType* msg, MavStateEstimator* state_estimator), SensorHandlerClass * handler_class)
+{
       if (!isActive(sensor_prefix)) {
         fprintf(stderr, "Sensor \"%s\" inactive, not subscribing\n", sensor_prefix.c_str());
         return;

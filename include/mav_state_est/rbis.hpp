@@ -8,7 +8,7 @@
 // #include <lcmtypes/pronto_indexed_measurement_t.h>
 // #include <lcmtypes/pronto_filter_state_t.h>
 // #include <lcmtypes/pronto/filter_state_t.hpp>
-#include <bot_lcmgl_client/lcmgl.h>
+// #include <bot_lcmgl_client/lcmgl.h>
 
 
 namespace MavStateEst {
