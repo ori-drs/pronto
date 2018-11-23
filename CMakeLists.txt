@@ -38,6 +38,7 @@ catkin_package(INCLUDE_DIRS include
 # this library contains only computation, no dependency on LCM
 add_library (${PRONTO_CORE_LIB} src/mav_state_est/rbis.cpp
                                 src/mav_state_est/ins_module.cpp
+                                src/mav_state_est/scan_matcher_module.cpp
                                 src/mav_state_est/rbis_update_interface.cpp
                                 src/mav_state_est/mav_state_est.cpp
                                 src/mav_state_est/update_history.cpp)
