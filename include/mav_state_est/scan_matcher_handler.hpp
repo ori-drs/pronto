@@ -4,21 +4,19 @@
 #include <bot_param/param_client.h>
 #include <lcmtypes/bot_core/pose_t.hpp>
 #include "mav_state_est/mav_state_est.hpp"
+#include "mav_state_est/scan_matcher_module.hpp"
 
 namespace  MavStateEst {
 
 class ScanMatcherHandler {
 public:
-  typedef enum {
-    MODE_POSITION, MODE_POSITION_YAW, MODE_VELOCITY, MODE_VELOCITY_YAW, MODE_YAW
-  } ScanMatchingMode;
-
   ScanMatcherHandler(BotParam * param);
   RBISUpdateInterface * processMessage(const bot_core::pose_t * msg, MavStateEstimator* state_estimator);
 
-  ScanMatchingMode mode;
-  Eigen::VectorXi z_indices;
-  Eigen::MatrixXd cov_scan_match;
+protected:
+  ScanMatcherModule scan_matcher_module_;
+  PoseMeasurement pose_meas_;
+
 };
 
 

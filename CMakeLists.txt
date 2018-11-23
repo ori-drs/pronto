@@ -68,6 +68,9 @@ target_link_libraries(${STATE_EST_LIB} ${PRONTO_CORE_LIB} ${catkin_LIBRARIES})
 catkin_add_gtest(bot_trans_test test/bot_trans_eigen_conversion_test.cpp)
 target_link_libraries(bot_trans_test ${STATE_EST_LIB} ${catkin_LIBRARIES} pthread)
 
+catkin_add_gtest(ins_module_ballistic test/imu_module_test.cpp)
+target_link_libraries(ins_module_ballistic ${STATE_EST_LIB} ${catkin_LIBRARIES} pthread)
+
 
 install(TARGETS ${TARGETS}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
