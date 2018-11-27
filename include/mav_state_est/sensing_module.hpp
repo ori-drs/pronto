@@ -6,6 +6,7 @@ namespace MavStateEst {
 template <class MessageT>
 class SensingModule {
 public:
+    virtual ~SensingModule() = 0;
     virtual RBISUpdateInterface* processMessage(const MessageT* msg,
                                         MavStateEstimator* est = NULL) = 0;
 
@@ -15,6 +16,7 @@ public:
                                     const RBIM & default_cov,
                                     RBIS & init_state,
                                     RBIM & init_cov) = 0;
+
 
 };
 }

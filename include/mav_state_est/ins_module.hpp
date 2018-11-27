@@ -37,14 +37,14 @@ public:
     InsModule(const InsConfig& config, const Eigen::Affine3d& ins_to_body);
 
   RBISUpdateInterface * processMessage(const ImuMeasurement *msg,
-                                       MavStateEstimator* state_estimator);
+                                       MavStateEstimator* state_estimator) override;
 
   bool processMessageInit(const ImuMeasurement * msg,
                           const std::map<std::string, bool> & sensors_initialized,
                           const RBIS & default_state,
                           const RBIM & default_cov,
                           RBIS & init_state,
-                          RBIM & init_cov);
+                          RBIM & init_cov) override;
   inline double getTimeStep() {
       return dt;
   }
@@ -54,7 +54,7 @@ public:
 protected:
   bool allInitializedExcept(const std::map<std::string, bool> & _sensors_initialized,
                             const std::string & sensor_prefix);
-private:
+
   // Common Initialization Function:
   bool processMessageInitCommon(const std::map<std::string, bool> & sensors_initialized,
                                 const RBIS & default_state,
