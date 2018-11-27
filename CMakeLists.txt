@@ -58,6 +58,7 @@ add_library(${STATE_EST_LIB} src/mav_state_est/lcm_front_end.cpp
                              src/mav_state_est/gps_handler.cpp
                              src/mav_state_est/index_meas_handler.cpp
                              src/mav_state_est/ins_handler.cpp
+                             src/mav_state_est/init_message_handler.cpp
                              src/mav_state_est/atlas_ins_handler.cpp
                              src/mav_state_est/scan_matcher_handler.cpp
                              src/mav_state_est/vicon_handler.cpp
