@@ -4,7 +4,8 @@ project(pronto_estimator_core)
 add_compile_options(-std=c++11)
 
 #required by the lcm-based state estimator library
-find_package(catkin REQUIRED COMPONENTS pronto_lcmtypes
+find_package(catkin REQUIRED COMPONENTS roscpp
+                                        pronto_lcmtypes
                                         bot_core
                                         bot_frames)
 include_directories(${catkin_INCLUDE_DIRS})
@@ -24,9 +25,10 @@ include_directories(${bot_core_lcmtypes_INCLUDE_DIRS})
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIRS})
 
-set(PRONTO_CORE_LIB prontocore)
+set(PRONTO_CORE_LIB pronto_core)
 set(STATE_EST_LIB mav-state-est)
 set(ESTIMATE_TOOLS_LIB estimate_tools)
+set(PRONTO_ROS_LIB pronto_ros)
 
 include_directories(include)
 
@@ -67,6 +69,10 @@ add_library(${STATE_EST_LIB} src/mav_state_est/lcm_front_end.cpp
 add_dependencies(${STATE_EST_LIB} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${STATE_EST_LIB} ${PRONTO_CORE_LIB} ${catkin_LIBRARIES})
 
+add_library(${PRONTO_ROS_LIB} src/mav_state_est/ros_frontend.cpp)
+
+add_executable(param_test test/test_parameter_parse.cpp)
+target_link_libraries(param_test ${catkin_LIBRARIES})
 catkin_add_gtest(bot_trans_test test/bot_trans_eigen_conversion_test.cpp)
 target_link_libraries(bot_trans_test ${STATE_EST_LIB} ${catkin_LIBRARIES} pthread)
 
