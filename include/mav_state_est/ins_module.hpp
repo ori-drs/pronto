@@ -35,6 +35,7 @@ public:
 public:
         InsModule();
     InsModule(const InsConfig& config, const Eigen::Affine3d& ins_to_body);
+    ~InsModule();
 
   RBISUpdateInterface * processMessage(const ImuMeasurement *msg,
                                        MavStateEstimator* state_estimator) override;

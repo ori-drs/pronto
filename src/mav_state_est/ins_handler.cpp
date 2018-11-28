@@ -9,6 +9,10 @@ InsHandler::InsHandler()
 
 }
 
+InsHandler::~InsHandler(){
+
+}
+
 InsHandler::InsHandler(BotParam * _param, BotFrames * _frames) {
 
   // mfallon: this chooses between MICROSTRAIN and ATLAS_IMU_BATCH

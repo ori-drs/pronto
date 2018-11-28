@@ -15,9 +15,11 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
   void create(BotParam * _param, BotFrames * _frames);
-  public:
+public:
     InsHandler();
+    ~InsHandler();
   InsHandler(BotParam * _param, BotFrames * _frames);
+
 
   RBISUpdateInterface * processMessage(const bot_core::ins_t * msg,
                                        MavStateEstimator* state_estimator);

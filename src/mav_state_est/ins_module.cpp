@@ -6,6 +6,10 @@ InsModule::InsModule() : InsModule(InsConfig(), Eigen::Affine3d::Identity())
 {
 }
 
+InsModule::~InsModule() {
+
+}
+
 InsModule::InsModule(const InsConfig &config, const Eigen::Affine3d &ins_to_body) :
     ins_to_body(ins_to_body),
     dt(config.dt),
