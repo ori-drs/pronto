@@ -11,7 +11,7 @@ public:
 
     RBISUpdateInterface* processMessage(const sensor_msgs::Imu *imu_msg, MavStateEstimator *est) override;
 
-    bool processMessageInit(const sensor_msgs::Imu *msg,
+    bool processMessageInit(const sensor_msgs::Imu *imu_msg,
                             const std::map<std::string, bool> &sensor_initialized,
                             const RBIS &default_state,
                             const RBIM &default_cov,
