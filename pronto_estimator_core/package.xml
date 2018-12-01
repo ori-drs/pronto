@@ -19,17 +19,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>pronto_lcmtypes</build_depend>
-  <build_depend>bot_core_lcmtypes</build_depend>
-  <build_depend>bot_core</build_depend>
-  <build_depend>bot_frames</build_depend>
   <build_depend>stl_utils</build_depend> 
   <build_depend>eigen_utils</build_depend>
 
-  <run_depend>pronto_lcmtypes</run_depend>
-  <run_depend>bot_core_lcmtypes</run_depend>
-  <run_depend>bot_core</run_depend>
-  <run_depend>bot_frames</run_depend>
   <run_depend>stl_utils</run_depend>
   <run_depend>eigen_utils</run_depend>
 

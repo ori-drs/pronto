@@ -14,7 +14,7 @@ include_directories(include ${EIGEN3_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 catkin_package(INCLUDE_DIRS include
                LIBRARIES ${PRONTO_CORE_LIB}
-               CATKIN_DEPENDS bot_core bot_frames eigen_utils stl_utils
+               CATKIN_DEPENDS eigen_utils stl_utils
                DEPENDS EIGEN3)
 
 # this library contains only computation, no dependency on LCM
