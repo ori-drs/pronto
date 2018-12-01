@@ -14,16 +14,17 @@ class ROSFrontEnd {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    using SensorKey = RBISUpdateInterface::sensor_enum;
+    using SensorId = std::string;
 
-    ROSFrontEnd(ros::NodeHandle& nh);
+    ROSFrontEnd(ros::NodeHandle &nh);
     virtual ~ROSFrontEnd();
 
-    template <SensorKey K>
     void addInitModule(const std::string& sensor_id);
 
-    template<class MsgT, SensorKey K>
+    template<class MsgT>
     void addSensingModule(SensingModule<MsgT>& module,
+                          const SensorId& Key,
+                          bool is_init_module,
                           bool roll_forward,
                           bool publish_head,
                           const std::string& topic);
@@ -34,11 +35,9 @@ public:
 
 
 protected:
-    template <class MsgT, SensorKey K>
-    void callback(boost::shared_ptr<MsgT const> msg);
-
-    template <class MsgT, SensorKey K>
-    void initCallback(boost::shared_ptr<MsgT const> msg);
+    template <class MsgT>
+    void callback(boost::shared_ptr<MsgT const> msg,
+                  const SensorId& Key);
 
     bool initializeFilter();
 
@@ -46,13 +45,11 @@ protected:
 private:
     ros::NodeHandle& nh_;
     std::shared_ptr<MavStateEstimator> state_est_;
-    std::map<SensorKey, ros::Subscriber> subscribers_;
-    std::map<SensorKey, void*> sensing_modules_;
-    std::map<SensorKey, bool> init_modules_;
-    std::map<SensorKey, bool> roll_forward_;
-    std::map<SensorKey, bool> publish_head_;
-    std::map<SensorKey, std::string> key_to_id_;
-    std::map<std::string, bool> init_modules_id_;
+    std::map<SensorId, ros::Subscriber> subscribers_;
+    std::map<SensorId, void*> sensing_modules_;
+    std::map<SensorId, bool> init_modules_;
+    std::map<SensorId, bool> roll_forward_;
+    std::map<SensorId, bool> publish_head_;
 
     RBIS default_state;
     RBIM default_cov;
@@ -81,25 +78,26 @@ private:
 }
 
 namespace MavStateEst {
-using SensorKey = MavStateEst::ROSFrontEnd::SensorKey;
+using SensorId = MavStateEst::ROSFrontEnd::SensorId;
 
-ROSFrontEnd::ROSFrontEnd(ros::NodeHandle &nh) : nh_(nh) {
+ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh) : nh_(nh) {
     std::string prefix = "/state_estimator_pronto/";
-    bool publish_pose = false;
-    ROS_ASSERT(nh_.getParam(prefix + "publish_pose", publish_pose));
-
-    if(publish_pose){
-        std::string pose_topic = "POSE_BODY";
-        ROS_ASSERT(nh_.getParam(prefix + "pose_topic", pose_topic));
-        std::string twist_topic = "TWIST_BODY";
-        ROS_ASSERT(nh_.getParam(prefix + "twist_topic", twist_topic));
-        pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>(pose_topic, 200);
-        twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>(twist_topic, 200);
+    bool publish_pose;
+    if(nh_.getParam(prefix + "publish_pose", publish_pose)){
+        if(publish_pose){
+            std::string pose_topic = "POSE_BODY";
+            if(nh_.getParam(prefix + "pose_topic", pose_topic)){
+                pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("/" + pose_topic, 200);
+            }
+            std::string twist_topic = "TWIST_BODY";
+            if(nh_.getParam(prefix + "twist_topic", twist_topic)){
+                twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>("/" + twist_topic, 200);
+            }
+        }
+        int history_span;
+        nh_.getParam(prefix + "utime_history_span", history_span);
+        history_span_ = (uint64_t)history_span;
     }
-
-    int history_span = 100000; // 1 sec default
-    ROS_ASSERT(nh_.getParam(prefix + "utime_history_span", history_span));
-    history_span_ = (uint64_t)history_span;
 }
 
 
@@ -107,49 +105,59 @@ ROSFrontEnd::~ROSFrontEnd()
 {
 }
 
-template <SensorKey K>
 void ROSFrontEnd::addInitModule(const std::string& sensor_id)
 {
     // add the sensor to the list of sensor that require initialization
-    std::pair<SensorKey, bool> pair(K, false);
-    init_modules_.insert(pair);
-    std::pair<SensorKey, std::string> id_pair(K, sensor_id);
-    key_to_id_.insert(id_pair);
-    std::pair<std::string, bool> init_id_pair(sensor_id, false);
-    init_modules_id_.insert(init_id_pair);
+    std::pair<SensorId, bool> init_id_pair(sensor_id, false);
+    init_modules_.insert(init_id_pair);
 }
 
-template<class MsgT, SensorKey K>
+template<class MsgT>
 void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
+                                   const SensorId& sensor_id,
+                                   bool is_init_module,
                                    bool roll_forward,
                                    bool publish_head,
                                    const std::string& topic)
 {
     // int this implementation we allow only one different type of module
-    if(sensing_modules_.count(K) > 0){
-        ROS_WARN_STREAM("Sensing Module " << K << "already added. Skipping.");
+    if(sensing_modules_.count(sensor_id) > 0){
+        ROS_WARN_STREAM("Sensing Module \"" << sensor_id << "\" already added. Skipping.");
         return;
     }
 
+    ROS_INFO_STREAM("Sensor id: " << sensor_id);
+    ROS_INFO_STREAM("Init module: "<< (is_init_module? "yes" : "no"));
+    ROS_INFO_STREAM("Roll forward: "<< (roll_forward? "yes" : "no"));
+    ROS_INFO_STREAM("Publish head: "<< (publish_head? "yes" : "no"));
+    ROS_INFO_STREAM("Topic: " << topic);
+
+    if(is_init_module){
+        addInitModule(sensor_id);
+    }
+
     // store the will to roll forward when the message is received
-    std::pair<SensorKey, bool> roll_pair(K, roll_forward);
+    std::pair<SensorId, bool> roll_pair(sensor_id, roll_forward);
     roll_forward_.insert(roll_pair);
 
     // store the will to publish the estimator state when the message is received
-    std::pair<SensorKey, bool> publish_pair(K, publish_head);
+    std::pair<SensorId, bool> publish_pair(sensor_id, publish_head);
     publish_head_.insert(publish_pair);
 
     // store the module as void*, to allow for different types of module to stay
     // in the same container. The type will be known when the message arrives
     // so we can properly cast back to the right type.
-    std::pair<SensorKey, void*> pair(K, (void*) &module);
+    std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     sensing_modules_.insert(pair);
-
+    ROS_INFO("SUBSCRIBBING!!");
     // subscribe the generic templated callback for all modules
-    subscribers_[K] = nh_.subscribe(topic, 100, &ROSFrontEnd::callback<MsgT,K>, this);
+    subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::callback<MsgT>, this, _1, sensor_id));
+
+
 }
 
-bool ROSFrontEnd::initializeFilter(){
+bool ROSFrontEnd::initializeFilter()
+{
     // if the modules are not ready we return false
     if(!areModulesInitialized())
     {
@@ -165,13 +173,12 @@ bool ROSFrontEnd::initializeFilter(){
                                                                init_state.utime),
                                            history_span_));
 
-
     filter_initialized_ = true;
     return true;
 }
 
 bool ROSFrontEnd::areModulesInitialized(){
-    std::map<SensorKey,bool>::iterator it;
+    std::map<SensorId,bool>::iterator it = init_modules_.begin();
     for(; it != init_modules_.end(); ++it){
         if(!it->second){
             return false;
@@ -185,8 +192,8 @@ bool ROSFrontEnd::isFilterInitialized(){
 }
 
 
-template <class MsgT, SensorKey Key>
-void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg)
+template <class MsgT>
+void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
 {
     // this is a generic templated callback that does the same for every module:
     // If the module is in the initialization list and hasn't been initialized yet:
@@ -195,31 +202,32 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg)
     // if the module is initialized and the filter is ready
     // 1) take the measurement update and pass it to the filter if valid
     // 2) publish the filter state if the module wants to
-
     // if the module is in the initialization list but it is not initialized yet
-    if(init_modules_.count(Key) > 0 && !init_modules_[Key]){
-        init_modules_[Key] = static_cast<SensingModule<MsgT>*>(sensing_modules_[Key])->processMessageInit(msg.get(),
-                                                                                                           init_modules_id_,
+    if(init_modules_.count(sensor_id) > 0 && !init_modules_[sensor_id])
+    {
+        init_modules_[sensor_id] = static_cast<SensingModule<MsgT>*>(sensing_modules_[sensor_id])->processMessageInit(msg.get(),
+                                                                                                           init_modules_,
                                                                                                            default_state,
                                                                                                            default_cov,
                                                                                                            init_state,
                                                                                                            init_cov);
-        // save the same output into a different map (required by the callback)
-        init_modules_id_[key_to_id_[Key]] = init_modules_[Key];
         // attempt to initialize the filter
         // (all the init modules should have initialized first)
         initializeFilter();
     } else if(isFilterInitialized()) {
+        ROS_INFO("IMHERE2!!!");
+
         // appropriate casting to the right type and call to the process message
         // function to get the update
-        RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(sensing_modules_[Key])->processMessage(msg.get(), state_est_.get());
+        RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(sensing_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
 
         // if the update is valid, pass it to the filter
         if(update != NULL){
             // tell also the filter if we need to roll forward
-            state_est_->addUpdate(update, roll_forward_[Key]);
+            state_est_->addUpdate(update, roll_forward_[sensor_id]);
         }
-        if(publish_head_[Key]){
+        ROS_INFO_STREAM("PUBLISH HEAD: " << (publish_head_[sensor_id]? "yes" : "no"));
+        if(publish_head_[sensor_id]){
             state_est_->getHeadState(head_state, head_cov);
 
             // fill in linear velocity
@@ -235,6 +243,8 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg)
             // TODO insert appropriate covariance into the message
             // publish the twist
             twist_pub_.publish(twist_msg_);
+
+            ROS_INFO_STREAM(head_state.position().transpose());
 
 
 
@@ -253,6 +263,7 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg)
             // publish the pose
             pose_pub_.publish(pose_msg_);
         }
+
     }
 
 

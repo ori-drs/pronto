@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<launch>
+        <rosparam command="load" file="$(find director_drs)/config/anymal/state_estimator.yaml" />
+	<node name="pronto_estimator_ros_node" pkg="pronto_estimator_ros" type="pronto_estimator_ros_node" output="screen"/>
+</launch>
+
