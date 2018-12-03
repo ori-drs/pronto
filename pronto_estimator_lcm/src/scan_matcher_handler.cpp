@@ -1,5 +1,5 @@
 #include "pronto_estimator_lcm/scan_matcher_handler.hpp"
-
+#include <bot_core/math_util.h>
 namespace MavStateEst {
 
 using ScanMatchingMode = ScanMatcherModule::ScanMatchingMode;
