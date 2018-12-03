@@ -34,10 +34,12 @@ void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & pri
 
   // mfallon: only called when ins data flows
   // i think this is only called for IMU
-  bot_tictoc("insUpdateState");
+  // TODO if this was meant to measure some sort of performance
+  // replace with non-libbot calls
+  // bot_tictoc("insUpdateState");
   insUpdateState(gyro, accelerometer, dt, posterior_state);
   insUpdateCovariance(q_gyro, q_accel, q_gyro_bias, q_accel_bias, prior_state, posterior_covariance, dt);
-  bot_tictoc("insUpdateState");
+  // bot_tictoc("insUpdateState");
 
   loglikelihood = prior_loglikelihood;
   //    eigen_dump(prior_state);
