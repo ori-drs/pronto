@@ -149,7 +149,6 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
     // so we can properly cast back to the right type.
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     sensing_modules_.insert(pair);
-    ROS_INFO("SUBSCRIBBING!!");
     // subscribe the generic templated callback for all modules
     subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::callback<MsgT>, this, _1, sensor_id));
 
@@ -215,8 +214,6 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // (all the init modules should have initialized first)
         initializeFilter();
     } else if(isFilterInitialized()) {
-        ROS_INFO("IMHERE2!!!");
-
         // appropriate casting to the right type and call to the process message
         // function to get the update
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(sensing_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
@@ -226,8 +223,9 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             // tell also the filter if we need to roll forward
             state_est_->addUpdate(update, roll_forward_[sensor_id]);
         }
-        ROS_INFO_STREAM("PUBLISH HEAD: " << (publish_head_[sensor_id]? "yes" : "no"));
+
         if(publish_head_[sensor_id]){
+
             state_est_->getHeadState(head_state, head_cov);
 
             // fill in linear velocity
@@ -244,7 +242,6 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             // publish the twist
             twist_pub_.publish(twist_msg_);
 
-            ROS_INFO_STREAM(head_state.position().transpose());
 
 
 

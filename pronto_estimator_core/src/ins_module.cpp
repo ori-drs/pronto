@@ -93,7 +93,6 @@ bool InsModule::processMessageInit(const ImuMeasurement * msg,
     }
 
     init_counter++;
-
     // TODO not using magnetometer, sending zero
     // Eigen::Vector3d mag_vec(ins_to_body.rotation() * Eigen::Map<const Eigen::Vector3d>(msg->mag));
 
@@ -114,7 +113,6 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
                                           RBISIMUProcessStep * update,
                                           const Eigen::Vector3d& mag_vec)
 {
-
   g_vec_sum += -update->accelerometer;
   mag_vec_sum += mag_vec;
   gyro_bias_sum += update->gyro;
