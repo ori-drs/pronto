@@ -9,7 +9,7 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
     tf::TransformListener tf_imu_to_body_listener_;
     tf::StampedTransform tf_imu_to_body_;
 
-    std::string ins_param_prefix = "/state_estimator_pronto/ins/";
+    std::string ins_param_prefix = "ins/";
     std::string imu_frame = "/imu";
 
     nh_.getParam(ins_param_prefix + "frame", imu_frame);
