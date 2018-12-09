@@ -84,28 +84,29 @@ namespace MavStateEst {
 using SensorId = MavStateEst::ROSFrontEnd::SensorId;
 
 ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh) : nh_(nh) {
-    std::string prefix = "/state_estimator_pronto/";
     bool publish_pose;
-    if(nh_.getParam(prefix + "publish_pose", publish_pose)){
+    // looking for relative param names, the nodehandle namespace will be added
+    // automatically, e.g. publish_pose -> /state_estimator_pronto/publish_pose
+    if(nh_.getParam("publish_pose", publish_pose)){
         if(publish_pose){
             std::string pose_frame_id = "odom";
-            if(!nh_.getParam(prefix + "pose_frame_id", pose_frame_id)){
+            if(!nh_.getParam("pose_frame_id", pose_frame_id)){
                 ROS_WARN_STREAM("Couldn't get param \"pose_frame_id\". Setting default to: \"" << pose_frame_id <<"\"");
             }
             std::string pose_topic = "POSE_BODY";
-            if(nh_.getParam(prefix + "pose_topic", pose_topic)){
-                pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>("/" + pose_topic, 200);
+            if(nh_.getParam("pose_topic", pose_topic)){
+                pose_pub_ = nh_.advertise<geometry_msgs::PoseWithCovarianceStamped>(pose_topic, 200);
                 pose_msg_.header.frame_id = pose_frame_id;
             }
             std::string twist_topic = "TWIST_BODY";
-            if(nh_.getParam(prefix + "twist_topic", twist_topic)){
-                twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>("/" + twist_topic, 200);
+            if(nh_.getParam("twist_topic", twist_topic)){
+                twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>(twist_topic, 200);
                 twist_msg_.header.frame_id = pose_frame_id;
             }
         }
         int history_span;
-        nh_.getParam(prefix + "utime_history_span", history_span);
-        history_span_ = (uint64_t)history_span;
+        nh_.getParam("utime_history_span", history_span);
+        history_span_ = history_span;
     }
 
     initializeState();
