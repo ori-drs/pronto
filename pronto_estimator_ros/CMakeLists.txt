@@ -7,7 +7,8 @@ find_package(catkin REQUIRED COMPONENTS pronto_estimator_core
                                         roscpp
                                         sensor_msgs
                                         eigen_conversions
-                                        tf_conversions)
+                                        tf_conversions
+                                        pronto_msgs)
 
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -89,6 +90,7 @@ catkin_package(INCLUDE_DIRS include
                               sensor_msgs
                               tf_conversions
                               eigen_conversions
+                              pronto_msgs
                # DEPENDS system_lib
 )
 

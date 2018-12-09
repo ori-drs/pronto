@@ -52,7 +52,7 @@
   <depend>sensor_msgs</depend>
   <depend>tf_conversions</depend>
   <depend>eigen_conversions</depend>
-
+<depend>pronto_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
