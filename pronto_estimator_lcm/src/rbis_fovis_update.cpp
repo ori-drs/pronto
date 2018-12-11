@@ -6,32 +6,16 @@ namespace MavStateEst {
 FovisHandler::FovisHandler(lcm::LCM* lcm_recv,  lcm::LCM* lcm_pub,
                            BotParam * param, BotFrames * frames): lcm_recv(lcm_recv), lcm_pub(lcm_pub), frames(frames){
   
-    /*
-  pc_vis_ = new pronto_vis( lcm_pub->getUnderlyingLCM());
-  // obj: id name type reset
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(7000,"Pronto-VO Pose t0",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(7001,"Pronto-VO Pose t1 kin",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(7002,"Pronto-VO Pose t1 vo",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(7003,"Pronto-VO Pose current",5,1) );
-
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(7010,"Pronto-VO Pose t0 internal",5,1) );
-*/
   char* mode_str = bot_param_get_str_or_fail(param, "state_estimator.fovis.mode");
 
-  if (strcmp(mode_str, "velocity_rotation_rate") == 0) {
-    mode = FovisHandler::MODE_VELOCITY_ROTATION_RATE;
-    std::cout << "FOVIS will provide velocity and rotation rates." << std::endl;
-  }
-  else if (strcmp(mode_str, "velocity") == 0){
-    mode = FovisHandler::MODE_VELOCITY;
-    std::cout << "FOVIS will provide velocity rates." << std::endl;
-  }
-  else if (strcmp(mode_str, "position") == 0){
-    mode = FovisHandler::MODE_POSITION;
+  VisualOdometryConfig cfg;
+
+  if (strcmp(mode_str, "position") == 0){
+    cfg.mode = VisualOdometryMode::MODE_POSITION;
     std::cout << "FOVIS will provide position corrections." << std::endl;
   }
   else if (strcmp(mode_str, "position_orient") == 0){
-    mode = FovisHandler::MODE_POSITION_ORIENT;
+    cfg.mode = VisualOdometryMode::MODE_POSITION_ORIENT;
     std::cout << "FOVIS will provide position and orientation corrections." << std::endl;
   }
   else{
@@ -42,20 +26,12 @@ FovisHandler::FovisHandler(lcm::LCM* lcm_recv,  lcm::LCM* lcm_pub,
   free(mode_str);
   
   Eigen::VectorXd R_fovis;
-  if (mode == MODE_VELOCITY_ROTATION_RATE) {
-    z_indices.resize(6);
-    R_fovis.resize(6);
-  }
-  else if (mode == MODE_VELOCITY){
-    z_indices.resize(3);
+  if (cfg.mode == VisualOdometryMode::MODE_POSITION){
+    cfg.z_indices.resize(3);
     R_fovis.resize(3);
   }
-  else if (mode == MODE_POSITION){
-    z_indices.resize(3);
-    R_fovis.resize(3);
-  }
-  else if (mode == MODE_POSITION_ORIENT){
-    z_indices.resize(6);
+  else if (cfg.mode == VisualOdometryMode::MODE_POSITION_ORIENT){
+    cfg.z_indices.resize(6);
     R_fovis.resize(6);
   }
   else{
@@ -63,57 +39,33 @@ FovisHandler::FovisHandler(lcm::LCM* lcm_recv,  lcm::LCM* lcm_pub,
   }
 
   // Initialize covariance matrix based on mode.
-  if (mode == MODE_VELOCITY_ROTATION_RATE) {
-    double R_fovis_vxyz = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_vxyz");
-    R_fovis(0) = bot_sq(R_fovis_vxyz);
-    R_fovis(1) = bot_sq(R_fovis_vxyz);
-    R_fovis(2) = bot_sq(R_fovis_vxyz);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::velocityInds();
-
-    double R_fovis_vang = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_vang");
-    R_fovis(3) = bot_sq(R_fovis_vang);
-    R_fovis(4) = bot_sq(R_fovis_vang);
-    R_fovis(5) = bot_sq(R_fovis_vang);
-    z_indices.tail<3>() = eigen_utils::RigidBodyState::angularVelocityInds();
-
-  }else if (mode == MODE_VELOCITY){
-    double R_fovis_vxyz = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_vxyz");
-    R_fovis(0) = bot_sq(R_fovis_vxyz);
-    R_fovis(1) = bot_sq(R_fovis_vxyz);
-    R_fovis(2) = bot_sq(R_fovis_vxyz);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::velocityInds();
-
-  }else if (mode == MODE_POSITION){
+  if (cfg.mode == VisualOdometryMode::MODE_POSITION){
     double R_fovis_pxyz = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_pxyz");
-    R_fovis(0) = bot_sq(R_fovis_pxyz);
-    R_fovis(1) = bot_sq(R_fovis_pxyz);
-    R_fovis(2) = bot_sq(R_fovis_pxyz);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
+    R_fovis(0) = std::pow(R_fovis_pxyz, 2);
+    R_fovis(1) = std::pow(R_fovis_pxyz, 2);
+    R_fovis(2) = std::pow(R_fovis_pxyz, 2);
+    cfg.z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
 
-  }else if (mode == MODE_POSITION_ORIENT){
+  }else if (cfg.mode == VisualOdometryMode::MODE_POSITION_ORIENT){
     double R_fovis_pxyz = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_pxyz");
-    R_fovis(0) = bot_sq(R_fovis_pxyz);
-    R_fovis(1) = bot_sq(R_fovis_pxyz);
-    R_fovis(2) = bot_sq(R_fovis_pxyz);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
+    R_fovis(0) = std::pow(R_fovis_pxyz, 2);
+    R_fovis(1) = std::pow(R_fovis_pxyz, 2);
+    R_fovis(2) = std::pow(R_fovis_pxyz, 2);
+    cfg.z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
 
     double R_fovis_chi = bot_param_get_double_or_fail(param, "state_estimator.fovis.r_chi");
-    R_fovis(3) = bot_sq(R_fovis_chi);
-    R_fovis(4) = bot_sq(R_fovis_chi);
-    R_fovis(5) = bot_sq(R_fovis_chi);
-    z_indices.tail<3>() = eigen_utils::RigidBodyState::chiInds();;
+    R_fovis(3) = std::pow(R_fovis_chi, 2);
+    R_fovis(4) = std::pow(R_fovis_chi, 2);
+    R_fovis(5) = std::pow(R_fovis_chi, 2);
+    cfg.z_indices.tail<3>() = eigen_utils::RigidBodyState::chiInds();
 
   }else{
     // ..incomplete
   }
 
-  cov_fovis = R_fovis.asDiagonal();
+  cfg.cov_vo = R_fovis.asDiagonal();
 
-  prev_t0_body_ = Eigen::Isometry3d::Identity();
-  prev_t0_body_internal_ = Eigen::Isometry3d::Identity();
-  prev_t0_body_utime_ = 0;
-
-  publish_diagnostics_ = bot_param_get_boolean_or_fail(param, "state_estimator.fovis.publish_diagnostics");
+  vo_module_.reset(new VisualOdometryModule(cfg));
 
 }
 
@@ -156,162 +108,27 @@ bot_core::pose_t getBotTransAsBotPoseVelocity(BotTrans bt, int64_t utime ){
 
 
 
-RBISUpdateInterface * FovisHandler::processMessage(const pronto::update_t * msg, MavStateEstimator* state_estimator){
-
-  if (msg->estimate_status == pronto::update_t::ESTIMATE_VALID){
-  }else{
-    std::cout << "FovisHandler: FOVIS failure, not integrating this measurement\n";
-    return NULL;
-  }
-  
-  // TODO: explore why this is allowed to be published upstream
-  if ( std::isnan( msg->translation[0]) ){
-    std::cout << "FovisHandler: FOVIS produced NaN. x="<< msg->translation[0] << ", quitting\n";
-    exit(-1); // keep this exit until we have found the source of the NaN in Fovis
-    return NULL;
-  }
-
-
-  // 1. position correction mode:
-  Eigen::Isometry3d t0_body = Eigen::Isometry3d::Identity();
-  Eigen::Isometry3d t0_body_internal = Eigen::Isometry3d::Identity();
-  if (msg->prev_timestamp != prev_t0_body_utime_){
-    // TODO: check that these trans are valid
-    int status = get_trans_with_utime(frames, "body" , "local", msg->prev_timestamp, t0_body);
-
-
-    /////////////////////////////////////////////////////////////////////////////////
-    //updateHistory::historyMapIterator prev_it = state_estimator->history.updateMap.find(msg->prev_timestamp);
-    updateHistory::historyMapIterator lower_it = state_estimator->history.updateMap.lower_bound(msg->prev_timestamp);
-    double diff_utime = ( lower_it->first - msg->prev_timestamp ) *1E-6;
-    if (diff_utime > 0.025){
-      std::cout << "FOIVS: time difference for VO delta root pose is too great ("<< diff_utime <<"sec). Will not use\n";
-      return NULL;
+RBISUpdateInterface * FovisHandler::processMessage(const pronto::update_t * msg, MavStateEstimator* state_estimator)
+{
+    if(!get_trans_with_utime(frames, "body" , "local", msg->prev_timestamp, t0_body)){
+        // if the transform can't be retrieved, we quietly return an invalid update
+        return NULL;
     }
+    // we will pass to the module both the messate and the transform
+    // the vo_update contains also t0_body (the pose of the robot at the previous
+    // time
+    getVisualOdometryUpdateFromLCM(*msg, t0_body, vo_update_);
+    return vo_module_->processMessage(&vo_update_, state_estimator);
+}
 
-    // The following check is not properly debugged:
-    if (lower_it == state_estimator->history.updateMap.end()){
-      std::cout << msg->prev_timestamp <<  " at the end\n";
-      return NULL;
-    }else{
-      std::cout << msg->prev_timestamp <<  " not at the end - (successful delta change)\n";
-    }
-
-    RBISUpdateInterface * t0_body_RBISInterface = lower_it->second;
-    RBIS t0_body_RBIS = t0_body_RBISInterface->posterior_state;
-    t0_body_internal.translation() = Eigen::Vector3d( t0_body_RBIS.position()[0], t0_body_RBIS.position()[1], t0_body_RBIS.position()[2] );
-    t0_body_internal.rotate( Eigen::Quaterniond( t0_body_RBIS.quat.w(), t0_body_RBIS.quat.x(), t0_body_RBIS.quat.y(), t0_body_RBIS.quat.z()) );
-    /////////////////////////////////////////////////////////////////////////////////
-
-    prev_t0_body_ = t0_body;
-    prev_t0_body_internal_ = t0_body_internal;
-    prev_t0_body_utime_ = msg->prev_timestamp;
-
-
-  }else{
-    t0_body = prev_t0_body_;
-    t0_body_internal = prev_t0_body_internal_;
-  }
-
-
-  Eigen::Isometry3d t1_body = Eigen::Isometry3d::Identity();
-  get_trans_with_utime(frames, "body" , "local", msg->timestamp, t1_body);
-
-  Eigen::Isometry3d t0t1_body_vo = Eigen::Isometry3d::Identity();
-  t0t1_body_vo.translation() = Eigen::Vector3d( msg->translation[0], msg->translation[1], msg->translation[2] );
-  t0t1_body_vo.rotate( Eigen::Quaterniond( msg->rotation[0], msg->rotation[1], msg->rotation[2], msg->rotation[3] ) );
-
-  Eigen::Isometry3d t1_body_vo = t0_body_internal * t0t1_body_vo; // the pose of the robot as estimated by applying the VO translation on top of t0 state
-
-  if (publish_diagnostics_){
-      /*
-    Isometry3dTime t0_body_T = Isometry3dTime(msg->prev_timestamp , t0_body );
-    pc_vis_->pose_to_lcm_from_list(7000, t0_body_T );
-    Isometry3dTime t1_body_T = Isometry3dTime(msg->timestamp , t1_body );
-    pc_vis_->pose_to_lcm_from_list(7001, t1_body_T );
-    Isometry3dTime t1_body_vo_T = Isometry3dTime(msg->timestamp , t1_body_vo );
-    pc_vis_->pose_to_lcm_from_list(7002, t1_body_vo_T );
-
-
-    Isometry3dTime t0_body_internal_T = Isometry3dTime(msg->prev_timestamp , t0_body_internal );
-    pc_vis_->pose_to_lcm_from_list(7010, t0_body_internal_T );
-
-
-
-    RBIS head_state;
-    RBIM head_cov;
-    state_estimator->getHeadState(head_state, head_cov);
-
-    Eigen::Isometry3d current_body;
-    current_body.setIdentity();
-    current_body.translation() = Eigen::Vector3d( head_state.position()[0], head_state.position()[1], head_state.position()[2] );
-    current_body.rotate( Eigen::Quaterniond( head_state.quat.w(), head_state.quat.x(), head_state.quat.y(), head_state.quat.z() ) );
-    Isometry3dTime current_body_T = Isometry3dTime(msg->timestamp , current_body );
-    pc_vis_->pose_to_lcm_from_list(7003, current_body_T );
-
-    //std::cout << t1_body.translation().transpose() << " body\n";
-    //std::cout << t1_body_vo.translation().transpose() << " vo delta\n";
-    //Eigen::Vector3d diff = Eigen::Vector3d( t1_body_vo.translation() - t1_body.translation() ); 
-    //std::cout << diff.transpose() << " is diff\n\n";
-    */
-  }
-
-
-
-
-  BotTrans odo_velT;
-  if ( (mode == MODE_VELOCITY_ROTATION_RATE) || (mode == MODE_VELOCITY) ) {
-    BotTrans odo_deltaT;
-    memset(&odo_deltaT, 0, sizeof(odo_deltaT));
-    memcpy(odo_deltaT.trans_vec, msg->translation, 3 * sizeof(double));
-    memcpy(odo_deltaT.rot_quat,  msg->rotation   , 4 * sizeof(double));
-    odo_velT = getTransAsVelocityTrans(odo_deltaT, msg->timestamp, msg->prev_timestamp);
-
-    if (publish_diagnostics_){
-      // Get the velocity as a pose message:
-      bot_core::pose_t vel_pose = getBotTransAsBotPoseVelocity(odo_velT, msg->timestamp)  ;
-      lcm_pub->publish("POSE_BODY_FOVIS_VELOCITY", &vel_pose );      
-    }    
-  }
-
-
-  
-  if (mode == MODE_VELOCITY_ROTATION_RATE) {
-    // This isn't finished
-    //Eigen::VectorXd z_meas(6);
-    //Eigen::Quaterniond quat;
-    //eigen_utils::botDoubleToQuaternion(quat, odo_velT.rot_quat);
-    //z_meas.head<3>() = Eigen::Map<const Eigen::Vector3d>(odo_velT.trans_vec);
-    //return new RBISIndexedPlusOrientationMeasurement(z_indices, z_meas, cov_fovis, quat, RBISUpdateInterface::fovis,
-    //        msg->timestamp);
-    std::cout << "FovisHandler Mode not supported, exiting\n";
-    return NULL;
-
-  }else if (mode == MODE_VELOCITY) {
-    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
-        Eigen::Map<const Eigen::Vector3d>( odo_velT.trans_vec ), cov_fovis, RBISUpdateInterface::fovis,
-        msg->timestamp);
-
-  }else if (mode == MODE_POSITION) {
-    Eigen::VectorXd z_meas(3);
-    z_meas.head<3>() = Eigen::Vector3d( t1_body_vo.translation().x()  , t1_body_vo.translation().y() , t1_body_vo.translation().z() );
-    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
-        z_meas, cov_fovis, RBISUpdateInterface::fovis,
-        msg->timestamp);
-
-  }else if (mode == MODE_POSITION_ORIENT) {
-    Eigen::VectorXd z_meas(3);
-    Eigen::Quaterniond quat(t1_body_vo.rotation());
-    z_meas.head<3>() = Eigen::Vector3d( t1_body_vo.translation().x()  , t1_body_vo.translation().y() , t1_body_vo.translation().z() );
-    return new RBISIndexedPlusOrientationMeasurement(z_indices,
-         z_meas, cov_fovis, quat, RBISUpdateInterface::fovis,
-         msg->timestamp);
-
-  }else{
-    std::cout << "FovisHandler Mode not supported, exiting\n";
-    return NULL;
-  }
-  
+bool FovisHandler::processMessageInit(const pronto::update_t *msg,
+                                      const std::map<std::string, bool> &sensor_initialized,
+                                      const RBIS &default_state,
+                                      const RBIM &default_cov,
+                                      RBIS &init_state,
+                                      RBIM &init_cov){
+    // we don't use this module to initialize for now
+    return true;
 }
 
 
@@ -341,6 +158,26 @@ void FovisHandler::sendTransAsVelocityPose(BotTrans msgT, int64_t utime, int64_t
   BotTrans msgT_vel = getTransAsVelocityTrans(msgT, utime, prev_utime);
   bot_core::pose_t vel_pose = getBotTransAsBotPoseVelocity(msgT_vel, utime)  ;
   lcm_pub->publish(channel, &vel_pose );
+}
+
+void FovisHandler::getVisualOdometryUpdateFromLCM(const pronto::update_t &lcm_update,
+                                             const Eigen::Affine3d &body_to_local,
+                                             VisualOdometryUpdate &vo_update)
+{
+    vo_update.curr_utime = lcm_update.timestamp;
+    vo_update.pose_covariance = Eigen::Map<const Eigen::Matrix<double,6,6>>(&lcm_update.covariance[0][0]);
+
+    vo_update.prev_pose = body_to_local;
+    vo_update.prev_utime = lcm_update.prev_timestamp;
+    vo_update.relative_pose.setIdentity();
+    vo_update.relative_pose.translate(Eigen::Map<const Eigen::Vector3d>(lcm_update.translation));
+    temp_quat = Eigen::Quaterniond::Identity();
+    temp_quat.w() = lcm_update.rotation[0];
+    temp_quat.x() = lcm_update.rotation[1];
+    temp_quat.y() = lcm_update.rotation[2];
+    temp_quat.z() = lcm_update.rotation[3];
+    vo_update.relative_pose.rotate(temp_quat);
+    vo_update.status = static_cast<VisualOdometryUpdate::Status>(lcm_update.estimate_status);
 }
 
 } // end of namespace

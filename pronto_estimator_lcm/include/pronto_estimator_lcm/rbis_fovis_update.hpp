@@ -2,7 +2,6 @@
 #define RBIS_FOVIS_LIB_UPDATE_HPP_
 
 #include <lcm/lcm.h>
-#include <bot_core/bot_core.h>
 #include <bot_param/param_client.h>
 #include <bot_frames/bot_frames.h>
 
@@ -15,24 +14,25 @@
 #include <lcmtypes/pronto/update_t.hpp>
 #include <lcm/lcm-cpp.hpp>
 
+#include <pronto_estimator_core/visual_odometry_module.hpp>
+#include <pronto_estimator_core/definitions.hpp>
+#include <memory>
+
 namespace MavStateEst {
 
-class FovisHandler {
+class FovisHandler : SensingModule<pronto::update_t>{
 public:
-  // Typical mode is MODE_POSITION OR MODE_
-  typedef enum {
-    MODE_VELOCITY, MODE_ROTATION_RATE, MODE_VELOCITY_ROTATION_RATE, MODE_POSITION, MODE_POSITION_ORIENT
-  } FovisMode;
-
   FovisHandler(lcm::LCM* lcm_recv,  lcm::LCM* lcm_pub,
                BotParam * param, BotFrames * frames);
 
   RBISUpdateInterface * processMessage(const pronto::update_t  * msg, MavStateEstimator* state_estimator);
-
-  FovisMode mode;
-  Eigen::VectorXi z_indices;
-  Eigen::MatrixXd cov_fovis;
-  
+  bool processMessageInit(const pronto::update_t *msg,
+                          const std::map<std::string, bool> &sensor_initialized,
+                          const RBIS &default_state,
+                          const RBIM &default_cov,
+                          RBIS &init_state,
+                          RBIM &init_cov);
+private:
   lcm::LCM* lcm_pub;
   lcm::LCM* lcm_recv;
   BotFrames* frames;
@@ -43,13 +43,27 @@ public:
            int64_t utime, int64_t prev_utime);  
   
   void sendTransAsVelocityPose(BotTrans msgT, int64_t utime, int64_t prev_utime, std::string channel);
-  
-  // Publish Debug Data to LCM
-  bool publish_diagnostics_;  
+  Eigen::Isometry3d t0_body = Eigen::Isometry3d::Identity();
+  std::shared_ptr<VisualOdometryModule> vo_module_;
+  VisualOdometryUpdate vo_update_;
+  Eigen::Quaterniond temp_quat;
 
-  Eigen::Isometry3d prev_t0_body_;
-  Eigen::Isometry3d prev_t0_body_internal_;
-  int64_t prev_t0_body_utime_;
+  /**
+   * @brief getVisualOdometryUpdateFromLCM takes an LCM message and a pose
+   * and converts them into a VisualOdometryUpdate, which contains the time t0
+   * the pose of the robot at t0, the time t1 and the relative pose between
+   * t0 and t1, plus covariance and status.
+   * @param[in] lcm_update
+   * @param[in] body_to_local
+   * @param[out] vo_update
+   */
+  void getVisualOdometryUpdateFromLCM(const pronto::update_t& lcm_update,
+                                        const Eigen::Affine3d& body_to_local,
+                                        VisualOdometryUpdate& vo_update);
+
+
+
+
 };
 
 
