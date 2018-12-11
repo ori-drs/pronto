@@ -24,7 +24,8 @@ add_library (${PRONTO_CORE_LIB} src/rbis.cpp
                                 src/rbis_update_interface.cpp
                                 src/mav_state_est.cpp
                                 src/update_history.cpp
-                                src/visual_odometry_module.cpp)
+                                src/visual_odometry_module.cpp
+                                src/vicon_module.cpp)
 
 target_link_libraries(${PRONTO_CORE_LIB} ${catkin_LIBRRARIES})
 

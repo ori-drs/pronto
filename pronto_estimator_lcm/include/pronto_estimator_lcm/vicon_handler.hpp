@@ -4,7 +4,9 @@
 #include <lcmtypes/bot_core/rigid_transform_t.hpp>
 #include <bot_param/param_client.h>
 #include <bot_frames/bot_frames.h>
-
+#include <pronto_estimator_core/definitions.hpp>
+#include <pronto_estimator_core/vicon_module.hpp>
+#include <memory>
 
 namespace MavStateEst {
 class ViconHandler {
@@ -12,15 +14,7 @@ public:
     // required by all classes with an Eigen type member
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-  typedef enum {
-    MODE_POSITION, MODE_POSITION_ORIENT, MODE_ORIENTATION, MODE_YAW
-  } ViconMode;
-
   ViconHandler(BotParam * param, BotFrames *frames);
-
-  ViconHandler(BotParam * param, ViconMode vicon_mode);
-
-  void init(BotParam * param);
 
   RBISUpdateInterface * processMessage(const bot_core::rigid_transform_t * msg,
                                        MavStateEstimator* state_estimator);
@@ -40,5 +34,9 @@ private:
   ViconMode mode;
   Eigen::VectorXi z_indices;
   Eigen::MatrixXd cov_vicon;
+  RigidTransform vicon_transform_;
+  std::shared_ptr<ViconModule> vicon_module_;
+
+  void rigidTransformFromLCM(const bot_core::rigid_transform_t &lcm_transf, RigidTransform &transf);
 };
 }

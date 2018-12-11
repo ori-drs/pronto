@@ -53,4 +53,12 @@ public:
     PoseCovariance pose_covariance;
     uint8_t status;
 };
+
+struct RigidTransform {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
+    uint64_t utime;
+    Transform transform;
+};
 }
