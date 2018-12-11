@@ -53,6 +53,7 @@
   <depend>tf_conversions</depend>
   <depend>eigen_conversions</depend>
 <depend>pronto_msgs</depend>
+<depend>geometry_msgs</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

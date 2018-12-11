@@ -8,7 +8,8 @@ find_package(catkin REQUIRED COMPONENTS pronto_estimator_core
                                         sensor_msgs
                                         eigen_conversions
                                         tf_conversions
-                                        pronto_msgs)
+                                        pronto_msgs
+                                        geometry_msgs)
 
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -91,13 +92,15 @@ catkin_package(INCLUDE_DIRS include
                               tf_conversions
                               eigen_conversions
                               pronto_msgs
+                              geometry_msgs
                # DEPENDS system_lib
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} src/ros_frontend.cpp
-                            src/ins_ros_handler.cpp)
+                            src/ins_ros_handler.cpp
+                            src/vicon_ros_handler.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
