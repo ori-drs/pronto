@@ -1,6 +1,7 @@
 #include <ros/node_handle.h>
 #include "pronto_estimator_ros/ros_frontend.hpp"
 #include "pronto_estimator_ros/ins_ros_handler.hpp"
+#include "pronto_estimator_ros/vicon_ros_handler.hpp"
 
 using namespace MavStateEst;
 
@@ -31,7 +32,7 @@ int main(int argc, char** argv) {
     }
 
     std::shared_ptr<InsHandlerROS> ins_handler_;
-    // std::shared_ptr<LegOdometryHandlerROS> legodo_handler_;
+    std::shared_ptr<ViconHandlerROS> vicon_handler_;
 
     bool init = false;
     bool active = false;
@@ -78,10 +79,15 @@ int main(int argc, char** argv) {
                 front_end.addInitModule(*ins_handler_, *it, topic);
             }
         }
-        if(it->compare("legodo") == 0){
-
+        if(it->compare("vicon") == 0 ){
+            vicon_handler_.reset(new ViconHandlerROS(nh));
+            if(active){
+                front_end.addSensingModule(*vicon_handler_, *it, roll_forward, publish_head, topic);
+            }
+            if(init){
+                front_end.addInitModule(*vicon_handler_, *it, topic);
+            }
         }
     }
-
     ros::spin();
 }
