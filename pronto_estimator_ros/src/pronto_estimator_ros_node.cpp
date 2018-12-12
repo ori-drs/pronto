@@ -11,9 +11,12 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh(prefix);
     ROSFrontEnd front_end(nh);
 
+    // get the list of active and init sensors from the param server
     typedef std::vector<std::string> SensorList;
+    typedef std::set<std::string> SensorSet;
     SensorList init_sensors;
     SensorList active_sensors;
+    SensorList all_sensors;
 
     if(!nh.getParam("init_sensors", init_sensors)){
         ROS_ERROR("Not able to get init_sensors param");
@@ -33,11 +36,20 @@ int main(int argc, char** argv) {
     // std::shared_ptr<LegOdometryHandlerROS> legodo_handler_;
 
     bool init = false;
+    bool active = false;
     bool roll_forward = false;
     bool publish_head = false;
     std::string topic;
 
-    for(SensorList::iterator it = active_sensors.begin(); it != active_sensors.end(); ++it)
+
+    for(SensorList::iterator it = active_sensors.begin(); it != active_sensors.end(); ++it){
+        all_sensors.push_back(*it);
+    }
+    for(SensorList::iterator it = init_sensors.begin(); it != init_sensors.end(); ++it){
+        all_sensors.push_back(*it);
+    }
+
+    for(SensorList::iterator it = all_sensors.begin(); it != all_sensors.end(); ++it)
     {
         if(!nh.getParam(*it + "/roll_forward_on_receive", roll_forward)){
             ROS_WARN_STREAM("Not adding sensor \"" << *it << "\".");
@@ -55,13 +67,18 @@ int main(int argc, char** argv) {
             continue;
         }
         // check if the sensor is also used to initialize
-        if(std::find(init_sensors.begin(), init_sensors.end(), *it) != init_sensors.end()){
-            init = true;
-        }
+        init = (std::find(init_sensors.begin(), init_sensors.end(), *it) != init_sensors.end());
+        active = (std::find(active_sensors.begin(), active_sensors.end(), *it) != active_sensors.end());
+        // is the IMU module in the list? Typically yes.
         if(it->compare("ins") == 0)
         {
             ins_handler_.reset(new InsHandlerROS(nh));
-            front_end.addSensingModule(*ins_handler_, *it, init, roll_forward, publish_head, topic);
+            if(active){
+                front_end.addSensingModule(*ins_handler_, *it, roll_forward, publish_head, topic);
+            }
+            if(init){
+                front_end.addInitModule(*ins_handler_, *it, topic);
+            }
         }
         if(it->compare("legodo") == 0){
 

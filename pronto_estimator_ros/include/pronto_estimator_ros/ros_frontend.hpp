@@ -19,15 +19,16 @@ public:
     ROSFrontEnd(ros::NodeHandle &nh);
     virtual ~ROSFrontEnd();
 
-    void addInitModule(const std::string& sensor_id);
-
     template<class MsgT>
     void addSensingModule(SensingModule<MsgT>& module,
-                          const SensorId& Key,
-                          bool is_init_module,
+                          const SensorId& sensor_id,
                           bool roll_forward,
                           bool publish_head,
                           const std::string& topic);
+    template <class MsgT>
+    void addInitModule(SensingModule<MsgT>& module,
+                       const SensorId& sensor_id,
+                       const std::string& topic);
 
     bool areModulesInitialized();
 
@@ -35,6 +36,10 @@ public:
 
 
 protected:
+    template <class MsgT>
+    void initCallback(boost::shared_ptr<MsgT const> msg,
+                      const SensorId& Key);
+
     template <class MsgT>
     void callback(boost::shared_ptr<MsgT const> msg,
                   const SensorId& Key);
@@ -48,9 +53,11 @@ protected:
 private:
     ros::NodeHandle& nh_;
     std::shared_ptr<MavStateEstimator> state_est_;
-    std::map<SensorId, ros::Subscriber> subscribers_;
-    std::map<SensorId, void*> sensing_modules_;
-    std::map<SensorId, bool> init_modules_;
+    std::map<SensorId, ros::Subscriber> sensors_subscribers_;
+    std::map<SensorId, ros::Subscriber> init_subscribers_;
+    std::map<SensorId, void*> active_modules_;
+    std::map<SensorId, void*> init_modules_;
+    std::map<SensorId, bool> initialized_list_;
     std::map<SensorId, bool> roll_forward_;
     std::map<SensorId, bool> publish_head_;
 
@@ -210,36 +217,46 @@ ROSFrontEnd::~ROSFrontEnd()
 {
 }
 
-void ROSFrontEnd::addInitModule(const std::string& sensor_id)
+template <class MsgT>
+void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
+                                const SensorId& sensor_id,
+                                const std::string& topic)
 {
+    if(init_modules_.count(sensor_id) > 0){
+        ROS_WARN_STREAM("Init Module \"" << sensor_id << "\" already added. Skipping.");
+        return;
+    }
+    ROS_INFO_STREAM("Sensor init id: " << sensor_id);
+    ROS_INFO_STREAM("Topic: " << topic);
+
     // add the sensor to the list of sensor that require initialization
     std::pair<SensorId, bool> init_id_pair(sensor_id, false);
-    init_modules_.insert(init_id_pair);
+    initialized_list_.insert(init_id_pair);
+    // store the module as void*, to allow for different types of module to stay
+    // in the same container. The type will be known when the message arrives
+    // so we can properly cast back to the right type.
+    std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
+    init_modules_.insert(pair);
+    init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::initCallback<MsgT>, this, _1, sensor_id));
 }
 
 template<class MsgT>
 void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
                                    const SensorId& sensor_id,
-                                   bool is_init_module,
                                    bool roll_forward,
                                    bool publish_head,
                                    const std::string& topic)
 {
     // int this implementation we allow only one different type of module
-    if(sensing_modules_.count(sensor_id) > 0){
+    if(active_modules_.count(sensor_id) > 0){
         ROS_WARN_STREAM("Sensing Module \"" << sensor_id << "\" already added. Skipping.");
         return;
     }
 
     ROS_INFO_STREAM("Sensor id: " << sensor_id);
-    ROS_INFO_STREAM("Init module: "<< (is_init_module? "yes" : "no"));
     ROS_INFO_STREAM("Roll forward: "<< (roll_forward? "yes" : "no"));
     ROS_INFO_STREAM("Publish head: "<< (publish_head? "yes" : "no"));
     ROS_INFO_STREAM("Topic: " << topic);
-
-    if(is_init_module){
-        addInitModule(sensor_id);
-    }
 
     // store the will to roll forward when the message is received
     std::pair<SensorId, bool> roll_pair(sensor_id, roll_forward);
@@ -253,11 +270,9 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
     // in the same container. The type will be known when the message arrives
     // so we can properly cast back to the right type.
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
-    sensing_modules_.insert(pair);
+    active_modules_.insert(pair);
     // subscribe the generic templated callback for all modules
-    subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::callback<MsgT>, this, _1, sensor_id));
-
-
+    sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::callback<MsgT>, this, _1, sensor_id));
 }
 
 bool ROSFrontEnd::initializeFilter()
@@ -282,8 +297,8 @@ bool ROSFrontEnd::initializeFilter()
 }
 
 bool ROSFrontEnd::areModulesInitialized(){
-    std::map<SensorId,bool>::iterator it = init_modules_.begin();
-    for(; it != init_modules_.end(); ++it){
+    std::map<SensorId,bool>::iterator it = initialized_list_.begin();
+    for(; it != initialized_list_.end(); ++it){
         if(!it->second){
             return false;
         }
@@ -295,33 +310,46 @@ bool ROSFrontEnd::isFilterInitialized(){
     return filter_initialized_;
 }
 
+template <class MsgT>
+void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id){
+    if(initialized_list_.count(sensor_id) > 0 && !initialized_list_[sensor_id])
+    {
+        initialized_list_[sensor_id] = static_cast<SensingModule<MsgT>*>(init_modules_[sensor_id])->processMessageInit(msg.get(),
+                                                                                                                       initialized_list_,
+                                                                                                                       default_state,
+                                                                                                                       default_cov,
+                                                                                                                       init_state,
+                                                                                                                       init_cov);
+
+        // if the sensor has been successfully initialized, we unsubscribe.
+        // This happens only for the sensors which are only for initialization.
+        // The sensor which are for initialization and active will continue to listen
+        if(initialized_list_[sensor_id]){
+            init_subscribers_[sensor_id].shutdown();
+            // attempt to initialize the filter, because the value has changed
+            // in the list
+            initializeFilter();
+        }
+    } else {
+        // if we are here it means that the module is not in the list of
+        // initialized modules or that the module is already initialized
+        // in both cases we don't want to subscribe to this topic anymore.
+        init_subscribers_[sensor_id].shutdown();
+    }
+}
+
 
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
 {
     // this is a generic templated callback that does the same for every module:
-    // If the module is in the initialization list and hasn't been initialized yet:
-    // 1) execute the initialization callback
-    // 2) attempt to inizialize the filter
     // if the module is initialized and the filter is ready
     // 1) take the measurement update and pass it to the filter if valid
     // 2) publish the filter state if the module wants to
-    // if the module is in the initialization list but it is not initialized yet
-    if(init_modules_.count(sensor_id) > 0 && !init_modules_[sensor_id])
-    {
-        init_modules_[sensor_id] = static_cast<SensingModule<MsgT>*>(sensing_modules_[sensor_id])->processMessageInit(msg.get(),
-                                                                                                           init_modules_,
-                                                                                                           default_state,
-                                                                                                           default_cov,
-                                                                                                           init_state,
-                                                                                                           init_cov);
-        // attempt to initialize the filter
-        // (all the init modules should have initialized first)
-        initializeFilter();
-    } else if(isFilterInitialized()) {
+    if(isFilterInitialized()) {
         // appropriate casting to the right type and call to the process message
         // function to get the update
-        RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(sensing_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
+        RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
 
         // if the update is valid, pass it to the filter
         if(update != NULL){
@@ -330,11 +358,10 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         }
 
         if(publish_head_[sensor_id]){
-
             state_est_->getHeadState(head_state, head_cov);
 
             // fill in linear velocity
-            tf::vectorEigenToTF(head_state.velocity(),temp_v3);
+            tf::vectorEigenToTF(head_state.orientation()*head_state.velocity(),temp_v3);
             tf::vector3TFToMsg(temp_v3,twist_msg_.twist.twist.linear);
             // fill in angular velocity
             tf::vectorEigenToTF(head_state.angularVelocity(),temp_v3);
@@ -364,7 +391,6 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         }
 
     }
-
-
 }
+
 } // namespace MavStateEst
