@@ -29,8 +29,6 @@ int main(int argc, char** argv) {
     if(!nh.getParam("publish_pose", publish_pose)){
         ROS_WARN("Not able to get publish_pose param. Not publishing pose.");
     }
-    std::vector<std::string> param_names;
-    nh.getParamNames(param_names);
 
     std::shared_ptr<InsHandlerROS> ins_handler_;
     // std::shared_ptr<LegOdometryHandlerROS> legodo_handler_;
