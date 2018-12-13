@@ -61,4 +61,15 @@ public:
     uint64_t utime;
     Transform transform;
 };
+
+struct IndexedMeasurement {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
+    uint64_t utime;
+    uint64_t state_utime;
+    Eigen::VectorXd z_effective;
+    Eigen::VectorXi z_indices;
+    Eigen::MatrixXd R_effective;
+};
 }
