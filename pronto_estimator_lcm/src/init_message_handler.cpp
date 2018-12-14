@@ -12,15 +12,13 @@ bool InitMessageHandler::processMessageInit(const pronto::filter_state_t * msg,
                                             RBIS & init_state,
                                             RBIM & init_cov)
 {
-    Eigen::Quaterniond init_quat;
-    eigen_utils::botDoubleToQuaternion(init_quat, msg->quat);
-    init_state = RBIS(Eigen::Map<const Eigen::VectorXd>(&msg->state[0], msg->num_states),
-                      init_quat);
-    init_state.utime = msg->utime;
-    Eigen::Map<const MatrixXd> cov_map(&msg->cov[0], msg->num_states, msg->num_states);
-    init_cov = cov_map;
-    fprintf(stderr, "Initialized using message\n");
-    return true;
+    filterStateFromLCM(*msg, init_msg_);
+    return init_module_.processMessageInit(&init_msg_,
+                                           sensors_initialized,
+                                           default_state,
+                                           default_cov,
+                                           init_state,
+                                           init_cov);
 }
 
 /**
@@ -30,15 +28,18 @@ bool InitMessageHandler::processMessageInit(const pronto::filter_state_t * msg,
 RBISUpdateInterface * InitMessageHandler::processMessage(const pronto::filter_state_t * msg,
                                                          MavStateEstimator* state_estimator)
 {
-  Eigen::Map<const MatrixXd> cov_map(&msg->cov[0], msg->num_states, msg->num_states);
-  Eigen::Quaterniond quat;
-  eigen_utils::botDoubleToQuaternion(quat, msg->quat);
-  RBIS state = RBIS(Eigen::Map<const Eigen::VectorXd>(&msg->state[0], msg->num_states),
-                    quat);
-  state.utime = msg->utime;
+  filterStateFromLCM(*msg, init_msg_);
+  return init_module_.processMessage(&init_msg_, state_estimator);
+}
 
-  return new RBISResetUpdate(state, cov_map, RBISUpdateInterface::init_message, msg->utime);
-
+void InitMessageHandler::filterStateFromLCM(const pronto::filter_state_t &lcm_msg, FilterState &msg){
+    Eigen::Quaterniond init_quat;
+    eigen_utils::botDoubleToQuaternion(init_quat, lcm_msg.quat);
+    Eigen::Map<const MatrixXd> cov_map(&lcm_msg.cov[0], lcm_msg.num_states, lcm_msg.num_states);
+    msg.cov = cov_map;
+    msg.quat = init_quat;
+    msg.state = Eigen::Map<const Eigen::VectorXd>(&lcm_msg.state[0], lcm_msg.num_states);
+    msg.utime = lcm_msg.utime;
 }
 }
 
