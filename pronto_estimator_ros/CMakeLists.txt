@@ -100,7 +100,12 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} src/ros_frontend.cpp
                             src/ins_ros_handler.cpp
-                            src/vicon_ros_handler.cpp)
+                            src/vicon_ros_handler.cpp
+                            src/gps_ros_handler.cpp
+                            src/index_meas_ros_handler.cpp
+                            src/init_message_ros_handler.cpp
+                            src/scan_matcher_ros_handler.cpp
+                            src/visual_odometry_ros_handler.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
