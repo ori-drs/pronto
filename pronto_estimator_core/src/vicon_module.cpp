@@ -49,7 +49,7 @@ RBISUpdateInterface* ViconModule::processMessage(const RigidTransform *msg,
 {
     local_to_vicon = msg->transform;
     // TODO check that this is correct
-    local_to_body = local_to_vicon * body_to_vicon.inverse();
+    local_to_body = body_to_vicon.inverse() * local_to_vicon;
 
     // mild check for invalid vicon data. If the translation is very small
     // we send an invalid update
@@ -74,7 +74,6 @@ RBISUpdateInterface* ViconModule::processMessage(const RigidTransform *msg,
                                                          RBISUpdateInterface::vicon,
                                                          msg->utime);
     case ViconMode::MODE_ORIENTATION:
-        z_meas.resize(3);
         return new RBISIndexedPlusOrientationMeasurement(z_indices,
                                                          z_meas,
                                                          cov_vicon,
