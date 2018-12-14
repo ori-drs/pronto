@@ -1,11 +1,13 @@
 #pragma once
 #include <pronto_estimator_core/rbis_update_interface.hpp>
 #include <pronto_estimator_core/mav_state_est.hpp>
+#include <pronto_estimator_core/gps_module.hpp>
 #include <lcmtypes/bot_core/gps_data_t.hpp>
 #include <bot_param/param_client.h>
+#include <memory>
 
 namespace MavStateEst {
-class GpsHandler {
+class GpsHandler : public SensingModule<bot_core::gps_data_t> {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 protected:
@@ -19,7 +21,13 @@ protected:
                           const RBIM & default_cov,
                           RBIS & init_state,
                           RBIM & init_cov);
-private:
+protected:
   Eigen::Matrix3d cov_xyz;
+  std::shared_ptr<GPSModule> gps_module_;
+  GPSMeasurement gps_meas_;
+
+  void gpsDataFromLCM(const bot_core::gps_data_t& lcm_msg,
+                      GPSMeasurement& msg);
+
 };
 } // namespace MavStateEst
