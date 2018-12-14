@@ -82,4 +82,22 @@ public:
     Eigen::VectorXd state;
     Eigen::MatrixXd cov;
 };
+
+struct GPSMeasurement {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
+    uint64_t    utime;
+    int32_t    gps_lock;
+    double     longitude;
+    double     latitude;
+    double     elev;
+    double     horizontal_accuracy;
+    double     vertical_accuracy;
+    uint32_t    numSatellites;
+    double     speed;
+    double     heading;
+    Position   xyz_pos;
+    double     gps_time;
+};
 }

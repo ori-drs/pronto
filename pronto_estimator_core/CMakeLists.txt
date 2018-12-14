@@ -27,7 +27,8 @@ add_library (${PRONTO_CORE_LIB} src/rbis.cpp
                                 src/visual_odometry_module.cpp
                                 src/vicon_module.cpp
                                 src/indexed_meas_module.cpp
-                                src/init_message_module.cpp)
+                                src/init_message_module.cpp
+                                src/gps_module.cpp)
 
 target_link_libraries(${PRONTO_CORE_LIB} ${catkin_LIBRRARIES})
 
