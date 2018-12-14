@@ -30,14 +30,15 @@ public:
 public:
     VisualOdometryModule(const VisualOdometryConfig& cfg);
 
-    RBISUpdateInterface* processMessage(const VisualOdometryUpdate *msg, MavStateEstimator *est);
+    RBISUpdateInterface* processMessage(const VisualOdometryUpdate *msg,
+                                        MavStateEstimator *est) override;
 
     bool processMessageInit(const VisualOdometryUpdate *msg,
                             const std::map<std::string, bool> &sensor_initialized,
                             const RBIS &default_state,
                             const RBIM &default_cov,
                             RBIS &init_state,
-                            RBIM &init_cov);
+                            RBIM &init_cov) override;
 protected:
     VisualOdometryMode mode_;
     Eigen::VectorXi z_indices;
@@ -58,8 +59,6 @@ protected:
     Transform t1_body_vo;
     Eigen::VectorXd z_meas;
     Quaternion quat;
-
-
 };
 
 

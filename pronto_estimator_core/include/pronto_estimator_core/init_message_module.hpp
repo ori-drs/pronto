@@ -8,14 +8,14 @@ class InitMessageModule : public SensingModule<FilterState> {
 public:
 
     RBISUpdateInterface* processMessage(const FilterState *msg,
-                                        MavStateEstimator *est);
+                                        MavStateEstimator *est) override;
 
     bool processMessageInit(const FilterState *msg,
                             const std::map<std::string, bool> &sensor_initialized,
                             const RBIS &default_state,
                             const RBIM &default_cov,
                             RBIS &init_state,
-                            RBIM &init_cov);
+                            RBIM &init_cov) override;
 
 
 };

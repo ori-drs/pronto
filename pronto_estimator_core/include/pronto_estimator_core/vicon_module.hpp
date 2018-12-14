@@ -32,12 +32,15 @@ public:
     using CovMatrix = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6 ,6>;
 public:
     ViconModule(const ViconConfig& cfg);
-    RBISUpdateInterface* processMessage(const RigidTransform *msg, MavStateEstimator *est);
+
+    RBISUpdateInterface* processMessage(const RigidTransform *msg,
+                                        MavStateEstimator *est) override;
+
     bool processMessageInit(const RigidTransform *msg,
                             const std::map<std::string, bool> &sensor_initialized,
                             const RBIS &default_state,
                             const RBIM &default_cov,
-                            RBIS &init_state, RBIM &init_cov);
+                            RBIS &init_state, RBIM &init_cov) override;
 protected:
     ViconMode mode;
     Transform body_to_vicon = Transform::Identity();
