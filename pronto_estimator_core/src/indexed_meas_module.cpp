@@ -39,8 +39,9 @@ bool IndexedMeasurementModule::processMessageInit(const IndexedMeasurement *msg,
     }
     init_state.chiToQuat();
 
-    std::cout << "Initializing indices:\n" << update->index << "\n with:\n" << update->measurement << "\nand cov:\n"
-        << update->measurement_cov << "\n";
+    std::cout << "Initializing indices:" << std::endl << update->index << std::endl
+              << "with:" << std::endl << update->measurement << std::endl
+              << "and cov:" << std::endl << update->measurement_cov << std::endl;
     delete update;
 
     return true;

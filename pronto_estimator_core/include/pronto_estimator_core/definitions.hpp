@@ -72,4 +72,14 @@ public:
     Eigen::VectorXi z_indices;
     Eigen::MatrixXd R_effective;
 };
+
+struct FilterState {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
+    uint64_t utime;
+    Orientation quat;
+    Eigen::VectorXd state;
+    Eigen::MatrixXd cov;
+};
 }
