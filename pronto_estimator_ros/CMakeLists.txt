@@ -98,8 +98,7 @@ catkin_package(INCLUDE_DIRS include
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} src/ros_frontend.cpp
-                            src/ins_ros_handler.cpp
+add_library(${PROJECT_NAME} src/ins_ros_handler.cpp
                             src/vicon_ros_handler.cpp
                             src/gps_ros_handler.cpp
                             src/index_meas_ros_handler.cpp
