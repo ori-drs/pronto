@@ -98,4 +98,14 @@ RBISUpdateInterface * ScanMatcherHandler::processMessage(const bot_core::pose_t 
     return scan_matcher_module_.processMessage(&pose_meas_,state_estimator);
 }
 
+bool ScanMatcherHandler::processMessageInit(const bot_core::pose_t *msg,
+                                            const std::map<std::string, bool> &sensor_initialized,
+                                            const RBIS &default_state,
+                                            const RBIM &default_cov,
+                                            RBIS &init_state,
+                                            RBIM &init_cov)
+{
+    return true;
+}
+
 } // namespace MavStateEst
