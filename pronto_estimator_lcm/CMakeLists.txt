@@ -40,7 +40,8 @@ add_library(${STATE_EST_LIB} src/lcm_front_end.cpp
                              src/scan_matcher_handler.cpp
                              src/vicon_handler.cpp
                              src/optical_flow_handler.cpp
-                             src/rbis_fovis_update.cpp)
+                             src/rbis_fovis_update.cpp
+                             src/pose_meas_handler.cpp)
 
 add_dependencies(${STATE_EST_LIB} ${catkin_EXPORTED_TARGETS})
 
