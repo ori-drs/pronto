@@ -92,6 +92,15 @@ public:
     return Eigen::Vector3i::LinSpaced(accel_bias_ind, accel_bias_ind + 2);
   }
 
+  inline Eigen::Isometry3d getPoseAsIsometry3d()
+  {
+      Eigen::Isometry3d pose_iso;
+      pose_iso.setIdentity();
+      pose_iso.translate(this->position());
+      pose_iso.rotate(this->orientation());
+      return pose_iso;
+    }
+
 };
 
 typedef RBIS::MatrixNd RBIM;
