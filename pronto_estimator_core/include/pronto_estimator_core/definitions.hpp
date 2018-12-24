@@ -100,4 +100,34 @@ public:
     Position   xyz_pos;
     double     gps_time;
 };
+
+struct JointState {
+  uint64_t utime;
+  std::vector<double> joint_position;
+  std::vector<double> joint_velocity;
+  std::vector<double> joint_effort;
+  std::vector<double> joint_acceleration;
+  std::vector<std::string> joint_name;
+};
+
+struct ForceTorqueSensor {
+    // default constructor
+    ForceTorqueSensor()  = default;
+    // copy constructor
+    ForceTorqueSensor(const ForceTorqueSensor& s){
+        this->utime = s.utime;
+        memcpy(this->force, s.force, 3*sizeof(double));
+        memcpy(this->moment, s.moment, 3*sizeof(double));
+    }
+    uint64_t utime;
+    double force[3];
+    double moment[3];
+};
+
+struct ForceTorqueSensorArray {
+    uint64_t    utime;
+    uint32_t    num_sensors;
+    std::vector<std::string> names;
+    std::vector<ForceTorqueSensor> sensors;
+};
 }
