@@ -1,7 +1,7 @@
 #include "pronto_estimator_lcm/ins_handler.hpp"
 #include <map>
 #include "pronto_estimator_lcm/rbis_initializer.hpp"
-
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 namespace MavStateEst {
 
 InsHandler::InsHandler()
@@ -88,9 +88,7 @@ InsHandler::InsHandler(BotParam * _param, BotFrames * _frames) {
 RBISUpdateInterface * InsHandler::processMessage(const bot_core::ins_t * msg,
                                                  MavStateEstimator* state_estimator)
 {
-    imu_meas_.acceleration = Eigen::Map<const Eigen::Vector3d>(msg->accel);
-    imu_meas_.utime = msg->utime;
-    imu_meas_.omega = Eigen::Map<const Eigen::Vector3d>(msg->gyro);
+    imuMeasurementFromLCM(*msg, imu_meas_);
     return ins_module_.processMessage(&imu_meas_, state_estimator);
 }
 
@@ -100,25 +98,13 @@ bool InsHandler::processMessageInit(const bot_core::ins_t * msg,
                                     const RBIM & default_cov,
                                     RBIS & init_state, RBIM & init_cov)
 {
-    imu_meas_.acceleration = Eigen::Map<const Eigen::Vector3d>(msg->accel);
-    imu_meas_.utime = msg->utime;
-    imu_meas_.omega = Eigen::Map<const Eigen::Vector3d>(msg->gyro);
-
+    imuMeasurementFromLCM(*msg, imu_meas_);
     return ins_module_.processMessageInit(&imu_meas_,
                                           sensors_initialized,
                                           default_state,
                                           default_cov,
                                           init_state,
                                           init_cov);
-
-
 }
 
-
-
-
-
-
-
-
-}
+} // namespace MavStateEst

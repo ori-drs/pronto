@@ -1,5 +1,6 @@
 #include "pronto_estimator_lcm/init_message_handler.hpp"
 #include <Eigen/Dense>
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 
 using namespace Eigen;
 
@@ -32,14 +33,5 @@ RBISUpdateInterface * InitMessageHandler::processMessage(const pronto::filter_st
   return init_module_.processMessage(&init_msg_, state_estimator);
 }
 
-void InitMessageHandler::filterStateFromLCM(const pronto::filter_state_t &lcm_msg, FilterState &msg){
-    Eigen::Quaterniond init_quat;
-    eigen_utils::botDoubleToQuaternion(init_quat, lcm_msg.quat);
-    Eigen::Map<const MatrixXd> cov_map(&lcm_msg.cov[0], lcm_msg.num_states, lcm_msg.num_states);
-    msg.cov = cov_map;
-    msg.quat = init_quat;
-    msg.state = Eigen::Map<const Eigen::VectorXd>(&lcm_msg.state[0], lcm_msg.num_states);
-    msg.utime = lcm_msg.utime;
-}
-}
+} // namespace MavStateEst
 

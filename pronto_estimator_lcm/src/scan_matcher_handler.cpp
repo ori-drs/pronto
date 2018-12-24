@@ -1,4 +1,5 @@
 #include "pronto_estimator_lcm/scan_matcher_handler.hpp"
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 #include <bot_core/math_util.h>
 namespace MavStateEst {
 
@@ -90,12 +91,8 @@ ScanMatcherHandler::ScanMatcherHandler(BotParam * param)
 RBISUpdateInterface * ScanMatcherHandler::processMessage(const bot_core::pose_t * msg,
                                                          MavStateEstimator* state_estimator)
 {
-    // convert LCM to generic format
-    pose_meas_.utime = msg->utime;
-    pose_meas_.linear_vel = Eigen::Map<const Eigen::Vector3d>(msg->vel);
-    pose_meas_.pos = Eigen::Map<const Eigen::Vector3d>(msg->pos);
-    eigen_utils::botDoubleToQuaternion(pose_meas_.orientation,msg->orientation);
-    return scan_matcher_module_.processMessage(&pose_meas_,state_estimator);
+    poseMeasurementFromLCM(*msg, pose_meas_);
+    return scan_matcher_module_.processMessage(&pose_meas_, state_estimator);
 }
 
 bool ScanMatcherHandler::processMessageInit(const bot_core::pose_t *msg,

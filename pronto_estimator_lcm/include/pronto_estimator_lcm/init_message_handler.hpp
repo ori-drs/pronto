@@ -20,8 +20,5 @@ public:
 protected:
   InitMessageModule init_module_;
   FilterState init_msg_;
-
-  void filterStateFromLCM(const pronto::filter_state_t& lcm_msg,
-                          FilterState& msg);
 };
 }

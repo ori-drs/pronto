@@ -36,7 +36,5 @@ private:
   Eigen::MatrixXd cov_vicon;
   RigidTransform vicon_transform_;
   std::shared_ptr<ViconModule> vicon_module_;
-
-  void rigidTransformFromLCM(const bot_core::rigid_transform_t &lcm_transf, RigidTransform &transf);
 };
 }

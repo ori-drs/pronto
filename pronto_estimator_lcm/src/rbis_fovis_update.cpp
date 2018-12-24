@@ -1,5 +1,6 @@
 #include "pronto_estimator_lcm/rbis_fovis_update.hpp"
 #include <lcm/lcm-cpp.hpp>
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 
 namespace MavStateEst {
 
@@ -20,7 +21,8 @@ FovisHandler::FovisHandler(lcm::LCM* lcm_recv,  lcm::LCM* lcm_pub,
   }
   else{
     std::cout << "FOVIS mode not understood "<< mode_str << ", exiting\n";
-    exit(-1);
+    free(mode_str);
+    return;
     // ... incomplete...
   }
   free(mode_str);
@@ -160,24 +162,6 @@ void FovisHandler::sendTransAsVelocityPose(BotTrans msgT, int64_t utime, int64_t
   lcm_pub->publish(channel, &vel_pose );
 }
 
-void FovisHandler::getVisualOdometryUpdateFromLCM(const pronto::update_t &lcm_update,
-                                             const Eigen::Affine3d &body_to_local,
-                                             VisualOdometryUpdate &vo_update)
-{
-    vo_update.curr_utime = lcm_update.timestamp;
-    vo_update.pose_covariance = Eigen::Map<const Eigen::Matrix<double,6,6>>(&lcm_update.covariance[0][0]);
 
-    vo_update.prev_pose = body_to_local;
-    vo_update.prev_utime = lcm_update.prev_timestamp;
-    vo_update.relative_pose.setIdentity();
-    vo_update.relative_pose.translate(Eigen::Map<const Eigen::Vector3d>(lcm_update.translation));
-    temp_quat = Eigen::Quaterniond::Identity();
-    temp_quat.w() = lcm_update.rotation[0];
-    temp_quat.x() = lcm_update.rotation[1];
-    temp_quat.y() = lcm_update.rotation[2];
-    temp_quat.z() = lcm_update.rotation[3];
-    vo_update.relative_pose.rotate(temp_quat);
-    vo_update.status = static_cast<VisualOdometryUpdate::Status>(lcm_update.estimate_status);
-}
 
 } // end of namespace

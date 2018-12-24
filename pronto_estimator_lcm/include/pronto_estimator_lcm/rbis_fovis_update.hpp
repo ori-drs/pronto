@@ -47,23 +47,6 @@ private:
   std::shared_ptr<VisualOdometryModule> vo_module_;
   VisualOdometryUpdate vo_update_;
   Eigen::Quaterniond temp_quat;
-
-  /**
-   * @brief getVisualOdometryUpdateFromLCM takes an LCM message and a pose
-   * and converts them into a VisualOdometryUpdate, which contains the time t0
-   * the pose of the robot at t0, the time t1 and the relative pose between
-   * t0 and t1, plus covariance and status.
-   * @param[in] lcm_update
-   * @param[in] body_to_local
-   * @param[out] vo_update
-   */
-  void getVisualOdometryUpdateFromLCM(const pronto::update_t& lcm_update,
-                                        const Eigen::Affine3d& body_to_local,
-                                        VisualOdometryUpdate& vo_update);
-
-
-
-
 };
 
 

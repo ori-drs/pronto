@@ -25,9 +25,5 @@ protected:
   Eigen::Matrix3d cov_xyz;
   std::shared_ptr<GPSModule> gps_module_;
   GPSMeasurement gps_meas_;
-
-  void gpsDataFromLCM(const bot_core::gps_data_t& lcm_msg,
-                      GPSMeasurement& msg);
-
 };
 } // namespace MavStateEst

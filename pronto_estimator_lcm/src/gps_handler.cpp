@@ -1,4 +1,5 @@
 #include "pronto_estimator_lcm/gps_handler.hpp"
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 
 namespace MavStateEst {
 
@@ -30,20 +31,5 @@ bool GpsHandler::processMessageInit(const bot_core::gps_data_t * msg,
                                            init_cov);
 }
 
-void GpsHandler::gpsDataFromLCM(const bot_core::gps_data_t &lcm_msg,
-                                GPSMeasurement &msg)
-{
-    gps_meas_.elev = lcm_msg.elev;
-    gps_meas_.gps_lock = lcm_msg.gps_lock;
-    gps_meas_.gps_time = lcm_msg.gps_time;
-    gps_meas_.heading = lcm_msg.heading;
-    gps_meas_.horizontal_accuracy = lcm_msg.horizontal_accuracy;
-    gps_meas_.latitude = lcm_msg.latitude;
-    gps_meas_.longitude = lcm_msg.longitude;
-    gps_meas_.numSatellites = lcm_msg.numSatellites;
-    gps_meas_.speed = lcm_msg.speed;
-    gps_meas_.utime = lcm_msg.utime;
-    gps_meas_.vertical_accuracy = lcm_msg.vertical_accuracy;
-    gps_meas_.xyz_pos = Eigen::Map<const Eigen::Vector3d>(lcm_msg.xyz_pos);
-}
+
 } // namespace MavStateEst

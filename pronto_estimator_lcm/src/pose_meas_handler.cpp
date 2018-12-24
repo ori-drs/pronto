@@ -1,4 +1,5 @@
 #include "pronto_estimator_lcm/pose_meas_handler.hpp"
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 
 using namespace Eigen;
 
@@ -55,17 +56,6 @@ bool PoseMeasHandler::processMessageInit(const bot_core::pose_t * msg,
                                             default_cov,
                                             init_state,
                                             init_cov);
-}
-
-void PoseMeasHandler::poseMeasurementFromLCM(const bot_core::pose_t &lcm_msg,
-                                             PoseMeasurement &msg)
-{
-    // convert LCM to generic format
-    msg.utime = lcm_msg.utime;
-    msg.linear_vel = Eigen::Map<const Eigen::Vector3d>(lcm_msg.vel);
-    msg.angular_vel = Eigen::Map<const Eigen::Vector3d>(lcm_msg.rotation_rate);
-    msg.pos = Eigen::Map<const Eigen::Vector3d>(lcm_msg.pos);
-    eigen_utils::botDoubleToQuaternion(msg.orientation, lcm_msg.orientation);
 }
 
 } // namespace MavStateEst

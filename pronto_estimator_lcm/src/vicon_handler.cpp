@@ -1,5 +1,6 @@
 #include "pronto_estimator_lcm/vicon_handler.hpp"
 #include <pronto_conversions/pronto_conversions_bot_core.hpp>
+#include <pronto_conversions/pronto_meas_lcm.hpp>
 
 using namespace Eigen;
 
@@ -59,7 +60,7 @@ bool ViconHandler::processMessageInit(const bot_core::rigid_transform_t * msg,
                                       RBIS & init_state,
                                       RBIM & init_cov)
 {
-    rigidTransformFromLCM(*msg,vicon_transform_);
+    rigidTransformFromLCM(*msg, vicon_transform_);
     return vicon_module_->processMessageInit(&vicon_transform_,
                                             sensors_initialized,
                                             default_state,
@@ -68,18 +69,5 @@ bool ViconHandler::processMessageInit(const bot_core::rigid_transform_t * msg,
                                             init_cov);
 }
 
-void ViconHandler::rigidTransformFromLCM(const bot_core::rigid_transform_t &lcm_transf,
-                                         RigidTransform &transf)
-{
-    transf.transform = Transform::Identity();
-    transf.transform.translate(Eigen::Map<const Eigen::Vector3d>(lcm_transf.trans));
 
-    Eigen::Quaterniond quat;
-    quat.w() = lcm_transf.quat[0];
-    quat.x() = lcm_transf.quat[1];
-    quat.y() = lcm_transf.quat[2];
-    quat.z() = lcm_transf.quat[3];
-    transf.transform.rotate(quat);
-    transf.utime = lcm_transf.utime;
-}
 } // namespace MavStateEst

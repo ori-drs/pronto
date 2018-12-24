@@ -25,10 +25,6 @@ public:
 private:
     IndexedMeasurementModule index_module_;
     IndexedMeasurement index_msg_;
-
-    void indexMeasurementFromLCM(const pronto::indexed_measurement_t& lcm_msg,
-                                 IndexedMeasurement& msg);
-
 };
 
 

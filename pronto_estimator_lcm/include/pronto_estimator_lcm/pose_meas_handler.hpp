@@ -26,9 +26,6 @@ public:
                           RBIS & init_state,
                           RBIM & init_cov);
 protected:
-  void poseMeasurementFromLCM(const bot_core::pose_t& lcm_msg,
-                              PoseMeasurement& msg);
-
   void init(BotParam * param);
   std::shared_ptr<PoseMeasModule> pose_module_;
   PoseMeasurement pose_msg_;
