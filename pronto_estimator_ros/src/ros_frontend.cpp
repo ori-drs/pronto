@@ -19,9 +19,13 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh) : nh_(nh) {
                 pose_msg_.header.frame_id = pose_frame_id;
             }
             std::string twist_topic = "TWIST_BODY";
+            std::string twist_frame_id = "base";
+            if(!nh_.getParam("twist_frame_id", twist_frame_id)){
+                ROS_WARN_STREAM("Couldn't get param \"twist_frame_id\". Setting default to: \"" << twist_frame_id <<"\"");
+            }
             if(nh_.getParam("twist_topic", twist_topic)){
                 twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>(twist_topic, 200);
-                twist_msg_.header.frame_id = pose_frame_id;
+                twist_msg_.header.frame_id = twist_frame_id;
             }
         }
         int history_span;

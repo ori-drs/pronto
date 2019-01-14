@@ -211,7 +211,7 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             state_est_->getHeadState(head_state, head_cov);
 
             // fill in linear velocity
-            tf::vectorEigenToTF(head_state.orientation()*head_state.velocity(),temp_v3);
+            tf::vectorEigenToTF(head_state.velocity(),temp_v3);
             tf::vector3TFToMsg(temp_v3,twist_msg_.twist.twist.linear);
             // fill in angular velocity
             tf::vectorEigenToTF(head_state.angularVelocity(),temp_v3);
