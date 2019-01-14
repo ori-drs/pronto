@@ -201,11 +201,13 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // function to get the update
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
 
-        // if the update is valid, pass it to the filter
-        if(update != NULL){
-            // tell also the filter if we need to roll forward
-            state_est_->addUpdate(update, roll_forward_[sensor_id]);
+        // if the update is invalid, we leave
+        if(update == NULL){
+            return;
         }
+
+        // tell also the filter if we need to roll forward
+        state_est_->addUpdate(update, roll_forward_[sensor_id]);
 
         if(publish_head_[sensor_id]){
             state_est_->getHeadState(head_state, head_cov);
