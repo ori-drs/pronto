@@ -67,10 +67,22 @@ public:
   double q_gyro_bias;
   double q_accel_bias;
 
-  RBISIMUProcessStep(const Eigen::Vector3d & gyro_, const Eigen::Vector3d & accelerometer_, double q_gyro_,
-      double q_accel_, double q_gyro_bias_, double q_accel_bias_, double dt_, int64_t utime) :
-      RBISUpdateInterface(ins, utime), gyro(gyro_), accelerometer(accelerometer_), q_gyro(q_gyro_), q_accel(q_accel_), q_gyro_bias(
-          q_gyro_bias_), q_accel_bias(q_accel_bias_), dt(dt_)
+  RBISIMUProcessStep(const Eigen::Vector3d & gyro_,
+                     const Eigen::Vector3d & accelerometer_,
+                     double q_gyro_,
+                     double q_accel_,
+                     double q_gyro_bias_,
+                     double q_accel_bias_,
+                     double dt_,
+                     int64_t utime) :
+      RBISUpdateInterface(ins, utime),
+      gyro(gyro_),
+      accelerometer(accelerometer_),
+      q_gyro(q_gyro_),
+      q_accel(q_accel_),
+      q_gyro_bias(q_gyro_bias_),
+      q_accel_bias(q_accel_bias_),
+      dt(dt_)
   {
   }
 
