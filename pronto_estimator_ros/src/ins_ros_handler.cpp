@@ -32,38 +32,138 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
 
     InsConfig cfg;
 
-    nh_.getParam(ins_param_prefix + "num_to_init", cfg.num_to_init);
-    nh_.getParam(ins_param_prefix + "accel_bias_update_online", cfg.accel_bias_update_online);
-    nh_.getParam(ins_param_prefix + "gyro_bias_update_online", cfg.gyro_bias_update_online);
-    nh_.getParam(ins_param_prefix + "accel_bias_recalc_at_start", cfg.accel_bias_recalc_at_start);
-    nh_.getParam(ins_param_prefix + "gyro_bias_recalc_at_start", cfg.gyro_bias_recalc_at_start);
-    nh_.getParam(ins_param_prefix + "timestep_dt", cfg.dt);
+    if(!nh_.getParam(ins_param_prefix + "num_to_init", cfg.num_to_init)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace() << "/" << ins_param_prefix
+                        << "num_to_init\". Using default: "
+                        << cfg.num_to_init);
+    } else {
+        ROS_INFO_STREAM("num_to_init: " << cfg.num_to_init);
+    }
+
+    if(!nh_.getParam(ins_param_prefix + "accel_bias_update_online", cfg.accel_bias_update_online)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "accel_bias_update_online\". Using default: "
+                        << cfg.accel_bias_update_online);
+    }
+    if(!nh_.getParam(ins_param_prefix + "gyro_bias_update_online", cfg.gyro_bias_update_online)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "gyro_bias_update_online\". Using default: "
+                        << cfg.gyro_bias_update_online);
+    }
+    if(!nh_.getParam(ins_param_prefix + "accel_bias_recalc_at_start", cfg.accel_bias_recalc_at_start)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "accel_bias_recalc_at_start\". Using default: "
+                        << cfg.accel_bias_recalc_at_start);
+
+    }
+    if(!nh_.getParam(ins_param_prefix + "gyro_bias_recalc_at_start", cfg.gyro_bias_recalc_at_start)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "gyro_bias_recalc_at_start\". Using default: "
+                        << cfg.gyro_bias_recalc_at_start);
+    }
+    if(!nh_.getParam(ins_param_prefix + "timestep_dt", cfg.dt)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "timestep_dt\". Using default: "
+                        << cfg.dt);
+    }
     std::vector<double> accel_bias_initial_v;
     std::vector<double> gyro_bias_initial_v;
-    nh_.getParam(ins_param_prefix + "accel_bias_initial", accel_bias_initial_v);
-    nh_.getParam(ins_param_prefix + "gyro_bias_initial", gyro_bias_initial_v);
-    cfg.accel_bias_initial = Eigen::Map<Eigen::Vector3d, Eigen::Unaligned>(accel_bias_initial_v.data());
-    cfg.gyro_bias_initial = Eigen::Map<Eigen::Vector3d, Eigen::Unaligned>(gyro_bias_initial_v.data());
-    nh_.getParam(ins_param_prefix + "max_initial_gyro_bias", cfg.max_initial_gyro_bias);
-    nh_.getParam(ins_param_prefix + "topic", imu_topic_);
+    if(!nh_.getParam(ins_param_prefix + "accel_bias_initial", accel_bias_initial_v)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "accel_bias_initial\". Using default: "
+                        << cfg.accel_bias_initial.transpose());
+    } else {
+        cfg.accel_bias_initial = Eigen::Map<Eigen::Vector3d, Eigen::Unaligned>(accel_bias_initial_v.data());
+        ROS_INFO_STREAM("accel_bias_initial: " << cfg.accel_bias_initial.transpose());
+    }
+
+
+    if(!nh_.getParam(ins_param_prefix + "gyro_bias_initial", gyro_bias_initial_v)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "gyro_bias_initial\". Using default: "
+                        << cfg.gyro_bias_initial.transpose());
+    } else {
+        cfg.gyro_bias_initial = Eigen::Map<Eigen::Vector3d, Eigen::Unaligned>(gyro_bias_initial_v.data());
+        ROS_INFO_STREAM("gyro_bias_initial: " << cfg.gyro_bias_initial.transpose());
+    }
+
+
+    if(!nh_.getParam(ins_param_prefix + "max_initial_gyro_bias", cfg.max_initial_gyro_bias)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "max_initial_gyro_bias\". Using default: "
+                        << cfg.max_initial_gyro_bias);
+    }
+    if(!nh_.getParam(ins_param_prefix + "topic", imu_topic_)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "topic\". Using default: "
+                        << imu_topic_);
+    }
     int downsample_factor = downsample_factor_;
-    nh_.getParam(ins_param_prefix + "downsample_factor", downsample_factor);
-    downsample_factor_ = downsample_factor;
+    if(!nh_.getParam(ins_param_prefix + "downsample_factor", downsample_factor)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "downsample_factor\". Using default: "
+                        << downsample_factor);
+    } else {
+        downsample_factor_ = downsample_factor;
+    }
 
-    nh_.getParam(ins_param_prefix + "roll_forward_on_receive", roll_forward_on_receive_);
+
+    if(!nh_.getParam(ins_param_prefix + "roll_forward_on_receive", roll_forward_on_receive_)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "roll_forward_on_receive\". Using default: "
+                        << roll_forward_on_receive_);
+    }
     int utime_offset = utime_offset_;
-    nh_.getParam(ins_param_prefix + "utime_offset", utime_offset);
-    utime_offset_ = utime_offset;
+    if(!nh_.getParam(ins_param_prefix + "utime_offset", utime_offset)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "utime_offset\". Using default: "
+                        << utime_offset);
+    } else {
+        utime_offset_ = utime_offset;
+    }
 
-    double std_accel;
-    double std_gyro;
-    double std_gyro_bias;
-    double std_accel_bias;
+    double std_accel = 0;
+    double std_gyro = 0;
+    double std_gyro_bias = 0;
+    double std_accel_bias = 0;
 
-    nh_.getParam(ins_param_prefix + "q_gyro", std_gyro);
-    nh_.getParam(ins_param_prefix + "q_gyro_bias", std_gyro_bias);
-    nh_.getParam(ins_param_prefix + "q_accel", std_accel);
-    nh_.getParam(ins_param_prefix + "q_accel_bias", std_accel_bias);
+    if(!nh_.getParam(ins_param_prefix + "q_gyro", std_gyro)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "q_gyro\". Using default: "
+                        << std_gyro);
+    }
+    if(!nh_.getParam(ins_param_prefix + "q_gyro_bias", std_gyro_bias)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "q_gyro_bias\". Using default: "
+                        << std_gyro_bias);
+    }
+    if(!nh_.getParam(ins_param_prefix + "q_accel", std_accel)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "q_accel\". Using default: "
+                        << std_accel);
+    }
+    if(!nh_.getParam(ins_param_prefix + "q_accel_bias", std_accel_bias)){
+        ROS_WARN_STREAM("Couldn't get param \""
+                        << nh_.getNamespace()  << "/" << ins_param_prefix
+                        << "q_accel_bias\". Using default: "
+                        << std_accel_bias);
+    }
 
     cfg.cov_accel = std::pow(std_accel, 2);
     cfg.cov_gyro = std::pow(std_gyro * M_PI / 180.0, 2);
