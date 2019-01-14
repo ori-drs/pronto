@@ -18,8 +18,8 @@ public:
   uint64_t utime_history_span;
 
   void addUpdate(RBISUpdateInterface * update, bool roll_forward);
-  void getHeadState(RBIS & head_state, RBIM & head_cov);
-  double getMeasurementsLogLikelihood();
+  void getHeadState(RBIS & head_state, RBIM & head_cov) const;
+  double getMeasurementsLogLikelihood() const;
   void EKFSmoothBackwardsPass(double dt);
 
 };

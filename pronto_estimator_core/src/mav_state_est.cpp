@@ -83,7 +83,7 @@ void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forwar
   unprocessed_updates_start = history.updateMap.end();
 }
 
-void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov)
+void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
 {
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;
   head_state = head_update->posterior_state;
@@ -93,7 +93,7 @@ void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov)
 //  eigen_dump(head_cov);
 }
 
-double MavStateEstimator::getMeasurementsLogLikelihood()
+double MavStateEstimator::getMeasurementsLogLikelihood() const
 {
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;
   return head_update->loglikelihood;
