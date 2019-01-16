@@ -55,18 +55,18 @@
   <build_depend>bot_core</build_depend>
   <build_depend>bot_frames</build_depend>
   <build_depend>pronto_conversions</build_depend>
-  <build_depend>pronto_estimator_core</build_depend>
+  <build_depend>pronto_core</build_depend>
   <build_depend>pronto_lcmtypes</build_depend>
   <depend>pronto_estimate_tools</depend>
   <build_export_depend>bot_core</build_export_depend>
   <build_export_depend>bot_frames</build_export_depend>
   <build_export_depend>pronto_conversions</build_export_depend>
-  <build_export_depend>pronto_estimator_core</build_export_depend>
+  <build_export_depend>pronto_core</build_export_depend>
   <build_export_depend>pronto_lcmtypes</build_export_depend>
   <exec_depend>bot_core</exec_depend>
   <exec_depend>bot_frames</exec_depend>
   <exec_depend>pronto_conversions</exec_depend>
-  <exec_depend>pronto_estimator_core</exec_depend>
+  <exec_depend>pronto_core</exec_depend>
   <exec_depend>pronto_lcmtypes</exec_depend>
 
 

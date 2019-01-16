@@ -1,8 +1,8 @@
 #pragma once
 
 #include "pronto_estimator_lcm/lcm_front_end.hpp"
-#include <pronto_estimator_core/sensing_module.hpp>
-#include <pronto_estimator_core/pose_meas_module.hpp>
+#include <pronto_core/sensing_module.hpp>
+#include <pronto_core/pose_meas_module.hpp>
 #include <eigen_utils/eigen_utils.hpp>
 #include <lcmtypes/bot_core/pose_t.hpp>
 #include <memory>

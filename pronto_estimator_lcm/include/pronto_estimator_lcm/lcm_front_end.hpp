@@ -15,9 +15,9 @@
 #include <lcmtypes/bot_core/pose_t.hpp>
 
 //TODO remove when front end is templated on FilterState and Update
-#include <pronto_estimator_core/rbis.hpp>
-#include <pronto_estimator_core/rbis_update_interface.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
+#include <pronto_core/rbis.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
+#include <pronto_core/mav_state_est.hpp>
 #include "pronto_estimator_lcm/sensor_handler_interface.hpp"
 
 

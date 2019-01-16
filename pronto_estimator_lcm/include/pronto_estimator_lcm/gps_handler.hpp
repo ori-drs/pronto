@@ -1,7 +1,7 @@
 #pragma once
-#include <pronto_estimator_core/rbis_update_interface.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
-#include <pronto_estimator_core/gps_module.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
+#include <pronto_core/mav_state_est.hpp>
+#include <pronto_core/gps_module.hpp>
 #include <lcmtypes/bot_core/gps_data_t.hpp>
 #include <bot_param/param_client.h>
 #include <memory>

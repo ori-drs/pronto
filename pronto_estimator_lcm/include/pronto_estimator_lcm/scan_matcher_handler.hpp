@@ -1,10 +1,10 @@
 #pragma once
 #include <Eigen/Dense>
-#include <pronto_estimator_core/rbis_update_interface.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
 #include <bot_param/param_client.h>
 #include <lcmtypes/bot_core/pose_t.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
-#include <pronto_estimator_core/scan_matcher_module.hpp>
+#include <pronto_core/mav_state_est.hpp>
+#include <pronto_core/scan_matcher_module.hpp>
 
 namespace  MavStateEst {
 

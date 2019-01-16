@@ -2,11 +2,11 @@
 #include <bot_param/param_client.h>
 #include <bot_frames/bot_frames.h>
 #include <string>
-#include <pronto_estimator_core/rbis_update_interface.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
 #include <lcmtypes/bot_core/ins_t.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
-#include <pronto_estimator_core/sensing_module.hpp>
-#include <pronto_estimator_core/ins_module.hpp>
+#include <pronto_core/mav_state_est.hpp>
+#include <pronto_core/sensing_module.hpp>
+#include <pronto_core/ins_module.hpp>
 
 namespace MavStateEst {
 

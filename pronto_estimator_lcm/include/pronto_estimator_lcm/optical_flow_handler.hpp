@@ -2,9 +2,9 @@
 
 #include <bot_param/param_client.h>
 #include <bot_frames/bot_frames.h>
-#include <pronto_estimator_core/rbis_update_interface.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
 #include <lcmtypes/pronto/optical_flow_t.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
+#include <pronto_core/mav_state_est.hpp>
 
 namespace MavStateEst {
 class OpticalFlowHandler {

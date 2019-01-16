@@ -1,7 +1,7 @@
 #ifndef RBIS_INITIALIZER_HPP_
 #define RBIS_INITIALIZER_HPP_
 #include "lcm_front_end.hpp"
-#include <pronto_estimator_core/rbis.hpp>
+#include <pronto_core/rbis.hpp>
 #include <map>
 
 namespace MavStateEst {

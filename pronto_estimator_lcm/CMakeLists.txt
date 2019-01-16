@@ -6,7 +6,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS bot_core
                                         bot_frames
                                         pronto_conversions
-                                        pronto_estimator_core
+                                        pronto_core
                                         pronto_lcmtypes
                                         pronto_estimate_tools)
 
@@ -21,7 +21,7 @@ catkin_package(INCLUDE_DIRS include
                CATKIN_DEPENDS bot_core
                               bot_frames
                               pronto_conversions
-                              pronto_estimator_core
+                              pronto_core
                               pronto_lcmtypes
                               pronto_estimate_tools)
 

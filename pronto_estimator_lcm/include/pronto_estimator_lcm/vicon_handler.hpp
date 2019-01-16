@@ -1,11 +1,11 @@
 #pragma once
-#include <pronto_estimator_core/rbis_update_interface.hpp>
-#include <pronto_estimator_core/mav_state_est.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
+#include <pronto_core/mav_state_est.hpp>
 #include <lcmtypes/bot_core/rigid_transform_t.hpp>
 #include <bot_param/param_client.h>
 #include <bot_frames/bot_frames.h>
-#include <pronto_estimator_core/definitions.hpp>
-#include <pronto_estimator_core/vicon_module.hpp>
+#include <pronto_core/definitions.hpp>
+#include <pronto_core/vicon_module.hpp>
 #include <memory>
 
 namespace MavStateEst {

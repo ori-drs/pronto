@@ -8,14 +8,14 @@
 // #include <pronto_vis/pronto_vis.hpp>
 #include <pronto_conversions/pronto_conversions_lcm.hpp>
 #include <pronto_conversions/pronto_conversions_bot_core.hpp>
-#include <pronto_estimator_core/rbis_update_interface.hpp>
+#include <pronto_core/rbis_update_interface.hpp>
 #include <pronto_estimator_lcm/sensor_handlers.hpp>
 
 #include <lcmtypes/pronto/update_t.hpp>
 #include <lcm/lcm-cpp.hpp>
 
-#include <pronto_estimator_core/visual_odometry_module.hpp>
-#include <pronto_estimator_core/definitions.hpp>
+#include <pronto_core/visual_odometry_module.hpp>
+#include <pronto_core/definitions.hpp>
 #include <memory>
 
 namespace MavStateEst {
