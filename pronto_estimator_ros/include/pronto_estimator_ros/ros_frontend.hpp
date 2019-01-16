@@ -16,7 +16,7 @@ public:
 public:
     using SensorId = std::string;
 
-    ROSFrontEnd(ros::NodeHandle &nh);
+    ROSFrontEnd(ros::NodeHandle &nh, bool verbose = false);
     virtual ~ROSFrontEnd();
 
     template<class MsgT>
@@ -92,6 +92,7 @@ private:
     tf::Quaternion temp_q;
 
     bool filter_initialized_ = false;
+    bool verbose_ = false;
 
 
 };
@@ -162,6 +163,9 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
 
 template <class MsgT>
 void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id){
+    if(verbose_){
+        ROS_INFO_STREAM("Init callback for sensor " << sensor_id);
+    }
     if(initialized_list_.count(sensor_id) > 0 && !initialized_list_[sensor_id])
     {
         initialized_list_[sensor_id] = static_cast<SensingModule<MsgT>*>(init_modules_[sensor_id])->processMessageInit(msg.get(),
@@ -192,6 +196,9 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
 {
+    if(verbose_){
+        ROS_INFO_STREAM("Callback for sensor " << sensor_id);
+    }
     // this is a generic templated callback that does the same for every module:
     // if the module is initialized and the filter is ready
     // 1) take the measurement update and pass it to the filter if valid
@@ -200,15 +207,12 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // appropriate casting to the right type and call to the process message
         // function to get the update
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
-
         // if the update is invalid, we leave
         if(update == NULL){
             return;
         }
-
         // tell also the filter if we need to roll forward
         state_est_->addUpdate(update, roll_forward_[sensor_id]);
-
         if(publish_head_[sensor_id]){
             state_est_->getHeadState(head_state, head_cov);
 

@@ -3,7 +3,9 @@
 namespace MavStateEst {
 using SensorId = MavStateEst::ROSFrontEnd::SensorId;
 
-ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh) : nh_(nh) {
+ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
+    nh_(nh), verbose_(verbose)
+{
     bool publish_pose;
     // looking for relative param names, the nodehandle namespace will be added
     // automatically, e.g. publish_pose -> /state_estimator_pronto/publish_pose
@@ -35,6 +37,9 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh) : nh_(nh) {
 
     initializeState();
     initializeCovariance();
+    if(verbose_){
+        ROS_INFO_STREAM("Frontend constructed.");
+    }
 }
 
 void ROSFrontEnd::initializeState()
@@ -67,6 +72,9 @@ void ROSFrontEnd::initializeState()
     default_state.orientation() = eigen_utils::setQuatEulerAngles(Eigen::Map<Eigen::Vector3d>(init_orient.data()));
     init_state = default_state;
     head_state = default_state;
+    if(verbose_){
+        ROS_INFO_STREAM("Filter Initial State initialized.");
+    }
 }
 
 
@@ -128,6 +136,9 @@ void ROSFrontEnd::initializeCovariance(){
 
     init_cov = default_cov;
     head_cov = default_cov;
+    if(verbose_){
+        ROS_INFO_STREAM("Filter Covariance initialized.");
+    }
 }
 
 ROSFrontEnd::~ROSFrontEnd()
@@ -152,6 +163,9 @@ bool ROSFrontEnd::initializeFilter()
                                            history_span_));
 
     filter_initialized_ = true;
+    if(verbose_){
+        ROS_INFO_STREAM("Filter initialized.");
+    }
     return true;
 }
 
