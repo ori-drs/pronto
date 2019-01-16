@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pronto_estimator_core/sensing_module.hpp"
-#include "pronto_estimator_core/mav_state_est.hpp"
+#include <pronto_core/sensing_module.hpp>
+#include <pronto_core/mav_state_est.hpp>
 #include <ros/node_handle.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>

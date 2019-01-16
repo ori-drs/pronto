@@ -2,7 +2,7 @@
 #include <functional>
 #include <sensor_msgs/Imu.h>
 #include <ros/node_handle.h>
-#include "pronto_estimator_core/ins_module.hpp"
+#include <pronto_core/ins_module.hpp>
 
 namespace MavStateEst {
 class InsHandlerROS : public SensingModule<sensor_msgs::Imu> {

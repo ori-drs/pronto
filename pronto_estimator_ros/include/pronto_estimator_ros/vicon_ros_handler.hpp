@@ -1,6 +1,6 @@
 #pragma once
 #include <ros/node_handle.h>
-#include <pronto_estimator_core/vicon_module.hpp>
+#include <pronto_core/vicon_module.hpp>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf_conversions/tf_eigen.h>
 

@@ -1,6 +1,6 @@
 #pragma once
-#include <pronto_estimator_core/indexed_meas_module.hpp>
-#include <pronto_estimator_core/sensing_module.hpp>
+#include <pronto_core/indexed_meas_module.hpp>
+#include <pronto_core/sensing_module.hpp>
 #include <pronto_msgs/IndexedMeasurement.h>
 
 

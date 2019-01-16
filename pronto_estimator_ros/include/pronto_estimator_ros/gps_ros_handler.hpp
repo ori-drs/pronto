@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pronto_estimator_core/gps_module.hpp>
-#include <pronto_estimator_core/sensing_module.hpp>
+#include <pronto_core/gps_module.hpp>
+#include <pronto_core/sensing_module.hpp>
 #include <pronto_msgs/GPSData.h>
 #include <ros/node_handle.h>
 namespace MavStateEst {

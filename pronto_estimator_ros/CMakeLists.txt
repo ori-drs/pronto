@@ -3,7 +3,7 @@ project(pronto_estimator_ros)
 
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED COMPONENTS pronto_estimator_core
+find_package(catkin REQUIRED COMPONENTS pronto_core
                                         roscpp
                                         sensor_msgs
                                         eigen_conversions
@@ -86,7 +86,7 @@ find_package(catkin REQUIRED COMPONENTS pronto_estimator_core
 
 catkin_package(INCLUDE_DIRS include
                LIBRARIES ${PROJECT_NAME}
-               CATKIN_DEPENDS pronto_estimator_core
+               CATKIN_DEPENDS pronto_core
                               roscpp
                               sensor_msgs
                               tf_conversions

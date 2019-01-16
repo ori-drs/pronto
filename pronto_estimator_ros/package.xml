@@ -43,11 +43,11 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>pronto_estimator_core</build_depend>
+  <build_depend>pronto_core</build_depend>
   <build_depend>roscpp</build_depend>
-  <build_export_depend>pronto_estimator_core</build_export_depend>
+  <build_export_depend>pronto_core</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
-  <exec_depend>pronto_estimator_core</exec_depend>
+  <exec_depend>pronto_core</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <depend>sensor_msgs</depend>
   <depend>tf_conversions</depend>
