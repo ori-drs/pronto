@@ -1,9 +1,9 @@
 #pragma once
 #include <Eigen/Dense>
-#include "pronto_estimator_core/rbis_update_interface.hpp"
-#include "pronto_estimator_core/definitions.hpp"
-#include "pronto_estimator_core/sensing_module.hpp"
-#include "pronto_estimator_core/mav_state_est.hpp"
+#include "pronto_core/rbis_update_interface.hpp"
+#include "pronto_core/definitions.hpp"
+#include "pronto_core/sensing_module.hpp"
+#include "pronto_core/mav_state_est.hpp"
 
 namespace MavStateEst {
 

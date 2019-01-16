@@ -1,4 +1,4 @@
-#include "pronto_estimator_core/gps_module.hpp"
+#include "pronto_core/gps_module.hpp"
 
 namespace MavStateEst {
 

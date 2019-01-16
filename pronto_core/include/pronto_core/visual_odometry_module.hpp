@@ -1,6 +1,6 @@
 #pragma once
-#include "pronto_estimator_core/sensing_module.hpp"
-#include "pronto_estimator_core/definitions.hpp"
+#include "pronto_core/sensing_module.hpp"
+#include "pronto_core/definitions.hpp"
 
 namespace MavStateEst {
 

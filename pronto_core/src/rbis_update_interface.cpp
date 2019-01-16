@@ -1,4 +1,4 @@
-#include "pronto_estimator_core/rbis_update_interface.hpp"
+#include "pronto_core/rbis_update_interface.hpp"
 
 namespace MavStateEst {
 

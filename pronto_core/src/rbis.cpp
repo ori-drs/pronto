@@ -1,4 +1,4 @@
-#include "pronto_estimator_core/rbis.hpp"
+#include "pronto_core/rbis.hpp"
 #include <eigen_utils/eigen_rigidbody.hpp>
 
 using namespace eigen_utils;

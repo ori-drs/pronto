@@ -1,4 +1,4 @@
-#include "pronto_estimator_core/visual_odometry_module.hpp"
+#include "pronto_core/visual_odometry_module.hpp"
 
 using Update = MavStateEst::RBISUpdateInterface;
 using namespace std;

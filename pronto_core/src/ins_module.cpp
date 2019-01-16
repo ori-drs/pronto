@@ -1,4 +1,4 @@
-#include "pronto_estimator_core/ins_module.hpp"
+#include "pronto_core/ins_module.hpp"
 
 namespace MavStateEst {
 
