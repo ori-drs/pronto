@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pronto_estimator_ros)
+project(pronto_ros)
 
 add_compile_options(-std=c++11)
 
@@ -118,7 +118,7 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/pronto_estimator_ros_node.cpp)
+add_executable(${PROJECT_NAME}_node src/pronto_ros_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
@@ -173,7 +173,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pronto_estimator_ros.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pronto_ros.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

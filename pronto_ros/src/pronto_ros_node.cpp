@@ -1,13 +1,13 @@
 #include <ros/node_handle.h>
-#include "pronto_estimator_ros/ros_frontend.hpp"
-#include "pronto_estimator_ros/ins_ros_handler.hpp"
-#include "pronto_estimator_ros/vicon_ros_handler.hpp"
+#include "pronto_ros/ros_frontend.hpp"
+#include "pronto_ros/ins_ros_handler.hpp"
+#include "pronto_ros/vicon_ros_handler.hpp"
 
 using namespace MavStateEst;
 
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "pronto_estimator_ros_node");
+    ros::init(argc, argv, "pronto_ros_node");
     std::string prefix = "/state_estimator_pronto";
     ros::NodeHandle nh(prefix);
     ROSFrontEnd front_end(nh);

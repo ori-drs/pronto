@@ -1,4 +1,4 @@
-#include "pronto_estimator_ros/ros_frontend.hpp"
+#include "pronto_ros/ros_frontend.hpp"
 
 namespace MavStateEst {
 using SensorId = MavStateEst::ROSFrontEnd::SensorId;

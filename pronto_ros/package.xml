@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>pronto_estimator_ros</name>
+  <name>pronto_ros</name>
   <version>0.0.1</version>
-  <description>The pronto_estimator_ros package</description>
+  <description>The pronto_ros package</description>
 
   <author email="mcamurri@robots.ox.ac.uk">Marco Camurri</author>
   <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
@@ -13,7 +13,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/pronto_estimator_ros</url> -->
+  <!-- <url type="website">http://wiki.ros.org/pronto_ros</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
