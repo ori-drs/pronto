@@ -53,7 +53,7 @@ void ROSFrontEnd::initializeState()
 
     // setting the initial values from the state
     std::vector<double> init_position  = std::vector<double>(3,0.0);
-    if(!nh_.getParam("x0/position", init_velocity)){
+    if(!nh_.getParam("x0/position", init_position)){
         ROS_WARN_STREAM("Couldn't get default position. Setting to zero.");
     }
     default_state.position() = Eigen::Map<Eigen::Vector3d>(init_position.data());
@@ -65,7 +65,7 @@ void ROSFrontEnd::initializeState()
     default_state.angularVelocity() = Eigen::Map<Eigen::Vector3d>(init_omega.data());
 
     std::vector<double> init_orient = std::vector<double>(3,0.0);
-    if(!nh_.getParam("x0/rpy", init_omega)){
+    if(!nh_.getParam("x0/rpy", init_orient)){
         ROS_WARN_STREAM("Couldn't get default ang velocity. Setting to zero.");
         default_state.orientation() = Eigen::Quaterniond::Identity();
     }
