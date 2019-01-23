@@ -93,6 +93,14 @@ void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
 //  eigen_dump(head_cov);
 }
 
+void MavStateEstimator::getHeadState(const uint64_t& utime,
+                                     RBIS &head_state,
+                                     RBIM &head_cov) const {
+    auto head_update = history.updateMap.lower_bound(utime)->second;
+    head_state = head_update->posterior_state;
+    head_cov = head_update->posterior_covariance;
+}
+
 double MavStateEstimator::getMeasurementsLogLikelihood() const
 {
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;

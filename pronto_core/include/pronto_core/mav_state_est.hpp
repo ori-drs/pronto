@@ -19,6 +19,11 @@ public:
 
   void addUpdate(RBISUpdateInterface * update, bool roll_forward);
   void getHeadState(RBIS & head_state, RBIM & head_cov) const;
+
+  void getHeadState(const uint64_t& utime,
+                    RBIS &head_state,
+                    RBIM &head_cov) const;
+
   double getMeasurementsLogLikelihood() const;
   void EKFSmoothBackwardsPass(double dt);
 
