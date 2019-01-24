@@ -20,6 +20,14 @@ RBISUpdateInterface::sensor_enum RBISUpdateInterface::sensor_enum_from_char(char
   return (sensor_enum) sensor_ind;
 }
 
+std::string RBISUpdateInterface::sensorIdToString(const sensor_enum& id){
+    return std::string(sensor_enum_strings[(int)id]);
+}
+
+std::string RBISUpdateInterface::getSensorIdString() const{
+    return sensorIdToString(sensor_id);
+}
+
 void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_cov, double prior_loglikelihood)
 {
   posterior_state = reset_state;

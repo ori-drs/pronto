@@ -41,6 +41,15 @@ updateHistory::historyMapIterator updateHistory::addToHistory(RBISUpdateInterfac
   return it;
 }
 
+std::string updateHistory::toString() const{
+    std::stringstream ss;
+
+    for(auto it = updateMap.begin(); it != updateMap.end(); ++it){
+        ss << "Updatemap <" << it->first << ", " << it->second->getSensorIdString() << ">" << std::endl;
+    }
+    return ss.str();
+}
+
 void updateHistory::clearHistoryBeforeUtime(int64_t utime)
 {
   historyMapIterator it_before;

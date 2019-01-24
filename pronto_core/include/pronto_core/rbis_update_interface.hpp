@@ -37,6 +37,9 @@ public:
   static const char * sensor_enum_chars;
   static const char * sensor_enum_strings[];
   sensor_enum sensor_enum_from_char(char sensor_char);
+  static std::string sensorIdToString(const sensor_enum& id);
+
+  std::string getSensorIdString() const;
 };
 
 /**

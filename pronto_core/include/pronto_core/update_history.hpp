@@ -32,6 +32,8 @@ public:
    */
   void clearHistoryBeforeUtime(int64_t utime);
 
+  std::string toString() const;
+
 };
 
 }
