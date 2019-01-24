@@ -6,6 +6,8 @@
  */
 
 #include "pronto_core/mav_state_est.hpp"
+#include <iterator>
+using namespace Eigen;
 
 namespace MavStateEst {
 
@@ -27,6 +29,65 @@ MavStateEstimator::~MavStateEstimator()
     // the updateHistory class is taking care of memory deallocation of the
     // list of measurement pointers. Nothing to do here.
 
+}
+
+bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime, Eigen::Isometry3d& pose) const {
+    Vector3d pos;
+    Quaterniond orient;
+    if(!getInterpolatedPose(utime, pos, orient)){
+        return false;
+    }
+    pose = Eigen::Isometry3d::Identity();
+    pose.translate(pos);
+    pose.rotate(orient);
+    return true;
+}
+
+bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime,
+                                            Vector3d &position,
+                                            Quaterniond &orientation) const
+{
+
+    if(history.updateMap.empty() || utime < history.updateMap.begin()->first || utime > history.updateMap.rbegin()->first)
+    {
+        return false;
+    }
+    // this is the first element greater than utime
+    updateHistory::historyMap::const_iterator it_low = history.updateMap.upper_bound(utime);
+    // if we have reached the bottom already, we return
+    if(it_low == history.updateMap.end()){
+        return false;
+    }
+    // now it_low contains the last element smaller than utime
+    --it_low;
+    // if by chance we have the pose at that exact time, we return it
+    if(it_low->first == utime){
+        RBISUpdateInterface * head_update = it_low->second;
+        position = head_update->posterior_state.getPoseAsIsometry3d().translation();
+        orientation = Quaterniond(head_update->posterior_state.getPoseAsIsometry3d().rotation());
+        return true;
+    }
+    // at this point we have to interpolate, and we can't do it with less than
+    // two items in history
+    if(history.updateMap.size() < 2){
+        return false;
+    }
+    // it_high is the last element with utime greater than it_low
+
+
+    updateHistory::historyMap::const_iterator it_high = std::prev(history.updateMap.upper_bound((std::next(it_low,1))->first),1);
+
+    // alpha is 1 if the requested time coincides with it_low, 0 if equal to it_high
+    double alpha = (double)(it_high->first - utime) / (double)(it_high->first - it_low->first);
+
+    Eigen::Isometry3d iso_low = (it_low->second)->posterior_state.getPoseAsIsometry3d();
+    Eigen::Isometry3d iso_high = (it_low->second)->posterior_state.getPoseAsIsometry3d();
+
+    position = iso_low.translation() * alpha + iso_high.translation() * (1-alpha);
+    // in slerp, the paramter t is used as the opposite of alpha
+    // (1 - t) * p0 + t * p1
+    orientation = Quaterniond(iso_low.rotation()).slerp(1 - alpha, Quaterniond(iso_high.rotation()));
+    return true;
 }
 
 void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)
