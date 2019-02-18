@@ -121,7 +121,14 @@ void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
     // so we can properly cast back to the right type.
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     init_modules_.insert(pair);
-    init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::initCallback<MsgT>, this, _1, sensor_id));
+    init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
+                                                       1000,
+                                                       boost::bind(&ROSFrontEnd::initCallback<MsgT>,
+                                                                   this,
+                                                                   _1,
+                                                                   sensor_id),
+                                                       ros::VoidConstPtr(),
+                                                       ros::TransportHints().tcpNoDelay());
 }
 
 template<class MsgT>
@@ -156,7 +163,12 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     active_modules_.insert(pair);
     // subscribe the generic templated callback for all modules
-    sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic, 100, boost::bind(&ROSFrontEnd::callback<MsgT>, this, _1, sensor_id));
+    sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
+                                                          1000,
+                                                          boost::bind(&ROSFrontEnd::callback<MsgT>,
+                                                                      this, _1, sensor_id),
+                                                          ros::VoidConstPtr(),
+                                                          ros::TransportHints().tcpNoDelay());
 }
 
 
