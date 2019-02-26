@@ -3,7 +3,6 @@
 
 #include "rbis.hpp"
 #include "update_history.hpp"
-#include "pronto_core/filter_state_history.hpp"
 
 namespace MavStateEst {
 
