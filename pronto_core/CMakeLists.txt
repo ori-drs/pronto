@@ -31,10 +31,10 @@ add_library (${PRONTO_CORE_LIB} src/rbis.cpp
                                 src/gps_module.cpp
                                 src/pose_meas_module.cpp)
 
-target_link_libraries(${PRONTO_CORE_LIB} ${catkin_LIBRRARIES})
+target_link_libraries(${PRONTO_CORE_LIB} ${catkin_LIBRARIES})
 
 catkin_add_gtest(ins_module_ballistic test/imu_module_test.cpp)
-target_link_libraries(ins_module_ballistic ${STATE_EST_LIB} ${catkin_LIBRARIES} pthread)
+target_link_libraries(ins_module_ballistic ${catkin_LIBRARIES} ${PRONTO_CORE_LIB} pthread)
 
 
 install(TARGETS ${TARGETS}
