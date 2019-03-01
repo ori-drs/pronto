@@ -22,9 +22,9 @@ public:
 
 
 private:
+    ros::NodeHandle& nh_;
     std::shared_ptr<ViconModule> vicon_module_;
     RigidTransform vicon_transf_;
-    ros::NodeHandle nh_;
     tf::Transform temp_tf_transf_;
 
 
