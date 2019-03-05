@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package>
+  <name>pronto_core</name>
+  <version>0.0.1</version>
+  <description>
+    The pronto_core package contains the EKF and the main 
+    modules to perform state estimation, including: inertial, gps, optical
+    flow, etc.
+  </description>
+
+  <author email="abry@mit.edu">Adam Bry</author>
+  <author email="mfallon@robots.ox.ac.uk">Maurice Fallon</author>
+  
+  <maintainer email="mfallon@robots.ox.ac.uk">Maurice Fallon</maintainer>
+  <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
+
+
+  <license>LGPLv2.1</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>stl_utils</build_depend> 
+  <build_depend>eigen_utils</build_depend>
+
+  <run_depend>stl_utils</run_depend>
+  <run_depend>eigen_utils</run_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

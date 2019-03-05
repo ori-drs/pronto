@@ -1,0 +1,7 @@
+<?xml format="1.0" ?>
+<launch>
+<roparam load file="$(find director_drs)/config/anymal/state_estimator.yaml" />
+<node name="parameter_test" pkg=#include "pronto_core" >
+</node>
+</launch>
+
