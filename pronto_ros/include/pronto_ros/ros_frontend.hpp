@@ -25,11 +25,13 @@ public:
                           const SensorId& sensor_id,
                           bool roll_forward,
                           bool publish_head,
-                          const std::string& topic);
+                          const std::string& topic,
+                          bool subscribe = true);
     template <class MsgT>
     void addInitModule(SensingModule<MsgT>& module,
                        const SensorId& sensor_id,
-                       const std::string& topic);
+                       const std::string& topic,
+                       bool subscribe = true);
 
     bool areModulesInitialized();
 
@@ -45,8 +47,6 @@ public:
                                                                RBISUpdateInterface::reset,
                                                                state.utime), true);
     }
-
-protected:
     template <class MsgT>
     void initCallback(boost::shared_ptr<MsgT const> msg,
                       const SensorId& Key);
@@ -54,7 +54,7 @@ protected:
     template <class MsgT>
     void callback(boost::shared_ptr<MsgT const> msg,
                   const SensorId& Key);
-
+protected:
     bool initializeFilter();
 
     void initializeState();
@@ -108,7 +108,8 @@ namespace MavStateEst {
 template <class MsgT>
 void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
                                 const SensorId& sensor_id,
-                                const std::string& topic)
+                                const std::string& topic,
+                                bool subscribe)
 {
     if(init_modules_.count(sensor_id) > 0){
         ROS_WARN_STREAM("Init Module \"" << sensor_id << "\" already added. Skipping.");
@@ -125,14 +126,16 @@ void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
     // so we can properly cast back to the right type.
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     init_modules_.insert(pair);
-    init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
-                                                       1000,
-                                                       boost::bind(&ROSFrontEnd::initCallback<MsgT>,
-                                                                   this,
-                                                                   _1,
-                                                                   sensor_id),
-                                                       ros::VoidConstPtr(),
-                                                       ros::TransportHints().tcpNoDelay());
+    if(subscribe){
+        init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
+                                                           10000,
+                                                           boost::bind(&ROSFrontEnd::initCallback<MsgT>,
+                                                                       this,
+                                                                       _1,
+                                                                       sensor_id),
+                                                           ros::VoidConstPtr(),
+                                                           ros::TransportHints().tcpNoDelay());
+    }
 }
 
 template<class MsgT>
@@ -140,7 +143,8 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
                                    const SensorId& sensor_id,
                                    bool roll_forward,
                                    bool publish_head,
-                                   const std::string& topic)
+                                   const std::string& topic,
+                                   bool subscribe)
 {
     // int this implementation we allow only one different type of module
     if(active_modules_.count(sensor_id) > 0){
@@ -167,12 +171,14 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     active_modules_.insert(pair);
     // subscribe the generic templated callback for all modules
-    sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
-                                                          1000,
-                                                          boost::bind(&ROSFrontEnd::callback<MsgT>,
-                                                                      this, _1, sensor_id),
-                                                          ros::VoidConstPtr(),
-                                                          ros::TransportHints().tcpNoDelay());
+    if(subscribe){
+        sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
+                                                              10000,
+                                                              boost::bind(&ROSFrontEnd::callback<MsgT>,
+                                                                          this, _1, sensor_id),
+                                                              ros::VoidConstPtr(),
+                                                              ros::TransportHints().tcpNoDelay());
+    }
 }
 
 
@@ -203,8 +209,11 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
     } else {
         // if we are here it means that the module is not in the list of
         // initialized modules or that the module is already initialized
-        // in both cases we don't want to subscribe to this topic anymore.
-        init_subscribers_[sensor_id].shutdown();
+        // in both cases we don't want to subscribe to this topic anymore,
+        // unless there is no subscriber because we are processing a rosbag.
+        if(init_subscribers_.count(sensor_id) > 0){
+            init_subscribers_[sensor_id].shutdown();
+        }
     }
 }
 
