@@ -92,6 +92,8 @@ bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime,
 
 void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)
 {
+
+    std::cerr << "[ " << update->utime <<" ] "<< update->getSensorIdString() << std::endl;
   // Add current update to history
   updateHistory::historyMapIterator added_it = history.addToHistory(update);
 
