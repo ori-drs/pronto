@@ -8,6 +8,7 @@
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <tf_conversions/tf_eigen.h>
 
+#include <tf/transform_broadcaster.h>
 
 namespace MavStateEst {
 class ROSFrontEnd {
@@ -82,6 +83,9 @@ private:
 
     ros::Publisher pose_pub_;
     ros::Publisher twist_pub_;
+    tf::TransformBroadcaster tf_broadcaster_;
+    tf::StampedTransform tf_pose_;
+    bool publish_tf_ = false;
 
     geometry_msgs::PoseWithCovarianceStamped pose_msg_;
     geometry_msgs::TwistWithCovarianceStamped twist_msg_;
@@ -252,6 +256,12 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
 
             // fill in time
             pose_msg_.header.stamp = ros::Time().fromNSec(head_state.utime * 1000);
+            if(publish_tf_){
+                tf_pose_.setOrigin(temp_v3);
+                tf_pose_.setRotation(temp_q);
+                tf_pose_.stamp_ = ros::Time::now();
+                tf_broadcaster_.sendTransform(tf_pose_);
+            }
 
             // TODO insert appropriate covariance into the message
             // publish the pose
