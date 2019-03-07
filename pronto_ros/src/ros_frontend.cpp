@@ -29,12 +29,29 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
                 twist_pub_ = nh_.advertise<geometry_msgs::TwistWithCovarianceStamped>(twist_topic, 200);
                 twist_msg_.header.frame_id = twist_frame_id;
             }
+            // try to
+            if(!nh_.getParam("publish_tf", publish_tf_)){
+                ROS_WARN("Couldn't get param \"publish_tf\". Not publishing TF.");
+            }
+            if(publish_tf_){
+                std::string tf_child_frame_id = "base";
+                if(!nh_.getParam("tf_child_frame_id", tf_child_frame_id)){
+                    ROS_WARN("Couldn't get param \"tf_frame_id\". Setting default to \"base\".");
+                }
+                tf_pose_.frame_id_ = pose_frame_id;
+                // NOTE implicitly assuming the twist frame id is the base frame
+                tf_pose_.child_frame_id_ = tf_child_frame_id;
+                ROS_INFO_STREAM("Publishing TF with frame_id: \"" << tf_pose_.frame_id_ << "\" and child_frame_id: \"" << tf_pose_.child_frame_id_ << "\"");
+            }
         }
-        int history_span;
-        nh_.getParam("utime_history_span", history_span);
-        history_span_ = history_span;
+
     }
 
+    int history_span = 1e6; // keep 1 second as default
+    if(!nh_.getParam("utime_history_span", history_span)){
+     ROS_WARN_STREAM("Couldn't get param \"utime_history_span\". Setting default to \"" << history_span << "\"");
+    }
+    history_span_ = history_span;
     initializeState();
     initializeCovariance();
     if(verbose_){
