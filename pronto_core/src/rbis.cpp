@@ -56,8 +56,12 @@ void insUpdateState(const Eigen::Vector3d & gyro, const Eigen::Vector3d & accele
   dstate.velocity() = -state.angularVelocity().cross(state.velocity());
   dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
 
+  dstate.velocity() = Eigen::Vector3d::Zero();
+
   dstate.chi() = state.angularVelocity();
   dstate.position().noalias() = state.quat * state.velocity();
+  // add second order?
+  // dstate.position().noalias() += + 0.5 * state.quat.inverse() * g_vec * dt + 0.5 * state.quat * state.acceleration() * dt;
 
   //integrate
   dstate.vec *= dt;
