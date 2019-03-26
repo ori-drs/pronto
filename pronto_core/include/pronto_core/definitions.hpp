@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <Eigen/Dense>
+#include <vector>
 
 namespace MavStateEst {
 
