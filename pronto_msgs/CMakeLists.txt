@@ -45,7 +45,8 @@ find_package(catkin REQUIRED roscpp rospy std_msgs geometry_msgs message_generat
 add_message_files(FILES  VisualOdometryUpdate.msg
                          FilterState.msg
                          GPSData.msg
-                         IndexedMeasurement.msg)
+                         IndexedMeasurement.msg
+                         QuadrupedStance.msg)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
