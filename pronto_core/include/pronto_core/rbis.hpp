@@ -100,6 +100,9 @@ public:
       pose_iso.rotate(this->orientation());
       return pose_iso;
     }
+private:
+  bool debug_ = false;
+  uint64_t debug_utime_ = 0;
 
 };
 
@@ -107,7 +110,22 @@ typedef RBIS::MatrixNd RBIM;
 
 void getIMUProcessLinearizationContinuous(const RBIS & state, RBIM & Ac);
 
-void insUpdateState(const Eigen::Vector3d & gyro, const Eigen::Vector3d & accelerometer, double dt, RBIS & state);
+/**
+ * @brief insUpdateState integrates a gyro and accelerometer measurements given
+ * a delta time. Optionally, it skips the acceleration integration.
+ * @param[in] gyro angular velocity measurement, in rad / s, base frame
+ * @param[in] accelerometer proper acceleration (= 1 g at rest) in m / s^2
+ * @param[in] dt integration constant in s
+ * @param[out] state resulting state. If the state had already linear velocity
+ * values, they get integrated too.
+ * @param[in] ignore_accel (optional) if true, this will skip the accelerometer
+ * integration and use the velocity provided by state
+ */
+void insUpdateState(const Eigen::Vector3d & gyro,
+                    const Eigen::Vector3d & accelerometer,
+                    double dt,
+                    RBIS & state,
+                    const bool &ignore_accel = false);
 
 void insUpdateCovariance(double q_gyro, double q_accel, double q_gyro_bias, double q_accel_bias, const RBIS & state,
     RBIM & cov, double dt);

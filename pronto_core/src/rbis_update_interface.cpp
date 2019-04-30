@@ -45,7 +45,7 @@ void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & pri
   // TODO if this was meant to measure some sort of performance
   // replace with non-libbot calls
   // bot_tictoc("insUpdateState");
-  insUpdateState(gyro, accelerometer, dt, posterior_state);
+  insUpdateState(gyro, accelerometer, dt, posterior_state, ignore_accel_);
   insUpdateCovariance(q_gyro, q_accel, q_gyro_bias, q_accel_bias, prior_state, posterior_covariance, dt);
   // bot_tictoc("insUpdateState");
 

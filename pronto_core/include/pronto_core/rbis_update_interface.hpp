@@ -69,6 +69,7 @@ public:
   double q_accel;
   double q_gyro_bias;
   double q_accel_bias;
+  bool ignore_accel_ = false;
 
   RBISIMUProcessStep(const Eigen::Vector3d & gyro_,
                      const Eigen::Vector3d & accelerometer_,
@@ -77,7 +78,8 @@ public:
                      double q_gyro_bias_,
                      double q_accel_bias_,
                      double dt_,
-                     int64_t utime) :
+                     int64_t utime,
+                     bool ignore_accel = false) :
       RBISUpdateInterface(ins, utime),
       gyro(gyro_),
       accelerometer(accelerometer_),
@@ -85,7 +87,8 @@ public:
       q_accel(q_accel_),
       q_gyro_bias(q_gyro_bias_),
       q_accel_bias(q_accel_bias_),
-      dt(dt_)
+      dt(dt_),
+      ignore_accel_(ignore_accel)
   {
   }
 

@@ -35,6 +35,8 @@ public:
 
   double getMeasurementsLogLikelihood() const;
   void EKFSmoothBackwardsPass(double dt);
+private:
+  bool verbose_ = false;
 
 };
 

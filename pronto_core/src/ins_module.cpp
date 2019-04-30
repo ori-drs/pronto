@@ -24,7 +24,8 @@ InsModule::InsModule(const InsConfig &config, const Eigen::Affine3d &ins_to_body
     gyro_bias_recalc_at_start(config.gyro_bias_recalc_at_start),
     accel_bias_update_online(config.accel_bias_update_online),
     accel_bias_initial(config.accel_bias_initial),
-    accel_bias_recalc_at_start(config.accel_bias_recalc_at_start)
+    accel_bias_recalc_at_start(config.accel_bias_recalc_at_start),
+    ignore_accel(config.ignore_accel)
 {
     cov_accel = std::pow(config.cov_accel, 2);
     cov_gyro = std::pow(config.cov_gyro * M_PI / 180.0, 2);
@@ -62,7 +63,8 @@ RBISUpdateInterface * InsModule::processMessage(const ImuMeasurement * msg,
                                                       cov_gyro_bias,
                                                       cov_accel_bias,
                                                       dt,
-                                                      msg->utime);
+                                                      msg->utime,
+                                                      this->ignore_accel);
 
     // Reset the bias values to the original value, if requested
     if(!gyro_bias_update_online) {
