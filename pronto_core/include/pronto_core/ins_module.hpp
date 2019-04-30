@@ -18,6 +18,8 @@ public:
     int num_to_init = 100;
     double max_initial_gyro_bias = 0.015;
 
+    bool ignore_accel = false;
+
     bool gyro_bias_update_online = true;
     Eigen::Vector3d gyro_bias_initial = Eigen::Vector3d::Zero();
     bool gyro_bias_recalc_at_start = true;
@@ -92,6 +94,7 @@ protected:
   bool accel_bias_update_online;
   Eigen::Vector3d accel_bias_initial;
   bool accel_bias_recalc_at_start;
+  bool ignore_accel = false;
 
 };
 }

@@ -62,10 +62,13 @@ void insUpdateState(const Eigen::Vector3d & gyro, const Eigen::Vector3d & accele
 
   //compute derivatives
   RBIS dstate; //initialize everything to 0
-  dstate.velocity() = -state.angularVelocity().cross(state.velocity());
-  dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
 
-  dstate.velocity() = Eigen::Vector3d::Zero();
+  if(ignore_accel){
+      dstate.velocity() = Eigen::Vector3d::Zero();
+  } else {
+      dstate.velocity() = -state.angularVelocity().cross(state.velocity());
+      dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
+  }
 
   dstate.chi() = state.angularVelocity();
   dstate.position().noalias() = state.quat * state.velocity();
