@@ -35,27 +35,30 @@ void getIMUProcessLinearizationContinuous(const RBIS & state, RBIM & Ac)
 
 }
 
-void insUpdateState(const Eigen::Vector3d & gyro, const Eigen::Vector3d & accelerometer, double dt, RBIS & state)
-{
- static uint64_t utime;
-  bool verbose = false;
-  if (verbose){
-    std::cout << "mfallon insUpdateState\n";
-    std::cout << state << " state prior\n";
-    std::cout << gyro.transpose() << "\n";
-    std::cout << accelerometer.transpose() << "\n";
-    std::cout << dt << "\n";
-  }
+#define DEBUG_MODE 0
 
-  if(true){
-   std::cerr << "INS prior pos: " << state.position().transpose()        << std::endl;
-   std::cerr << "INS prior vel: " << state.velocity().transpose()        << std::endl;
-   std::cerr << "INS state gyro bias: " << state.gyroBias().transpose()  << std::endl;
-   std::cerr << "INS state accel bias: " << state.accelBias().transpose()<< std::endl;
-   std::cerr << "True dt: " << state.utime - utime  << std::endl;
-   utime = state.utime;
-  }
-  
+void insUpdateState(const Eigen::Vector3d & gyro,
+                    const Eigen::Vector3d & accelerometer,
+                    double dt,
+                    RBIS & state,
+                    const bool& ignore_accel)
+{
+#if DEBUG_MODE
+        std::cout << "mfallon insUpdateState\n";
+        std::cout << state << " state prior\n";
+        std::cout << gyro.transpose() << "\n";
+        std::cout << accelerometer.transpose() << "\n";
+        std::cout << dt << "\n";
+
+        static uint64_t utime;
+        std::cerr << "INS prior pos: " << state.position().transpose()        << std::endl;
+        std::cerr << "INS prior vel: " << state.velocity().transpose()        << std::endl;
+        std::cerr << "INS state gyro bias: " << state.gyroBias().transpose()  << std::endl;
+        std::cerr << "INS state accel bias: " << state.accelBias().transpose()<< std::endl;
+        std::cerr << "True dt: " << state.utime - utime  << std::endl;
+        utime = state.utime;
+#endif
+
   //put the ins measurements into the state, correcting for bias
   state.angularVelocity() = gyro - state.gyroBias();
   state.acceleration() = accelerometer - state.accelBias();
@@ -79,24 +82,22 @@ void insUpdateState(const Eigen::Vector3d & gyro, const Eigen::Vector3d & accele
   dstate.vec *= dt;
   dstate.chiToQuat();
   
-  if(true){
-   std::cerr << "INS delta pos: " << dstate.position().transpose() << std::endl;
-   std::cerr << "INS delta vel: " << dstate.velocity().transpose() << std::endl;
-  }
+#if DEBUG_MODE
+      std::cerr << "INS delta pos: " << dstate.position().transpose() << std::endl;
+      std::cerr << "INS delta vel: " << dstate.velocity().transpose() << std::endl;
 
-  if (verbose){
-    std::cout << dstate << " dstate\n";
-  }
-  // dstate.position() = state.position();
+      std::cout << dstate << " dstate\n";
+#endif
+
   state.addState(dstate);
-  if(true){
-   std::cerr << "INS posterior pos: " << state.position().transpose() << std::endl;
-   std::cerr << "INS posterior vel: " << state.velocity().transpose() << std::endl;
-  }
-  if (verbose){
-    std::cout << dstate << " state updated\n";
-    std::cout << "\n";
-  }
+
+#if DEBUG_MODE
+      std::cerr << "INS posterior pos: " << state.position().transpose() << std::endl;
+      std::cerr << "INS posterior vel: " << state.velocity().transpose() << std::endl;
+
+      std::cout << dstate << " state updated\n";
+      std::cout << "\n";
+#endif
 }
 
 void insUpdateCovariance(double q_gyro, double q_accel, double q_gyro_bias, double q_accel_bias, const RBIS & state,
@@ -194,16 +195,18 @@ double indexedMeasurement(const Eigen::VectorXd & z, const Eigen::MatrixXd & R, 
   for (int ii = 0; ii < m; ii++) {
     z_resid(ii) = z(ii) - state.vec(z_indices(ii));
     C(ii, z_indices(ii)) = 1;
-
+#if DEBUG_MODE
     std::cout << "prediction: [" << ii << "] " << state.vec(z_indices(ii)) << std::endl;
     std::cout << "update:     [" << ii << "] " << z(ii) << std::endl;
     std::cout << "residual:   [" << ii << "] " << z_resid(ii) << std::endl;
+#endif
   }
 
   double loglikelihood = matrixMeasurementGetKandCovDelta(R, C, cov, z_resid, dcov, K);
   dstate = RBIS(K * z_resid);
+#if DEBUG_MODE
   std::cout << "Kalman gain: " << K.rows()*K.cols() << std::endl;
-
+#endif
 
   return loglikelihood;
 

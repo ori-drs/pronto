@@ -100,6 +100,9 @@ public:
       pose_iso.rotate(this->orientation());
       return pose_iso;
     }
+private:
+  bool debug_ = false;
+  uint64_t debug_utime_ = 0;
 
 };
 

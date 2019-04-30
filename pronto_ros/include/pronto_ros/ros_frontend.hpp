@@ -217,13 +217,15 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
     }
 }
 
+//TODO come up with a better way to activate / deactivate debug mode
+#define DEBUG_MODE 0
 
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
 {
-    //if(verbose_){
+#if DEBUG_MODE
         ROS_INFO_STREAM("Callback for sensor " << sensor_id);
-    //}
+#endif
     // this is a generic templated callback that does the same for every module:
     // if the module is initialized and the filter is ready
     // 1) take the measurement update and pass it to the filter if valid
@@ -232,12 +234,15 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // appropriate casting to the right type and call to the process message
         // function to get the update
         // Record start time
+#if DEBUG_MODE
         auto start = std::chrono::high_resolution_clock::now();
+#endif
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
+#if DEBUG_MODE
         auto end = std::chrono::high_resolution_clock::now();
-
         ROS_INFO_STREAM("Time elapsed process message: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
         start = end;
+#endif
         // if the update is invalid, we leave
         if(update == NULL){
             std::cout << "Invalid update" << std::endl;
@@ -246,10 +251,11 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         }
         // tell also the filter if we need to roll forward
         state_est_->addUpdate(update, roll_forward_[sensor_id]);
+#if DEBUG_MODE
         end = std::chrono::high_resolution_clock::now();
         ROS_INFO_STREAM("Time elapsed process addupdate: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
         start = end;
-
+#endif
         if(publish_head_[sensor_id]){
             state_est_->getHeadState(head_state, head_cov);
 
@@ -288,10 +294,12 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             // publish the pose
             pose_pub_.publish(pose_msg_);
         }
+#if DEBUG_MODE
         end = std::chrono::high_resolution_clock::now();
 
         ROS_INFO_STREAM("Time elapsed till the end: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
         std::cout << std::endl;
+#endif
     }
 }
 
