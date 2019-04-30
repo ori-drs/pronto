@@ -6,6 +6,7 @@
 #include <ros/node_handle.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/LinearMath/Quaternion.h>
+
 namespace  MavStateEst {
 
 class ScanMatcherHandler : SensingModule<nav_msgs::Odometry>{
@@ -27,9 +28,6 @@ protected:
   PoseMeasurement pose_meas_;
   ros::NodeHandle& nh_;
   tf::Quaternion tf_q;
-  void poseMeasurementFromROS(const nav_msgs::Odometry& ros_msg,
-                              PoseMeasurement& msg);
-
 };
 
 

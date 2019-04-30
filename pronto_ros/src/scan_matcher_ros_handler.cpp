@@ -1,6 +1,7 @@
 #include "pronto_ros/scan_matcher_ros_handler.hpp"
 #include <string>
 #include <tf_conversions/tf_eigen.h>
+#include "pronto_ros/pronto_ros_conversions.hpp"
 
 namespace MavStateEst {
 
@@ -115,19 +116,8 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
 RBISUpdateInterface * ScanMatcherHandler::processMessage(const nav_msgs::Odometry * msg,
                                                          MavStateEstimator* state_estimator)
 {
-    // convert LCM to generic format
-    pose_meas_.utime = msg->header.stamp.toNSec() / 1000;
-    pose_meas_.linear_vel << msg->twist.twist.linear.x,
-                             msg->twist.twist.linear.y,
-                             msg->twist.twist.linear.z;
-
-    pose_meas_.pos << msg->pose.pose.position.x,
-                      msg->pose.pose.position.y,
-                      msg->pose.pose.position.z;
-    tf::Quaternion tf_q;
-    tf::quaternionMsgToTF(msg->pose.pose.orientation, tf_q);
-    tf::quaternionTFToEigen(tf_q, pose_meas_.orientation);
-    return scan_matcher_module_.processMessage(&pose_meas_,state_estimator);
+    poseMeasurementFromROS(*msg, pose_meas_);
+    return scan_matcher_module_.processMessage(&pose_meas_, state_estimator);
 }
 
 bool ScanMatcherHandler::processMessageInit(const nav_msgs::Odometry *msg,

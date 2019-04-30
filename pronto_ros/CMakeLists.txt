@@ -106,7 +106,8 @@ add_library(${PROJECT_NAME} src/ins_ros_handler.cpp
                             src/scan_matcher_ros_handler.cpp
                             src/visual_odometry_ros_handler.cpp
                             src/ros_frontend.cpp
-                            src/pose_msg_ros_handler.cpp)
+                            src/pose_msg_ros_handler.cpp
+                            src/pronto_ros_conversions.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})

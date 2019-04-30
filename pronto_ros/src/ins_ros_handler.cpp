@@ -1,6 +1,10 @@
 #include "pronto_ros/ins_ros_handler.hpp"
 #include <eigen_conversions/eigen_msg.h>
 #include <tf/transform_listener.h>
+
+#include "pronto_ros/pronto_ros_conversions.hpp"
+
+
 namespace MavStateEst {
 
 InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
@@ -186,16 +190,8 @@ RBISUpdateInterface* InsHandlerROS::processMessage(const sensor_msgs::Imu *imu_m
     if(counter++ % downsample_factor_ != 0){
         return NULL;
     }
-    msgToImuMeasurement(*imu_msg, imu_meas_);
+    msgToImuMeasurement(*imu_msg, imu_meas_, utime_offset_);
     return ins_module_.processMessage(&imu_meas_, est);
-}
-
-void InsHandlerROS::msgToImuMeasurement(const sensor_msgs::Imu &imu_msg, ImuMeasurement &imu_meas){
-    // convert the ROS message into our internal format
-    tf::vectorMsgToEigen(imu_msg.linear_acceleration,imu_meas.acceleration);
-    tf::quaternionMsgToEigen(imu_msg.orientation, imu_meas.orientation);
-    tf::vectorMsgToEigen(imu_msg.angular_velocity, imu_meas.omega);
-    imu_meas.utime = imu_msg.header.stamp.toNSec() / 1000 + utime_offset_;
 }
 
 bool InsHandlerROS::processMessageInit(const sensor_msgs::Imu *imu_msg,

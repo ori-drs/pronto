@@ -1,5 +1,5 @@
 #include "pronto_ros/pose_msg_ros_handler.hpp"
-
+#include "pronto_ros/pronto_ros_conversions.hpp"
 
 namespace MavStateEst {
 
@@ -57,20 +57,4 @@ bool PoseHandlerROS::processMessageInit(const geometry_msgs::PoseWithCovarianceS
                                             init_state,
                                             init_cov);
 }
-
-
-void PoseHandlerROS::poseMsgFromROS(const geometry_msgs::PoseWithCovarianceStamped &msg,
-                               PoseMeasurement &pose_meas)
-{
-    pose_meas.orientation = Orientation(msg.pose.pose.orientation.w,
-                                        msg.pose.pose.orientation.x,
-                                        msg.pose.pose.orientation.y,
-                                        msg.pose.pose.orientation.z);
-    pose_meas.pos << msg.pose.pose.position.x,
-                     msg.pose.pose.position.y,
-                     msg.pose.pose.position.z;
-    pose_meas.utime = (uint64_t) msg.header.stamp.toNSec() / 1000;
-}
-
-
 }
