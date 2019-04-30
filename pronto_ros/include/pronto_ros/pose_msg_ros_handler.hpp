@@ -22,10 +22,6 @@ private:
     ros::NodeHandle& nh_;
     std::shared_ptr<PoseMeasModule> pose_module_;
     PoseMeasurement pose_meas_;
-
-    void poseMsgFromROS(const geometry_msgs::PoseWithCovarianceStamped& msg,
-                        PoseMeasurement& pose_meas);
-
 };
 
 }

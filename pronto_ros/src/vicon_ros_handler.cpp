@@ -1,8 +1,9 @@
 #include "pronto_ros/vicon_ros_handler.hpp"
+#include "pronto_ros/pronto_ros_conversions.hpp"
 #include <tf/transform_listener.h>
-#include <tf_conversions/tf_eigen.h>
 
 namespace MavStateEst {
+
 ViconHandlerROS::ViconHandlerROS(ros::NodeHandle &nh) :
 nh_(nh)
 {
@@ -87,13 +88,4 @@ bool ViconHandlerROS::processMessageInit(const geometry_msgs::TransformStamped *
                                              init_state,
                                              init_cov);
 }
-
-void ViconHandlerROS::rigidTransformFromROS(const geometry_msgs::TransformStamped &msg,
-                                            RigidTransform &transf)
-{
-    tf::transformMsgToTF(msg.transform, temp_tf_transf_);
-    tf::transformTFToEigen(temp_tf_transf_, transf.transform);
-    transf.utime = msg.header.stamp.toNSec() / 1000; // from nanosec to microsec
-}
-
 } // namespace MavStateEst

@@ -25,9 +25,6 @@ protected:
     IndexedMeasurementModule index_module_;
     IndexedMeasurement index_msg_;
 
-    void indexMeasurementFromROS(const pronto_msgs::IndexedMeasurement& ros_msg,
-                                 IndexedMeasurement& msg);
-
 };
 
 } // namespace MavStateEst

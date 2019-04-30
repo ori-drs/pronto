@@ -4,6 +4,8 @@
 #include <pronto_core/sensing_module.hpp>
 #include <pronto_msgs/GPSData.h>
 #include <ros/node_handle.h>
+#include <pronto_ros/pronto_ros_conversions.hpp>
+
 namespace MavStateEst {
 class GPSHandlerROS : public SensingModule<pronto_msgs::GPSData> {
 public:
@@ -22,9 +24,5 @@ protected:
     ros::NodeHandle nh_;
     std::shared_ptr<GPSModule> gps_module_;
     GPSMeasurement gps_meas_;
-
-    void gpsDataFromROS(const pronto_msgs::GPSData& ros_msg,
-                        GPSMeasurement& msg);
-
 };
 } // namespace MavStateEst

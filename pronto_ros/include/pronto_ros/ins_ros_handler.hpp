@@ -17,9 +17,7 @@ public:
                             const RBIM &default_cov,
                             RBIS &init_state,
                             RBIM &init_cov) override;
-private:
-    void msgToImuMeasurement(const sensor_msgs::Imu& imu_msg,
-                             ImuMeasurement& imu_meas);
+
 
 private:
     ros::NodeHandle& nh_;

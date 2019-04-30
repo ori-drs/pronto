@@ -1,4 +1,5 @@
 #include "pronto_ros/gps_ros_handler.hpp"
+#include "pronto_ros/pronto_ros_conversions.hpp"
 
 namespace MavStateEst {
 
@@ -35,21 +36,6 @@ bool GPSHandlerROS::processMessageInit(const pronto_msgs::GPSData *msg,
                                            init_cov);
 }
 
-void GPSHandlerROS::gpsDataFromROS(const pronto_msgs::GPSData &ros_msg,
-                              GPSMeasurement &msg)
-{
-    msg.elev = ros_msg.elev;
-    msg.gps_lock = ros_msg.gps_lock;
-    msg.gps_time = ros_msg.gps_time;
-    msg.heading = ros_msg.heading;
-    msg.horizontal_accuracy = ros_msg.horizontal_accuracy;
-    msg.latitude = ros_msg.latitude;
-    msg.longitude = ros_msg.longitude;
-    msg.numSatellites = ros_msg.num_satellites;
-    msg.speed = ros_msg.speed;
-    msg.utime = ros_msg.utime;
-    msg.vertical_accuracy = ros_msg.vertical_accuracy;
-    msg.xyz_pos = Eigen::Map<const Eigen::Vector3d>(ros_msg.xyz_pos.data());
-}
+
 
 }

@@ -1,4 +1,5 @@
 #include "pronto_ros/index_meas_ros_handler.hpp"
+#include "pronto_ros/pronto_ros_conversions.hpp"
 
 namespace MavStateEst {
 
@@ -30,27 +31,6 @@ bool IndexedMeasurementHandlerROS::processMessageInit(const pronto_msgs::Indexed
                                             init_state,
                                             init_cov);
 }
-
-void IndexedMeasurementHandlerROS::indexMeasurementFromROS(const pronto_msgs::IndexedMeasurement &ros_msg,
-                                                           IndexedMeasurement &msg)
-{
-    // check that the size of z_indices == z_effective and R_effective is its square
-    if(ros_msg.R_effective.size() != ros_msg.z_effective.size() * ros_msg.z_indices.size()){
-        return;
-    }
-
-    // TODO check that the data are rowmajor
-    msg.R_effective = Eigen::Map<const Eigen::MatrixXd>(ros_msg.R_effective.data(),
-                                                        ros_msg.z_effective.size(),
-                                                        ros_msg.z_effective.size());
-    msg.state_utime = ros_msg.state_utime;
-    msg.utime = ros_msg.utime;
-    msg.z_effective = Eigen::Map<const Eigen::VectorXd>(ros_msg.z_effective.data(),
-                                                        ros_msg.z_effective.size());
-    msg.z_indices = Eigen::Map<const Eigen::VectorXi>(ros_msg.z_indices.data(),
-                                                      ros_msg.z_indices.size());
-}
-
 } // namespace MavStateEst
 
 

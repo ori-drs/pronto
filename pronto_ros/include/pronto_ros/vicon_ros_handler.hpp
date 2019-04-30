@@ -25,11 +25,6 @@ private:
     ros::NodeHandle& nh_;
     std::shared_ptr<ViconModule> vicon_module_;
     RigidTransform vicon_transf_;
-    tf::Transform temp_tf_transf_;
-
-
-    void rigidTransformFromROS(const geometry_msgs::TransformStamped& msg,
-                               RigidTransform& transf);
 };
 
 } // namespace MavStateEst
