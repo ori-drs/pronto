@@ -2,19 +2,18 @@
 <package format="2">
   <name>pronto_msgs</name>
   <version>0.0.0</version>
-  <description>The pronto_msgs package</description>
+
+  <description>
+	  The pronto_msgs package contains common message types used by the
+	  Pronto state estimator.
+  </description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="mcamurri@todo.todo">mcamurri</maintainer>
+  <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
 
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
-
+  <license>LGPLv2.1</license>
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
@@ -36,8 +35,8 @@
   <!--   Note that this is equivalent to the following: -->
   <!--   <build_depend>roscpp</build_depend> -->
   <!--   <exec_depend>roscpp</exec_depend> -->
-<depend>std_msgs</depend>
-<depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
 
   <!-- Use build_depend for packages you need at compile time: -->
   <build_depend>message_generation</build_depend>
