@@ -1,4 +1,5 @@
 #include "pronto_ros/init_message_ros_handler.hpp"
+#include "pronto_ros/pronto_ros_conversions.hpp"
 #include <tf_conversions/tf_eigen.h>
 #include <Eigen/Dense>
 #include <string>
@@ -34,27 +35,6 @@ RBISUpdateInterface * InitMessageHandlerROS::processMessage(const pronto_msgs::F
   return init_module_.processMessage(&init_msg_, state_estimator);
 }
 
-void InitMessageHandlerROS::filterStateFromROS(const pronto_msgs::FilterState &ros_msg,
-                                               FilterState &msg)
-{
-    if(ros_msg.cov.size() != std::pow(ros_msg.state.size(),2))
-    {
-        throw std::logic_error("Covariance matrix of size " +
-                               std::to_string(ros_msg.cov.size()) +
-        + ". " + std::to_string(std::pow(ros_msg.state.size(),2)) + " expected.");
-        return;
-    }
-    Eigen::Quaterniond init_quat;
-    tf::Quaternion q;
-    tf::quaternionMsgToTF(ros_msg.quat, q);
-    tf::quaternionTFToEigen(q, init_quat);
-    Eigen::Map<const Matrix<double, Dynamic, Dynamic, RowMajor>> cov_map(ros_msg.cov.data(),
-                                                                         ros_msg.state.size(),
-                                                                         ros_msg.state.size());
-    msg.cov = cov_map;
-    msg.quat = init_quat;
-    msg.state = Eigen::Map<const Eigen::VectorXd>(ros_msg.state.data(), ros_msg.state.size());
-    msg.utime = ros_msg.header.stamp.toNSec() / 1000;
-}
+
 }
 

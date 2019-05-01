@@ -20,8 +20,5 @@ public:
 protected:
   InitMessageModule init_module_;
   FilterState init_msg_;
-
-  void filterStateFromROS(const pronto_msgs::FilterState& ros_msg,
-                          FilterState& msg);
 };
 }
