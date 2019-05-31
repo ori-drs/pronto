@@ -7,7 +7,7 @@
 
 #include "rbis_update_interface.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 class updateHistory {
 public:

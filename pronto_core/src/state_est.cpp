@@ -5,13 +5,13 @@
  *      Author: abry
  */
 
-#include "pronto_core/mav_state_est.hpp"
+#include "pronto_core/state_est.hpp"
 #include <iterator>
 using namespace Eigen;
 
-namespace MavStateEst {
+namespace pronto {
 
-MavStateEstimator::MavStateEstimator(RBISResetUpdate * init_state,
+StateEstimator::StateEstimator(RBISResetUpdate * init_state,
                                      const uint64_t& history_span) :
     history(init_state),
     utime_history_span(history_span)
@@ -24,14 +24,14 @@ MavStateEstimator::MavStateEstimator(RBISResetUpdate * init_state,
   printf("\n");
 }
 
-MavStateEstimator::~MavStateEstimator()
+StateEstimator::~StateEstimator()
 {
     // the updateHistory class is taking care of memory deallocation of the
     // list of measurement pointers. Nothing to do here.
 
 }
 
-bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime, Eigen::Isometry3d& pose) const {
+bool StateEstimator::getInterpolatedPose(const uint64_t &utime, Eigen::Isometry3d& pose) const {
     Vector3d pos;
     Quaterniond orient;
     if(!getInterpolatedPose(utime, pos, orient)){
@@ -43,7 +43,7 @@ bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime, Eigen::Isomet
     return true;
 }
 
-bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime,
+bool StateEstimator::getInterpolatedPose(const uint64_t &utime,
                                             Vector3d &position,
                                             Quaterniond &orientation) const
 {
@@ -90,7 +90,7 @@ bool MavStateEstimator::getInterpolatedPose(const uint64_t &utime,
     return true;
 }
 
-void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)
+void StateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)
 {
     if(verbose_){
         std::cout << "[ " << update->utime <<" ] "<< update->getSensorIdString() << std::endl;
@@ -147,7 +147,7 @@ void MavStateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forwar
   unprocessed_updates_start = history.updateMap.end();
 }
 
-void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
+void StateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
 {
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;
   head_state = head_update->posterior_state;
@@ -157,7 +157,7 @@ void MavStateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
 //  eigen_dump(head_cov);
 }
 
-void MavStateEstimator::getHeadState(const uint64_t& utime,
+void StateEstimator::getHeadState(const uint64_t& utime,
                                      RBIS &head_state,
                                      RBIM &head_cov) const {
     auto head_update = history.updateMap.lower_bound(utime)->second;
@@ -165,13 +165,13 @@ void MavStateEstimator::getHeadState(const uint64_t& utime,
     head_cov = head_update->posterior_covariance;
 }
 
-double MavStateEstimator::getMeasurementsLogLikelihood() const
+double StateEstimator::getMeasurementsLogLikelihood() const
 {
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;
   return head_update->loglikelihood;
 }
 
-void MavStateEstimator::EKFSmoothBackwardsPass(double dt)
+void StateEstimator::EKFSmoothBackwardsPass(double dt)
 {
   /**
    * EKF smoother

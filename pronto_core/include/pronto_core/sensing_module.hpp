@@ -1,15 +1,15 @@
 #pragma once
 #include "pronto_core/rbis_update_interface.hpp"
-#include "pronto_core/mav_state_est.hpp"
+#include "pronto_core/state_est.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 template <class MessageT>
 class SensingModule {
 public:
     virtual ~SensingModule() {}
 
     virtual RBISUpdateInterface* processMessage(const MessageT* msg,
-                                                MavStateEstimator* est = NULL) = 0;
+                                                StateEstimator* est = NULL) = 0;
 
     virtual bool processMessageInit(const MessageT* msg,
                                     const std::map<std::string,bool>& sensor_initialized,

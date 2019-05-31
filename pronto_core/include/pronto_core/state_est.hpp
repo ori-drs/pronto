@@ -4,16 +4,16 @@
 #include "rbis.hpp"
 #include "update_history.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
-class MavStateEstimator {
+class StateEstimator {
 public:
     typedef Eigen::Vector3d Vector3d;
     typedef Eigen::Quaterniond Quaterniond;
 public:
-  MavStateEstimator(RBISResetUpdate * init_state,
+  StateEstimator(RBISResetUpdate * init_state,
                     const uint64_t& history_span);
-  ~MavStateEstimator();
+  ~StateEstimator();
 
   updateHistory::historyMapIterator unprocessed_updates_start;
   updateHistory history;

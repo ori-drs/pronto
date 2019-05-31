@@ -1,6 +1,6 @@
 #include "pronto_core/ins_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 InsModule::InsModule() : InsModule(InsConfig(), Eigen::Affine3d::Identity())
 {
@@ -47,7 +47,7 @@ bool InsModule::allInitializedExcept(const std::map<std::string, bool> &_sensors
 }
 
 RBISUpdateInterface * InsModule::processMessage(const ImuMeasurement * msg,
-                                                 MavStateEstimator* state_estimator)
+                                                 StateEstimator* state_estimator)
 {
 
   Eigen::Vector3d accelerometer(ins_to_body.rotation() * msg->acceleration);

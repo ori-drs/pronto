@@ -2,7 +2,7 @@
 #include "pronto_core/definitions.hpp"
 #include "pronto_core/sensing_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 struct GPSConfig{
     double r_gps_xy;
@@ -15,7 +15,7 @@ public:
 public:
     GPSModule(const GPSConfig& cfg);
     RBISUpdateInterface* processMessage(const GPSMeasurement *msg,
-                                        MavStateEstimator *est) override;
+                                        StateEstimator *est) override;
     bool processMessageInit(const GPSMeasurement *msg,
                             const std::map<std::string, bool> &sensor_initialized,
                             const RBIS &default_state,
@@ -30,4 +30,4 @@ protected:
 
 };
 
-} // namespace MavStateEst
+} // namespace pronto

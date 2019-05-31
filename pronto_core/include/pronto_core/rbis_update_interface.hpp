@@ -3,7 +3,7 @@
 
 #include "rbis.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 class RBISUpdateInterface {
 public:

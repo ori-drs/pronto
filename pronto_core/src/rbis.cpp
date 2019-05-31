@@ -5,7 +5,7 @@ using namespace eigen_utils;
 using namespace Eigen;
 using namespace std;
 
-namespace MavStateEst {
+namespace pronto {
 
 typedef Eigen::Matrix<double, 12, 1> Vector12d;
 typedef Eigen::Matrix<double, 12, 12> Matrix12d;

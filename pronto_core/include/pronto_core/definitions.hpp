@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <vector>
 
-namespace MavStateEst {
+namespace pronto {
 
 typedef Eigen::Vector3d Position;
 typedef Eigen::Quaterniond Orientation;

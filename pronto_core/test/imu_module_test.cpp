@@ -3,7 +3,7 @@
 #include <chrono>
 
 #include <gtest/gtest.h>
-using namespace MavStateEst;
+using namespace pronto;
 
 TEST(InsModule, ballisticTrajectory) {
 
@@ -76,9 +76,9 @@ TEST(InsModule, ballisticTrajectory) {
     init_state.position() << 0, 0, 19.62;
 
 
-    MavStateEstimator state_estimator(new RBISResetUpdate(init_state,
+    StateEstimator state_estimator(new RBISResetUpdate(init_state,
                                                           init_covariance,
-                                                          MavStateEst::RBISUpdateInterface::reset,
+                                                          pronto::RBISUpdateInterface::reset,
                                                           init_state.utime),
                                       history_span);
 

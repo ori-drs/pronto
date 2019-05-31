@@ -3,9 +3,9 @@
 #include "pronto_core/rbis_update_interface.hpp"
 #include "pronto_core/definitions.hpp"
 #include "pronto_core/sensing_module.hpp"
-#include "pronto_core/mav_state_est.hpp"
+#include "pronto_core/state_est.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 //enum ScanMatchingMode {
 //    MODE_POSITION, MODE_POSITION_YAW, MODE_VELOCITY, MODE_VELOCITY_YAW, MODE_YAW
@@ -25,7 +25,7 @@ public:
                     const Eigen::MatrixXd& cov_scan_match);
 
   RBISUpdateInterface * processMessage(const PoseMeasurement * msg,
-                                       MavStateEstimator* state_estimator) override;
+                                       StateEstimator* state_estimator) override;
 
   bool processMessageInit(const PoseMeasurement *msg,
                           const std::map<std::string, bool> &sensor_initialized,

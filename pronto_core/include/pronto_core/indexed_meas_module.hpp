@@ -1,12 +1,12 @@
 #pragma once
 #include "pronto_core/definitions.hpp"
 #include "pronto_core/sensing_module.hpp"
-namespace MavStateEst {
+namespace pronto {
 
 class IndexedMeasurementModule : public SensingModule<IndexedMeasurement> {
 public:
     IndexedMeasurementModule(const RBISUpdateInterface::sensor_enum& sensor);
-    RBISUpdateInterface* processMessage(const IndexedMeasurement *msg, MavStateEstimator *est) override;
+    RBISUpdateInterface* processMessage(const IndexedMeasurement *msg, StateEstimator *est) override;
 
     bool processMessageInit(const IndexedMeasurement *msg,
                             const std::map<std::string, bool> &sensor_initialized,
@@ -19,4 +19,4 @@ protected:
 
 };
 
-} // namespace MavStateEst
+} // namespace pronto

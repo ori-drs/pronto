@@ -1,7 +1,7 @@
 #pragma once
 #include "pronto_core/definitions.hpp"
 #include "pronto_core/sensing_module.hpp"
-namespace MavStateEst {
+namespace pronto {
 
 struct InsConfig {
 public:
@@ -40,7 +40,7 @@ public:
     ~InsModule();
 
   RBISUpdateInterface * processMessage(const ImuMeasurement *msg,
-                                       MavStateEstimator* state_estimator) override;
+                                       StateEstimator* state_estimator) override;
 
   bool processMessageInit(const ImuMeasurement * msg,
                           const std::map<std::string, bool> & sensors_initialized,

@@ -1,6 +1,6 @@
 #include "pronto_core/vicon_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 ViconModule::ViconModule(const ViconConfig &cfg) :
     mode(cfg.mode),
@@ -45,7 +45,7 @@ ViconModule::ViconModule(const ViconConfig &cfg) :
 }
 
 RBISUpdateInterface* ViconModule::processMessage(const RigidTransform *msg,
-                                                 MavStateEstimator *est)
+                                                 StateEstimator *est)
 {
     local_to_vicon = msg->transform;
     // TODO check that this is correct
@@ -122,6 +122,6 @@ bool ViconModule::processMessageInit(const RigidTransform *msg,
     return true;
 }
 
-}// namespace MavStateEst
+}// namespace pronto
 
 
