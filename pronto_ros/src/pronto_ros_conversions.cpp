@@ -2,7 +2,7 @@
 #include <tf_conversions/tf_eigen.h>
 #include <eigen_conversions/eigen_msg.h>
 
-namespace MavStateEst {
+namespace pronto {
 
 void gpsDataFromROS(const pronto_msgs::GPSData &ros_msg,
                     GPSMeasurement &msg)

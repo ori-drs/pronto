@@ -9,7 +9,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TransformStamped.h>
 
-namespace MavStateEst {
+namespace pronto {
 
 void gpsDataFromROS(const pronto_msgs::GPSData& ros_msg,
                     GPSMeasurement& msg);

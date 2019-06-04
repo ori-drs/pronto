@@ -5,7 +5,7 @@
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
 
-namespace MavStateEst {
+namespace pronto {
 
 InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
 {
@@ -185,7 +185,7 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
     ins_module_ = InsModule(cfg, ins_to_body);
 }
 
-RBISUpdateInterface* InsHandlerROS::processMessage(const sensor_msgs::Imu *imu_msg, MavStateEstimator *est){
+RBISUpdateInterface* InsHandlerROS::processMessage(const sensor_msgs::Imu *imu_msg, StateEstimator *est){
     // keep one every downsample_factor messages
     if(counter++ % downsample_factor_ != 0){
         return NULL;
@@ -209,4 +209,4 @@ bool InsHandlerROS::processMessageInit(const sensor_msgs::Imu *imu_msg,
                                           init_cov);
 
 }
-} // namespace MavStateEst
+} // namespace pronto

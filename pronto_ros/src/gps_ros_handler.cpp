@@ -1,7 +1,7 @@
 #include "pronto_ros/gps_ros_handler.hpp"
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 GPSHandlerROS::GPSHandlerROS(ros::NodeHandle &nh) : nh_(nh) {
     std::string prefix = "gps/";
@@ -12,7 +12,7 @@ GPSHandlerROS::GPSHandlerROS(ros::NodeHandle &nh) : nh_(nh) {
 }
 
 RBISUpdateInterface* GPSHandlerROS::processMessage(const pronto_msgs::GPSData *msg,
-                                                   MavStateEstimator *est)
+                                                   StateEstimator *est)
 {
     gpsDataFromROS(*msg, gps_meas_);
     return gps_module_->processMessage(&gps_meas_,

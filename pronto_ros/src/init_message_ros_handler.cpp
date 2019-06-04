@@ -6,7 +6,7 @@
 
 using namespace Eigen;
 
-namespace MavStateEst {
+namespace pronto {
 
 bool InitMessageHandlerROS::processMessageInit(const pronto_msgs::FilterState * msg,
                                             const std::map<std::string, bool> & sensors_initialized,
@@ -29,7 +29,7 @@ bool InitMessageHandlerROS::processMessageInit(const pronto_msgs::FilterState * 
  * on the fly.
  */
 RBISUpdateInterface * InitMessageHandlerROS::processMessage(const pronto_msgs::FilterState * msg,
-                                                         MavStateEstimator* state_estimator)
+                                                         StateEstimator* state_estimator)
 {
   filterStateFromROS(*msg, init_msg_);
   return init_module_.processMessage(&init_msg_, state_estimator);

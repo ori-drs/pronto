@@ -4,14 +4,14 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <tf_conversions/tf_eigen.h>
 
-namespace MavStateEst {
+namespace pronto {
 
 class ViconHandlerROS : public SensingModule<geometry_msgs::TransformStamped> {
 public:
     ViconHandlerROS(ros::NodeHandle& nh);
 
     RBISUpdateInterface* processMessage(const geometry_msgs::TransformStamped *msg,
-                                        MavStateEstimator *est);
+                                        StateEstimator *est);
 
     bool processMessageInit(const geometry_msgs::TransformStamped *msg,
                             const std::map<std::string, bool> &sensor_initialized,
@@ -27,4 +27,4 @@ private:
     RigidTransform vicon_transf_;
 };
 
-} // namespace MavStateEst
+} // namespace pronto

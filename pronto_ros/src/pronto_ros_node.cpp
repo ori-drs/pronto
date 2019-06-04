@@ -3,7 +3,7 @@
 #include "pronto_ros/ins_ros_handler.hpp"
 #include "pronto_ros/vicon_ros_handler.hpp"
 
-using namespace MavStateEst;
+using namespace pronto;
 
 
 int main(int argc, char** argv) {

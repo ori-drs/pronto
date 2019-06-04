@@ -1,7 +1,7 @@
 #pragma once
 
 #include <pronto_core/sensing_module.hpp>
-#include <pronto_core/mav_state_est.hpp>
+#include <pronto_core/state_est.hpp>
 #include <ros/node_handle.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -10,7 +10,7 @@
 #include <chrono>
 #include <tf/transform_broadcaster.h>
 
-namespace MavStateEst {
+namespace pronto {
 class ROSFrontEnd {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -42,7 +42,7 @@ public:
     }
 
     inline bool reset(const RBIS& state, const RBIM& cov) {
-        state_est_->addUpdate(new MavStateEst::RBISResetUpdate(state,
+        state_est_->addUpdate(new pronto::RBISResetUpdate(state,
                                                                cov,
                                                                RBISUpdateInterface::reset,
                                                                state.utime), true);
@@ -63,7 +63,7 @@ protected:
 
 private:
     ros::NodeHandle& nh_;
-    std::shared_ptr<MavStateEstimator> state_est_;
+    std::shared_ptr<StateEstimator> state_est_;
     std::map<SensorId, ros::Subscriber> sensors_subscribers_;
     std::map<SensorId, ros::Subscriber> init_subscribers_;
     std::map<SensorId, void*> active_modules_;
@@ -102,7 +102,7 @@ private:
 };
 }
 
-namespace MavStateEst {
+namespace pronto {
 
 
 template <class MsgT>
@@ -303,4 +303,4 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
     }
 }
 
-} // namespace MavStateEst
+} // namespace pronto

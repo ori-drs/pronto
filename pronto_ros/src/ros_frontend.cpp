@@ -1,7 +1,7 @@
 #include "pronto_ros/ros_frontend.hpp"
 
-namespace MavStateEst {
-using SensorId = MavStateEst::ROSFrontEnd::SensorId;
+namespace pronto {
+using SensorId = pronto::ROSFrontEnd::SensorId;
 
 ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
     nh_(nh), verbose_(verbose)
@@ -173,7 +173,7 @@ bool ROSFrontEnd::initializeFilter()
     if(isFilterInitialized()){
         return true;
     }
-    state_est_.reset(new MavStateEstimator(new RBISResetUpdate(init_state,
+    state_est_.reset(new StateEstimator(new RBISResetUpdate(init_state,
                                                                init_cov,
                                                                RBISUpdateInterface::reset,
                                                                init_state.utime),
