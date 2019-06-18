@@ -1,6 +1,6 @@
 #include "pronto_core/gps_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 GPSModule::GPSModule(const GPSConfig &cfg){
     Eigen::Vector3d R_gps_diagonal = Eigen::Array3d(cfg.r_gps_xy, cfg.r_gps_xy, cfg.r_gps_z).pow(2);
@@ -8,7 +8,7 @@ GPSModule::GPSModule(const GPSConfig &cfg){
 }
 
 RBISUpdateInterface* GPSModule::processMessage(const GPSMeasurement *msg,
-                                               MavStateEstimator *est)
+                                               StateEstimator *est)
 {
     if (msg->gps_lock < 3) {
       return NULL;
@@ -45,4 +45,4 @@ bool GPSModule::processMessageInit(const GPSMeasurement *msg,
     return true;
 }
 
-} // namespace MavStateEst 
+} // namespace pronto 

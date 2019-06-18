@@ -1,6 +1,6 @@
 #include "pronto_core/indexed_meas_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 IndexedMeasurementModule::IndexedMeasurementModule(const RBISUpdateInterface::sensor_enum& sensor) :
     indexed_sensor(sensor){
@@ -8,7 +8,7 @@ IndexedMeasurementModule::IndexedMeasurementModule(const RBISUpdateInterface::se
 }
 
 RBISUpdateInterface* IndexedMeasurementModule::processMessage(const IndexedMeasurement *msg,
-                                         MavStateEstimator *est)
+                                         StateEstimator *est)
 {
     return new RBISIndexedMeasurement(msg->z_indices,
                                       msg->z_effective,
@@ -48,4 +48,4 @@ bool IndexedMeasurementModule::processMessageInit(const IndexedMeasurement *msg,
 }
 
 
-} // namespace MavStateEst
+} // namespace pronto

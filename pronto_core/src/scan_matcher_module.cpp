@@ -1,7 +1,7 @@
 #include "pronto_core/scan_matcher_module.hpp"
 #include "eigen_utils/eigen_rigidbody.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 // using MODE_POSITION     = ScanMatchingMode::MODE_POSITION;
 // using MODE_POSITION_YAW = ScanMatchingMode::MODE_POSITION_YAW;
@@ -27,7 +27,7 @@ ScanMatcherModule::ScanMatcherModule(const ScanMatchingMode &mode,
 }
 
 RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *msg,
-                                                        MavStateEstimator *state_estimator)
+                                                        StateEstimator *state_estimator)
 {
     if (mode == MODE_POSITION) {
       return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),

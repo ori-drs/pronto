@@ -3,12 +3,12 @@
 #include "pronto_core/sensing_module.hpp"
 #include "pronto_core/definitions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 class InitMessageModule : public SensingModule<FilterState> {
 public:
 
     RBISUpdateInterface* processMessage(const FilterState *msg,
-                                        MavStateEstimator *est) override;
+                                        StateEstimator *est) override;
 
     bool processMessageInit(const FilterState *msg,
                             const std::map<std::string, bool> &sensor_initialized,
@@ -19,5 +19,5 @@ public:
 
 
 };
-} // namespace MavStateEst
+} // namespace pronto
 

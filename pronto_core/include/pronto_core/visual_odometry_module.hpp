@@ -2,7 +2,7 @@
 #include "pronto_core/sensing_module.hpp"
 #include "pronto_core/definitions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 enum class VisualOdometryMode {MODE_VELOCITY,
                                MODE_ROTATION_RATE,
@@ -31,7 +31,7 @@ public:
     VisualOdometryModule(const VisualOdometryConfig& cfg);
 
     RBISUpdateInterface* processMessage(const VisualOdometryUpdate *msg,
-                                        MavStateEstimator *est) override;
+                                        StateEstimator *est) override;
 
     bool processMessageInit(const VisualOdometryUpdate *msg,
                             const std::map<std::string, bool> &sensor_initialized,

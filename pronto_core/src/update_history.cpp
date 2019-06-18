@@ -1,6 +1,6 @@
 #include "pronto_core/update_history.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 updateHistory::updateHistory(RBISUpdateInterface * init)
 {

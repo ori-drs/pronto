@@ -6,12 +6,12 @@
 #include <ros/node_handle.h>
 #include <pronto_ros/pronto_ros_conversions.hpp>
 
-namespace MavStateEst {
+namespace pronto {
 class GPSHandlerROS : public SensingModule<pronto_msgs::GPSData> {
 public:
     GPSHandlerROS(ros::NodeHandle& nh);
     RBISUpdateInterface* processMessage(const pronto_msgs::GPSData *msg,
-                                        MavStateEstimator *est) override;
+                                        StateEstimator *est) override;
 
     bool processMessageInit(const pronto_msgs::GPSData *msg,
                             const std::map<std::string, bool> &sensor_initialized,
@@ -25,4 +25,4 @@ protected:
     std::shared_ptr<GPSModule> gps_module_;
     GPSMeasurement gps_meas_;
 };
-} // namespace MavStateEst
+} // namespace pronto

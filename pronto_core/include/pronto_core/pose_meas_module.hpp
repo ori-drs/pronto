@@ -3,7 +3,7 @@
 #include "pronto_core/sensing_module.hpp"
 #include "pronto_core/definitions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 enum class PoseMeasMode { MODE_POSITION = 0, MODE_POSITION_ORIENT };
 
@@ -26,7 +26,7 @@ public:
     PoseMeasModule(const PoseMeasConfig& cfg);
 
     RBISUpdateInterface* processMessage(const PoseMeasurement *msg,
-                                        MavStateEstimator *est);
+                                        StateEstimator *est);
 
     bool processMessageInit(const PoseMeasurement *msg,
                             const std::map<std::string, bool> &sensor_initialized,
@@ -42,5 +42,5 @@ protected:
   MeasVector z_meas;
   MeasCovMatrix cov_pose_meas;
 };
-} // namespace MavStateEst
+} // namespace pronto
 

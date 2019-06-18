@@ -1,8 +1,8 @@
 #include "pronto_core/visual_odometry_module.hpp"
 
-using Update = MavStateEst::RBISUpdateInterface;
+using Update = pronto::RBISUpdateInterface;
 using namespace std;
-namespace MavStateEst {
+namespace pronto {
 
 VisualOdometryModule::VisualOdometryModule(const VisualOdometryConfig &cfg) :
     mode_(cfg.mode), z_indices(cfg.z_indices), cov_vo_(cfg.cov_vo)
@@ -11,7 +11,7 @@ VisualOdometryModule::VisualOdometryModule(const VisualOdometryConfig &cfg) :
 }
 
 Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
-                                             MavStateEstimator *est)
+                                             StateEstimator *est)
 {
     // TODO more appropriate check to distinguish different situations
     if(msg->status != VisualOdometryUpdate::ESTIMATE_VALID){

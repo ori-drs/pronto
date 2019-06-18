@@ -1,6 +1,6 @@
 #include "pronto_core/rbis_update_interface.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 const char * RBISUpdateInterface::sensor_enum_chars = "igvlfsorxdukpabmtwy";
 const char * RBISUpdateInterface::sensor_enum_strings[] =

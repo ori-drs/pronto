@@ -1,6 +1,6 @@
 #include "pronto_core/pose_meas_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 PoseMeasModule::PoseMeasModule(const PoseMeasConfig &cfg) :
     mode(cfg.mode), no_corrections(cfg.number_of_corrections)
@@ -23,7 +23,7 @@ PoseMeasModule::PoseMeasModule(const PoseMeasConfig &cfg) :
 }
 
 RBISUpdateInterface* PoseMeasModule::processMessage(const PoseMeasurement *msg,
-                                                    MavStateEstimator *est)
+                                                    StateEstimator *est)
 {
     // If we have created no_corrections, go silent afterwards
     no_corrections--;
@@ -90,5 +90,5 @@ bool PoseMeasModule::processMessageInit(const PoseMeasurement *msg,
 
     return true;
 }
-} // namespace MavStateEst
+} // namespace pronto
 

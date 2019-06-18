@@ -5,7 +5,7 @@
 #include <Eigen/Geometry>
 #include <eigen_utils/eigen_utils.hpp>
 
-namespace MavStateEst {
+namespace pronto {
 
 /**
  * Rigid body state

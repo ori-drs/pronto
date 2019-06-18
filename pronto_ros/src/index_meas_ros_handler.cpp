@@ -1,7 +1,7 @@
 #include "pronto_ros/index_meas_ros_handler.hpp"
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 IndexedMeasurementHandlerROS::IndexedMeasurementHandlerROS(const RBISUpdateInterface::sensor_enum &this_sensor) :
     index_module_(this_sensor)
@@ -10,7 +10,7 @@ IndexedMeasurementHandlerROS::IndexedMeasurementHandlerROS(const RBISUpdateInter
 }
 
 RBISUpdateInterface * IndexedMeasurementHandlerROS::processMessage(const pronto_msgs::IndexedMeasurement * msg,
-                                                                   MavStateEstimator* state_estimator)
+                                                                   StateEstimator* state_estimator)
 {
     indexMeasurementFromROS(*msg, index_msg_);
     return index_module_.processMessage(&index_msg_, state_estimator);
@@ -31,6 +31,6 @@ bool IndexedMeasurementHandlerROS::processMessageInit(const pronto_msgs::Indexed
                                             init_state,
                                             init_cov);
 }
-} // namespace MavStateEst
+} // namespace pronto
 
 

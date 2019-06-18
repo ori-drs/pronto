@@ -4,12 +4,12 @@
 #include <ros/node_handle.h>
 #include <pronto_core/ins_module.hpp>
 
-namespace MavStateEst {
+namespace pronto {
 class InsHandlerROS : public SensingModule<sensor_msgs::Imu> {
 public:
     InsHandlerROS(ros::NodeHandle& nh);
 
-    RBISUpdateInterface* processMessage(const sensor_msgs::Imu *imu_msg, MavStateEstimator *est) override;
+    RBISUpdateInterface* processMessage(const sensor_msgs::Imu *imu_msg, StateEstimator *est) override;
 
     bool processMessageInit(const sensor_msgs::Imu *imu_msg,
                             const std::map<std::string, bool> &sensor_initialized,

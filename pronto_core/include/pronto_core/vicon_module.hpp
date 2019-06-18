@@ -1,7 +1,7 @@
 #pragma once
 #include "pronto_core/sensing_module.hpp"
 #include "pronto_core/definitions.hpp"
-namespace MavStateEst {
+namespace pronto {
 
 enum class ViconMode {MODE_POSITION,
                       MODE_POSITION_ORIENT,
@@ -34,7 +34,7 @@ public:
     ViconModule(const ViconConfig& cfg);
 
     RBISUpdateInterface* processMessage(const RigidTransform *msg,
-                                        MavStateEstimator *est) override;
+                                        StateEstimator *est) override;
 
     bool processMessageInit(const RigidTransform *msg,
                             const std::map<std::string, bool> &sensor_initialized,

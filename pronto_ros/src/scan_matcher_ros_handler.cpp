@@ -3,7 +3,7 @@
 #include <tf_conversions/tf_eigen.h>
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 using ScanMatchingMode = ScanMatcherModule::ScanMatchingMode;
 
@@ -114,7 +114,7 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
 }
 
 RBISUpdateInterface * ScanMatcherHandler::processMessage(const nav_msgs::Odometry * msg,
-                                                         MavStateEstimator* state_estimator)
+                                                         StateEstimator* state_estimator)
 {
     poseMeasurementFromROS(*msg, pose_meas_);
     return scan_matcher_module_.processMessage(&pose_meas_, state_estimator);
@@ -130,4 +130,4 @@ bool ScanMatcherHandler::processMessageInit(const nav_msgs::Odometry *msg,
     return true;
 }
 
-} // namespace MavStateEst
+} // namespace pronto

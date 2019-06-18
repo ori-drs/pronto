@@ -4,7 +4,7 @@
 #include <pronto_msgs/IndexedMeasurement.h>
 
 
-namespace MavStateEst {
+namespace pronto {
 
 class IndexedMeasurementHandlerROS : public SensingModule<pronto_msgs::IndexedMeasurement>
 {
@@ -12,7 +12,7 @@ public:
     IndexedMeasurementHandlerROS(const RBISUpdateInterface::sensor_enum& this_sensor);
 
     RBISUpdateInterface * processMessage(const pronto_msgs::IndexedMeasurement *msg,
-                                         MavStateEstimator* state_estimator);
+                                         StateEstimator* state_estimator);
 
     bool processMessageInit(const pronto_msgs::IndexedMeasurement *msg,
                             const std::map<std::string, bool> & sensors_initialized,
@@ -27,4 +27,4 @@ protected:
 
 };
 
-} // namespace MavStateEst
+} // namespace pronto

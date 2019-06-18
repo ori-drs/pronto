@@ -1,9 +1,9 @@
 #include "pronto_core/init_message_module.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 RBISUpdateInterface* InitMessageModule::processMessage(const FilterState *msg,
-                                                       MavStateEstimator *est)
+                                                       StateEstimator *est)
 {
     RBIS state = RBIS(msg->state, msg->quat);
     state.utime = msg->utime;
@@ -28,5 +28,5 @@ bool InitMessageModule::processMessageInit(const FilterState *msg,
     return true;
 }
 
-} // namespace MavStateEst
+} // namespace pronto
 

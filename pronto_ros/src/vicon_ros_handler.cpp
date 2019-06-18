@@ -2,7 +2,7 @@
 #include "pronto_ros/pronto_ros_conversions.hpp"
 #include <tf/transform_listener.h>
 
-namespace MavStateEst {
+namespace pronto {
 
 ViconHandlerROS::ViconHandlerROS(ros::NodeHandle &nh) :
 nh_(nh)
@@ -68,7 +68,7 @@ nh_(nh)
 }
 
 RBISUpdateInterface* ViconHandlerROS::processMessage(const geometry_msgs::TransformStamped *msg,
-                                                     MavStateEstimator *est)
+                                                     StateEstimator *est)
 {
     rigidTransformFromROS(*msg, vicon_transf_);
     return vicon_module_->processMessage(&vicon_transf_,est);
@@ -88,4 +88,4 @@ bool ViconHandlerROS::processMessageInit(const geometry_msgs::TransformStamped *
                                              init_state,
                                              init_cov);
 }
-} // namespace MavStateEst
+} // namespace pronto

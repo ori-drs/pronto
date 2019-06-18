@@ -1,7 +1,7 @@
 #include "pronto_ros/pose_msg_ros_handler.hpp"
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
-namespace MavStateEst {
+namespace pronto {
 
 PoseHandlerROS::PoseHandlerROS(ros::NodeHandle &nh) : nh_(nh) {
     PoseMeasConfig cfg;
@@ -36,7 +36,7 @@ PoseHandlerROS::PoseHandlerROS(ros::NodeHandle &nh) : nh_(nh) {
 }
 
 RBISUpdateInterface* PoseHandlerROS::processMessage(const geometry_msgs::PoseWithCovarianceStamped *msg,
-                                    MavStateEstimator *est)
+                                    StateEstimator *est)
 {
     poseMsgFromROS(*msg, pose_meas_);
     pose_module_->processMessage(&pose_meas_,est);

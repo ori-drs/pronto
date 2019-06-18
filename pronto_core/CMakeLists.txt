@@ -22,7 +22,7 @@ add_library (${PRONTO_CORE_LIB} src/rbis.cpp
                                 src/ins_module.cpp
                                 src/scan_matcher_module.cpp
                                 src/rbis_update_interface.cpp
-                                src/mav_state_est.cpp
+                                src/state_est.cpp
                                 src/update_history.cpp
                                 src/visual_odometry_module.cpp
                                 src/vicon_module.cpp

@@ -3,14 +3,14 @@
 #include <pronto_core/pose_meas_module.hpp>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
-namespace MavStateEst {
+namespace pronto {
 
 class PoseHandlerROS : public SensingModule<geometry_msgs::PoseWithCovarianceStamped> {
 public:
     PoseHandlerROS(ros::NodeHandle& nh);
 
     RBISUpdateInterface* processMessage(const geometry_msgs::PoseWithCovarianceStamped *msg,
-                                        MavStateEstimator *est);
+                                        StateEstimator *est);
 
     bool processMessageInit(const geometry_msgs::PoseWithCovarianceStamped *msg,
                             const std::map<std::string, bool> &sensor_initialized,
