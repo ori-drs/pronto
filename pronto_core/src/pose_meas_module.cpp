@@ -13,6 +13,7 @@ PoseMeasModule::PoseMeasModule(const PoseMeasConfig &cfg) :
     }
     else if(mode == PoseMeasMode::MODE_POSITION_ORIENT) {
         cov_pose_meas.resize(6, 6);
+        cov_pose_meas.setZero();
         cov_pose_meas.topLeftCorner<3, 3>() = std::pow(cfg.r_pose_meas_xyz, 2) * Eigen::Matrix3d::Identity();
         cov_pose_meas.bottomRightCorner<3, 3>() = std::pow((cfg.r_pose_meas_chi) * M_PI / 180.0, 2) * Eigen::Matrix3d::Identity();
         z_meas.resize(6);
