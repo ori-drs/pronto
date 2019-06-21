@@ -36,31 +36,32 @@ RBISUpdateInterface* PoseMeasModule::processMessage(const PoseMeasurement *msg,
     if (no_corrections <= 0){
         // quietly return invalid update if the max number of corrections has
         // been applied
-      return NULL;
+      return nullptr;
     }
 
     // filter out quasi-zero corrections
     if ((msg->pos.array().abs() < 1e-5).all()){
-      return NULL;
+      return nullptr;
     }
 
-    if (mode == PoseMeasMode::MODE_POSITION) {
-      return new RBISIndexedMeasurement(z_indices,
-                                        msg->pos,
-                                        cov_pose_meas,
-                                        RBISUpdateInterface::pose_meas,
-                                        msg->utime);
+    switch(mode){
+    case PoseMeasMode::MODE_POSITION:
+        return new RBISIndexedMeasurement(z_indices,
+                                          msg->pos,
+                                          cov_pose_meas,
+                                          RBISUpdateInterface::pose_meas,
+                                          msg->utime);
+    case PoseMeasMode::MODE_POSITION_ORIENT:
+        z_meas.head<3>() = msg->pos;
+        return new RBISIndexedPlusOrientationMeasurement(z_indices,
+                                                         z_meas,
+                                                         cov_pose_meas,
+                                                         msg->orientation,
+                                                         RBISUpdateInterface::pose_meas,
+                                                         msg->utime);
+    default:
+        return nullptr;
     }
-    else {
-      z_meas.head<3>() = msg->pos;
-      return new RBISIndexedPlusOrientationMeasurement(z_indices,
-                                                       z_meas,
-                                                       cov_pose_meas,
-                                                       msg->orientation,
-                                                       RBISUpdateInterface::pose_meas,
-                                                       msg->utime);
-    }
-
 }
 
 bool PoseMeasModule::processMessageInit(const PoseMeasurement *msg,
@@ -83,10 +84,10 @@ bool PoseMeasModule::processMessageInit(const PoseMeasurement *msg,
 
     Eigen::Vector3d init_rpy_deg = (init_state.getEulerAngles())*180.0 / M_PI;
 
-    std::cout << "Initialized position using a pose_t at xyz:"
+    std::cout << "Initialized position using a pose_t at xyz: "
               << init_state.position().transpose() << std::endl;
 
-    std::cout << "Initialized orientation using a pose_t at rpy:"
+    std::cout << "Initialized orientation using a pose_t at rpy: "
               << init_rpy_deg.transpose() << std::endl;
 
     return true;
