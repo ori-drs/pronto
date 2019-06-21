@@ -39,7 +39,7 @@ RBISUpdateInterface* PoseHandlerROS::processMessage(const geometry_msgs::PoseWit
                                     StateEstimator *est)
 {
     poseMsgFromROS(*msg, pose_meas_);
-    pose_module_->processMessage(&pose_meas_,est);
+    return pose_module_->processMessage(&pose_meas_,est);
 }
 
 bool PoseHandlerROS::processMessageInit(const geometry_msgs::PoseWithCovarianceStamped *msg,
