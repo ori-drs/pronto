@@ -244,9 +244,13 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         start = end;
 #endif
         // if the update is invalid, we leave
-        if(update == NULL){
-            std::cout << "Invalid update" << std::endl;
-            std::cout << std::endl;
+        if(update == nullptr){
+            ROS_INFO_STREAM("Invalid " << sensor_id << " update" << std::endl);
+            // special case for pose meas, it returns null when it does not want
+            // to process data anymore
+            if(sensor_id.compare("pose_meas") == 0){
+                sensors_subscribers_["pose_meas"].shutdown();
+            }
             return;
         }
         // tell also the filter if we need to roll forward
