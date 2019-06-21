@@ -1,6 +1,7 @@
 #include "pronto_ros/pronto_ros_conversions.hpp"
 #include <tf_conversions/tf_eigen.h>
 #include <eigen_conversions/eigen_msg.h>
+#include <sensor_msgs/JointState.h>
 
 namespace pronto {
 
@@ -111,5 +112,14 @@ void rigidTransformFromROS(const geometry_msgs::TransformStamped &msg,
     tf::transformMsgToTF(msg.transform, temp_tf_transf_);
     tf::transformTFToEigen(temp_tf_transf_, transf.transform);
     transf.utime = msg.header.stamp.toNSec() / 1000; // from nanosec to microsec
+}
+
+void jointStateFromROS(const sensor_msgs::JointState &ros_msg, JointState &msg){
+    // it is caller's responsibility to check that both joint states have same
+    // size
+    msg.utime = ros_msg.header.stamp.toNSec() / 1000;
+    msg.joint_position = std::move(ros_msg.position);
+    msg.joint_velocity = std::move(ros_msg.velocity);
+    msg.joint_effort = std::move(ros_msg.effort);
 }
 }

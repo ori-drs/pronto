@@ -8,6 +8,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <sensor_msgs/JointState.h>
 
 namespace pronto {
 
@@ -32,5 +33,8 @@ void poseMeasurementFromROS(const nav_msgs::Odometry& ros_msg,
 
 void rigidTransformFromROS(const geometry_msgs::TransformStamped& msg,
                            RigidTransform& transf);
+
+void jointStateFromROS(const sensor_msgs::JointState& ros_msg,
+                       JointState& msg);
 
 }
