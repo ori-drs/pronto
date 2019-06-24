@@ -11,7 +11,8 @@ namespace pronto {
  * Rigid body state
  */
 class RBIS: public eigen_utils::RigidBodyState {
-
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
   enum {
     gyro_bias_ind = 15, accel_bias_ind = 18, rbis_num_states = 21

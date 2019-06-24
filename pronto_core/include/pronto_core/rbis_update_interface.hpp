@@ -7,6 +7,8 @@ namespace pronto {
 
 class RBISUpdateInterface {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
   typedef enum {
     ins, gps, vicon, laser, laser_gpf, scan_matcher, optical_flow, reset, invalid, rgbd, fovis, legodo, pose_meas, altimeter, airspeed, sideslip, init_message, viewer, yawlock
   } sensor_enum;
@@ -19,7 +21,7 @@ public:
   sensor_enum sensor_id;
 
   RBISUpdateInterface(sensor_enum sensor_id_, int64_t utime_) :
-      posterior_state(), posterior_covariance(), sensor_id(sensor_id_), utime(utime_)
+      utime(utime_), posterior_state(), posterior_covariance(), sensor_id(sensor_id_) 
   {
   }
 
@@ -83,11 +85,11 @@ public:
       RBISUpdateInterface(ins, utime),
       gyro(gyro_),
       accelerometer(accelerometer_),
+      dt(dt_),
       q_gyro(q_gyro_),
       q_accel(q_accel_),
       q_gyro_bias(q_gyro_bias_),
       q_accel_bias(q_accel_bias_),
-      dt(dt_),
       ignore_accel_(ignore_accel)
   {
   }
@@ -100,6 +102,8 @@ public:
  * direct measurement of some piece of the state vector described by index
  */
 class RBISIndexedMeasurement: public RBISUpdateInterface {
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
   Eigen::VectorXi index;
   Eigen::VectorXd measurement;
@@ -120,6 +124,8 @@ public:
  * direct measurement of some piece of the state, as well as orientation
  */
 class RBISIndexedPlusOrientationMeasurement: public RBISUpdateInterface {
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
   Eigen::VectorXi index;
   Eigen::VectorXd measurement;
@@ -144,32 +150,46 @@ public:
 // #include <lcmtypes/pronto_optical_flow_t.h>
 // #include <lcm/lcm.h>
 class RBISOpticalFlowMeasurement: public RBISUpdateInterface {
-
-private:
-  static const int m = 4;
-
-  Eigen::Matrix<double, m, 1> measure(const RBIS::VectorNd & state_vec);
-  void publish(const Eigen::VectorXd & z);
-  Eigen::Vector3d r; // Names are to match my derivations.  Camera position in body frame
-  Eigen::Vector3d zeta1, zeta2, eta; // Camera rotation from body frame
-  double alpha1, alpha2, gamma;
-
 public:
-  Eigen::VectorXd z_meas;
-  Eigen::MatrixXd cov_xyrs;
-
-  RBISOpticalFlowMeasurement(const Eigen::VectorXd & z_meas_, const Eigen::MatrixXd & cov_xyrs_,
-      const Eigen::VectorXd & body_to_cam_trans_, const Eigen::MatrixXd & body_to_cam_rot_, const double alpha1_,
-      const double alpha2_, const double gamma_, RBISUpdateInterface::sensor_enum sensor_id_, int64_t utime) :
-      RBISUpdateInterface(sensor_id_, utime), z_meas(z_meas_), cov_xyrs(cov_xyrs_), r(body_to_cam_trans_), zeta1(
-          body_to_cam_rot_.col(0)), zeta2(body_to_cam_rot_.col(1)), eta(body_to_cam_rot_.col(2)), alpha1(alpha1_), alpha2(
-          alpha2_), gamma(gamma_)
+  RBISOpticalFlowMeasurement(const Eigen::VectorXd & z_meas_,
+                             const Eigen::MatrixXd & cov_xyrs_,
+                             const Eigen::VectorXd & body_to_cam_trans_,
+                             const Eigen::MatrixXd & body_to_cam_rot_,
+                             const double alpha1_,
+                             const double alpha2_,
+                             const double gamma_,
+                             RBISUpdateInterface::sensor_enum sensor_id_,
+                             int64_t utime) :
+    RBISUpdateInterface(sensor_id_, utime),
+    r(body_to_cam_trans_),
+    zeta1(body_to_cam_rot_.col(0)),
+    zeta2(body_to_cam_rot_.col(1)),
+    eta(body_to_cam_rot_.col(2)),
+    alpha1(alpha1_),
+    alpha2(alpha2_),
+    gamma(gamma_),
+    z_meas(z_meas_),
+    cov_xyrs(cov_xyrs_)
   {
   }
 
   void updateFilter(const RBIS & prior_state, const RBIM & prior_cov, double prior_loglikelihood);
 
+private:
+  static const int m = 4;
+  Eigen::Vector3d r; // Names are to match my derivations.  Camera position in body frame
+  Eigen::Vector3d zeta1, zeta2, eta; // Camera rotation from body frame
+  double alpha1, alpha2, gamma;
+  Eigen::VectorXd z_meas;
+  Eigen::MatrixXd cov_xyrs;
+
+private:
+  Eigen::Matrix<double, m, 1> measure(const RBIS::VectorNd & state_vec);
+  void publish(const Eigen::VectorXd & z);
 };
+
+
+
 
 
 }
