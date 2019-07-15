@@ -27,6 +27,27 @@ public:
                           bool publish_head,
                           const std::string& topic,
                           bool subscribe = true);
+
+    template<class SecondaryMsgT>
+    inline void addSecondarySensingModule(SecondarySensingModule<SecondaryMsgT>& module,
+                                          const SensorId& sensor_id,
+                                          const std::string& topic,
+                                          bool subscribe)
+    {
+        if(!subscribe){
+            return;
+        }
+        nh_.subscribe<SecondaryMsgT>(topic,
+                                     10000,
+                                     boost::bind(&ROSFrontEnd::secondaryCallback<SecondaryMsgT>,
+                                                 this,
+                                                 _1,
+                                                 sensor_id),
+                                     ros::VoidConstPtr(),
+                                     ros::TransportHints().tcpNoDelay());
+    }
+
+
     template <class MsgT>
     void addInitModule(SensingModule<MsgT>& module,
                        const SensorId& sensor_id,
@@ -50,6 +71,10 @@ public:
     template <class MsgT>
     void initCallback(boost::shared_ptr<MsgT const> msg,
                       const SensorId& Key);
+
+    template <class SecondaryMsg>
+    void secondaryCallback(boost::shared_ptr<SecondaryMsg const> msg,
+                           const SensorId& sensor_id);
 
     template <class MsgT>
     void callback(boost::shared_ptr<MsgT const> msg,
@@ -305,6 +330,13 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         std::cout << std::endl;
 #endif
     }
+}
+
+template <class SecondaryMsg>
+void ROSFrontEnd::secondaryCallback(boost::shared_ptr<SecondaryMsg const> msg,
+                                    const SensorId& sensor_id)
+{
+  static_cast<SecondarySensingModule<SecondaryMsg>*>(active_modules_[sensor_id])->processSecondaryMessage(*msg);
 }
 
 } // namespace pronto
