@@ -148,6 +148,7 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
 
     Eigen::Vector3d g_vec_rpy = (eigen_utils::getEulerAngles(quat_g_vec) * 180.0 / M_PI);
     fprintf(stderr, "Roll, Pitch Initialized from INS: %f, %f \n", g_vec_rpy(0), g_vec_rpy(1));
+    fprintf(stderr, "Yaw from INS: %f, \n", g_vec_rpy(2));
 
     init_state.orientation() = init_state.orientation() * quat_g_vec;
     init_cov.block<2, 2>(RBIS::chi_ind, RBIS::chi_ind) = default_cov.block<2, 2>(
