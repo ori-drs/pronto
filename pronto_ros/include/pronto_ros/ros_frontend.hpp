@@ -9,6 +9,22 @@
 #include <tf_conversions/tf_eigen.h>
 #include <chrono>
 #include <tf/transform_broadcaster.h>
+#include <string>
+#include <cstdlib>
+#include <cxxabi.h>
+
+template<typename T>
+std::string type_name()
+{
+    int status;
+    std::string tname = typeid(T).name();
+    char *demangled_name = abi::__cxa_demangle(tname.c_str(), NULL, NULL, &status);
+    if(status == 0) {
+        tname = demangled_name;
+        std::free(demangled_name);
+    }
+    return tname;
+}
 
 namespace pronto {
 class ROSFrontEnd {
@@ -28,8 +44,8 @@ public:
                           const std::string& topic,
                           bool subscribe = true);
 
-    template<class SecondaryMsgT>
-    inline void addSecondarySensingModule(SecondarySensingModule<SecondaryMsgT>& module,
+    template<class MsgT, class SecondaryMsgT>
+    inline void addSecondarySensingModule(DualSensingModule<MsgT, SecondaryMsgT>& module,
                                           const SensorId& sensor_id,
                                           const std::string& topic,
                                           bool subscribe)
@@ -37,14 +53,16 @@ public:
         if(!subscribe){
             return;
         }
-        nh_.subscribe<SecondaryMsgT>(topic,
-                                     10000,
-                                     boost::bind(&ROSFrontEnd::secondaryCallback<SecondaryMsgT>,
-                                                 this,
-                                                 _1,
-                                                 sensor_id),
-                                     ros::VoidConstPtr(),
-                                     ros::TransportHints().tcpNoDelay());
+        std::cerr << sensor_id << " subscribing to " << topic;
+        std::cerr << " with SecondaryMsgT = " << type_name<SecondaryMsgT>() << std::endl;
+        secondary_subscribers_[sensor_id] = nh_.subscribe<SecondaryMsgT>(topic,
+                                                                         10000,
+                                                                         boost::bind(&ROSFrontEnd::secondaryCallback<MsgT, SecondaryMsgT>,
+                                                                                     this,
+                                                                                     _1,
+                                                                                     sensor_id),
+                                                                         ros::VoidConstPtr(),
+                                                                         ros::TransportHints().tcpNoDelay());
     }
 
 
@@ -72,8 +90,8 @@ public:
     void initCallback(boost::shared_ptr<MsgT const> msg,
                       const SensorId& Key);
 
-    template <class SecondaryMsg>
-    void secondaryCallback(boost::shared_ptr<SecondaryMsg const> msg,
+    template <class PrimaryMsgT, class SecondaryMsgT>
+    void secondaryCallback(boost::shared_ptr<SecondaryMsgT const> msg,
                            const SensorId& sensor_id);
 
     template <class MsgT>
@@ -90,6 +108,7 @@ private:
     ros::NodeHandle& nh_;
     std::shared_ptr<StateEstimator> state_est_;
     std::map<SensorId, ros::Subscriber> sensors_subscribers_;
+    std::map<SensorId, ros::Subscriber> secondary_subscribers_;
     std::map<SensorId, ros::Subscriber> init_subscribers_;
     std::map<SensorId, void*> active_modules_;
     std::map<SensorId, void*> init_modules_;
@@ -152,6 +171,8 @@ void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
     std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
     init_modules_.insert(pair);
     if(subscribe){
+        std::cerr << sensor_id << " subscribing to " << topic;
+        std::cerr << " with MsgT = " << type_name<MsgT>() << std::endl;
         init_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
                                                            10000,
                                                            boost::bind(&ROSFrontEnd::initCallback<MsgT>,
@@ -171,6 +192,7 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
                                    const std::string& topic,
                                    bool subscribe)
 {
+
     // int this implementation we allow only one different type of module
     if(active_modules_.count(sensor_id) > 0){
         ROS_WARN_STREAM("Sensing Module \"" << sensor_id << "\" already added. Skipping.");
@@ -193,10 +215,12 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
     // store the module as void*, to allow for different types of module to stay
     // in the same container. The type will be known when the message arrives
     // so we can properly cast back to the right type.
-    std::pair<SensorId, void*> pair(sensor_id, (void*) &module);
+    std::pair<SensorId, void*> pair(sensor_id, (SensingModule<MsgT>*) &module);
     active_modules_.insert(pair);
     // subscribe the generic templated callback for all modules
     if(subscribe){
+        std::cerr << sensor_id << " subscribing to " << topic;
+        std::cerr << " with MsgT = " << type_name<MsgT>() << std::endl;
         sensors_subscribers_[sensor_id] = nh_.subscribe<MsgT>(topic,
                                                               10000,
                                                               boost::bind(&ROSFrontEnd::callback<MsgT>,
@@ -270,7 +294,9 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
 #endif
         // if the update is invalid, we leave
         if(update == nullptr){
+#if DEBUG_MODE
             ROS_INFO_STREAM("Invalid " << sensor_id << " update" << std::endl);
+#endif
             // special case for pose meas, it returns null when it does not want
             // to process data anymore
             if(sensor_id.compare("pose_meas") == 0){
@@ -332,11 +358,12 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
     }
 }
 
-template <class SecondaryMsg>
-void ROSFrontEnd::secondaryCallback(boost::shared_ptr<SecondaryMsg const> msg,
+template <class PrimaryMsgT, class SecondaryMsgT>
+void ROSFrontEnd::secondaryCallback(boost::shared_ptr<SecondaryMsgT const> msg,
                                     const SensorId& sensor_id)
-{
-  static_cast<SecondarySensingModule<SecondaryMsg>*>(active_modules_[sensor_id])->processSecondaryMessage(*msg);
+{    
+    auto a = dynamic_cast<DualSensingModule<PrimaryMsgT,SecondaryMsgT>*>(static_cast<SensingModule<PrimaryMsgT>*>(active_modules_[sensor_id]));
+    a->processSecondaryMessage(*msg);
 }
 
 } // namespace pronto

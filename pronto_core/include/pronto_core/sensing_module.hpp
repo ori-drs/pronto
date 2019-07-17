@@ -21,8 +21,8 @@ public:
 };
 
 
-template <class SecondaryMsgT>
-class SecondarySensingModule {
+template <class PrimaryMsgT, class SecondaryMsgT>
+class DualSensingModule : public SensingModule<PrimaryMsgT>{
 public:
   virtual void processSecondaryMessage(const SecondaryMsgT& msg) = 0;
 };
