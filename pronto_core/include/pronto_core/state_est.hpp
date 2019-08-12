@@ -1,5 +1,4 @@
-#ifndef MAV_STATE_ESTIMATOR_HPP_
-#define MAV_STATE_ESTIMATOR_HPP_
+#pragma once
 
 #include "rbis.hpp"
 #include "update_history.hpp"
@@ -41,5 +40,3 @@ private:
 };
 
 }
-
-#endif /* MAV_STATE_ESTIMATOR_HPP_ */
