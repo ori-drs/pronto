@@ -274,6 +274,22 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             twist_msg_.header.stamp = ros::Time().fromNSec(head_state.utime * 1000);
 
             // TODO insert appropriate covariance into the message
+
+
+            // set twist covariance to zero
+            twist_msg_.twist.covariance.assign(0);
+
+            Eigen::Matrix3d vel_cov = head_cov.block<3,3>(RBIS::velocity_ind,RBIS::velocity_ind);
+            Eigen::Matrix3d omega_cov = head_cov.block<3,3>(RBIS::angular_velocity_ind,RBIS::angular_velocity_ind);
+
+            for(int i=0; i<3; i++){
+              for(int j=0; j<3; j++){
+                twist_msg_.twist.covariance[3*i+j] = vel_cov(i,j);
+                twist_msg_.twist.covariance[3*(i+3)+j+3] = omega_cov(i,j);
+              }
+            }
+
+
             // publish the twist
             twist_pub_.publish(twist_msg_);
 
