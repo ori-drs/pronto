@@ -1,4 +1,5 @@
 #include "pronto_core/ins_module.hpp"
+#include <eigen_utils/eigen_rigidbody.hpp>
 
 namespace pronto {
 
@@ -11,7 +12,7 @@ InsModule::~InsModule() {
 }
 
 InsModule::InsModule(const InsConfig &config, const Eigen::Affine3d &ins_to_body) :
-    ins_to_body(ins_to_body),
+    ins_to_body_(ins_to_body),
     dt(config.dt),
     num_to_init(config.num_to_init),
     max_initial_gyro_bias(config.max_initial_gyro_bias),
@@ -51,12 +52,14 @@ RBISUpdateInterface * InsModule::processMessage(const ImuMeasurement * msg,
 {
 
   Eigen::Vector3d accelerometer(ins_to_body.rotation() * msg->acceleration);
+  current_omega_ = (ins_to_body_.rotation() * msg->omega);
 
   // mfallon thinks this was incorrect as the addition of the translation seems wrong:
   // experimentally the bias estimator estimates the body-imu translation (fixed may 2014):
   Eigen::Vector3d gyro(ins_to_body.rotation() * msg->omega);
 
-  RBISIMUProcessStep* update = new RBISIMUProcessStep(gyro,
+
+  RBISIMUProcessStep* update = new RBISIMUProcessStep(current_omega_,
                                                       accelerometer,
                                                       cov_gyro,
                                                       cov_accel,
