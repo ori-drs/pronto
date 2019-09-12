@@ -69,7 +69,7 @@ protected:
 
 
 
-  Eigen::Affine3d ins_to_body;
+  Eigen::Affine3d ins_to_body_;
 
   double cov_accel;
   double cov_gyro;
@@ -87,6 +87,7 @@ protected:
   Eigen::Vector3d mag_vec_sum;
   Eigen::Vector3d gyro_bias_sum;
 
+  Eigen::Vector3d current_omega_;
   bool gyro_bias_update_online;
   Eigen::Vector3d gyro_bias_initial;
   bool gyro_bias_recalc_at_start;

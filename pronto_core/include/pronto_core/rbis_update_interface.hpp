@@ -132,11 +132,17 @@ public:
   Eigen::MatrixXd measurement_cov;
   Eigen::Quaterniond orientation;
 
-  RBISIndexedPlusOrientationMeasurement(const Eigen::VectorXi & index_, const Eigen::VectorXd & measurement_,
-      const Eigen::MatrixXd & measurement_cov_, const Eigen::Quaterniond & orientation_,
-      RBISUpdateInterface::sensor_enum sensor_id_, int64_t utime) :
-      RBISUpdateInterface(sensor_id_, utime), index(index_), measurement(measurement_), measurement_cov(
-          measurement_cov_), orientation(orientation_)
+  RBISIndexedPlusOrientationMeasurement(const Eigen::VectorXi & index_,
+                                        const Eigen::VectorXd & measurement_,
+                                        const Eigen::MatrixXd & measurement_cov_,
+                                        const Eigen::Quaterniond & orientation_,
+                                        RBISUpdateInterface::sensor_enum sensor_id_,
+                                        int64_t utime) :
+      RBISUpdateInterface(sensor_id_, utime),
+      index(index_),
+      measurement(measurement_),
+      measurement_cov(measurement_cov_),
+      orientation(orientation_)
   {
   }
 

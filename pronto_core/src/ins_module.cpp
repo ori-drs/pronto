@@ -1,4 +1,5 @@
 #include "pronto_core/ins_module.hpp"
+#include <eigen_utils/eigen_rigidbody.hpp>
 
 namespace pronto {
 
@@ -11,7 +12,7 @@ InsModule::~InsModule() {
 }
 
 InsModule::InsModule(const InsConfig &config, const Eigen::Affine3d &ins_to_body) :
-    ins_to_body(ins_to_body),
+    ins_to_body_(ins_to_body),
     dt(config.dt),
     num_to_init(config.num_to_init),
     max_initial_gyro_bias(config.max_initial_gyro_bias),
@@ -50,13 +51,15 @@ RBISUpdateInterface * InsModule::processMessage(const ImuMeasurement * msg,
                                                  StateEstimator* state_estimator)
 {
 
-  Eigen::Vector3d accelerometer(ins_to_body.rotation() * msg->acceleration);
+  Eigen::Vector3d accelerometer(ins_to_body_.rotation() * msg->acceleration);
+  current_omega_ = (ins_to_body_.rotation() * msg->omega);
 
   // mfallon thinks this was incorrect as the addition of the translation seems wrong:
   // experimentally the bias estimator estimates the body-imu translation (fixed may 2014):
-  Eigen::Vector3d gyro(ins_to_body.rotation() * msg->omega);
+  Eigen::Vector3d gyro(ins_to_body_.rotation() * msg->omega);
 
-  RBISIMUProcessStep* update = new RBISIMUProcessStep(gyro,
+
+  RBISIMUProcessStep* update = new RBISIMUProcessStep(current_omega_,
                                                       accelerometer,
                                                       cov_gyro,
                                                       cov_accel,
@@ -148,6 +151,7 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
 
     Eigen::Vector3d g_vec_rpy = (eigen_utils::getEulerAngles(quat_g_vec) * 180.0 / M_PI);
     fprintf(stderr, "Roll, Pitch Initialized from INS: %f, %f \n", g_vec_rpy(0), g_vec_rpy(1));
+    fprintf(stderr, "Yaw from INS: %f, \n", g_vec_rpy(2));
 
     init_state.orientation() = init_state.orientation() * quat_g_vec;
     init_cov.block<2, 2>(RBIS::chi_ind, RBIS::chi_ind) = default_cov.block<2, 2>(

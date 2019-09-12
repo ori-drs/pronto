@@ -55,13 +55,23 @@ void insUpdateState(const Eigen::Vector3d & gyro,
         std::cerr << "INS prior vel: " << state.velocity().transpose()        << std::endl;
         std::cerr << "INS state gyro bias: " << state.gyroBias().transpose()  << std::endl;
         std::cerr << "INS state accel bias: " << state.accelBias().transpose()<< std::endl;
-        std::cerr << "True dt: " << state.utime - utime  << std::endl;
+        double ee = (((((double)(state.utime - utime))*1e-6) / dt) -1.0)*100;
+        std::cerr << "True dt: " << state.utime - utime  << " ("<< ee << "%)"<<std::endl;
+        if(std::abs(ee) > 0.25){
+          std::cerr << "========================" << std::endl;
+          std::cerr << std::endl << std::endl;
+        }
         utime = state.utime;
 #endif
 
   //put the ins measurements into the state, correcting for bias
   state.angularVelocity() = gyro - state.gyroBias();
   state.acceleration() = accelerometer - state.accelBias();
+
+#if DEBUG_MODE
+  std::cerr << "state.acceleration() = [" << accelerometer.transpose() << "]' - [" << state.accelBias().transpose() << "]'" << std::endl;
+  std::cerr << "state.angularVelocity() = [" << gyro.transpose() << "]' - " << state.gyroBias().transpose() << "]'" << std::endl;
+#endif
 
   //compute derivatives
   RBIS dstate; //initialize everything to 0
@@ -72,6 +82,10 @@ void insUpdateState(const Eigen::Vector3d & gyro,
       dstate.velocity() = -state.angularVelocity().cross(state.velocity());
       dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
   }
+#if DEBUG_MODE
+  std::cerr << "dstate.velocity() = [" << -state.angularVelocity().transpose() << "]' x [" << state.velocity().transpose()<< "]'" << std::endl;
+  std::cerr << "dstate.velocity() += [" << (state.quat.inverse() * g_vec).transpose() << "]' + [" << state.acceleration().transpose()<< "]'" << std::endl;
+#endif
 
   dstate.chi() = state.angularVelocity();
   dstate.position().noalias() = state.quat * state.velocity();
@@ -221,9 +235,14 @@ double indexedMeasurement(const Eigen::VectorXd & z, const Eigen::MatrixXd & R, 
  * Use this function only if you're certain you know what you're
  * doing.
  */
-double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z, const Eigen::Quaterniond & quat,
-    const Eigen::MatrixXd & R, const Eigen::VectorXi & z_indices, const RBIS & state, const RBIM & cov, RBIS & dstate,
-    RBIM & dcov)
+double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
+                                         const Eigen::Quaterniond & quat,
+                                         const Eigen::MatrixXd & R,
+                                         const Eigen::VectorXi & z_indices,
+                                         const RBIS & state,
+                                         const RBIM & cov,
+                                         RBIS & dstate,
+                                         RBIM & dcov)
 {
   int m = z_indices.rows();
   VectorXd z_resid(m);
@@ -251,8 +270,12 @@ double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z, const Eigen:
   return loglikelihood; //TODO get this right
 }
 
-void rbisApplyDelta(const RBIS & prior_state, const RBIM & prior_cov, const RBIS & dstate, const RBIM & dcov,
-    RBIS & posterior_state, RBIM & posterior_cov)
+void rbisApplyDelta(const RBIS & prior_state,
+                    const RBIM & prior_cov,
+                    const RBIS & dstate,
+                    const RBIM & dcov,
+                    RBIS & posterior_state,
+                    RBIM & posterior_cov)
 {
   posterior_state = prior_state;
   posterior_cov = prior_cov;
@@ -266,8 +289,13 @@ void rbisApplyDelta(const RBIS & prior_state, const RBIM & prior_cov, const RBIS
  * Michael Jordan's Graphical Models book (chapter 15 Kalman
  * Filtering)
  */
-void ekfSmoothingStep(const RBIS & next_state_pred, const RBIM & next_cov_pred, const RBIS & next_state,
-    const RBIM & next_cov, double dt, RBIS & cur_state, RBIM & cur_cov)
+void ekfSmoothingStep(const RBIS & next_state_pred,
+                      const RBIM & next_cov_pred,
+                      const RBIS & next_state,
+                      const RBIM & next_cov,
+                      double dt,
+                      RBIS & cur_state,
+                      RBIM & cur_cov)
 {
   RBIM Ac;
   getIMUProcessLinearizationContinuous(cur_state, Ac);

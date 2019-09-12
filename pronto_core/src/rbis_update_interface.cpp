@@ -33,6 +33,22 @@ void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_
   posterior_state = reset_state;
   posterior_covariance = reset_cov;
   loglikelihood = 0;
+  if(sensor_id == yawlock){
+    std::cerr << "?????????????????????" << std::endl;
+
+    std::cerr << "Prior gyro bias: " << prior_state.gyroBias().transpose() << std::endl;
+    Eigen::Vector3d rpy = eigen_utils::getEulerAngles(prior_state.orientation()) * 180.0 / M_PI;
+    std::cerr << "Prior accel bias: " << prior_state.accelBias().transpose() << std::endl;
+    std::cerr << "Prior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
+
+    std::cerr << "Posterior gyro bias: " << posterior_state.gyroBias().transpose() << std::endl;
+    std::cerr << "Posterior accel bias: " << posterior_state.accelBias().transpose() << std::endl;
+    rpy = eigen_utils::getEulerAngles(posterior_state.orientation()) * 180.0 / M_PI;
+    std::cerr << "Posterior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
+
+
+    std::cerr << "?????????????????????" << std::endl << std::endl;
+  }
 }
 
 void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & prior_cov, double prior_loglikelihood)
@@ -104,16 +120,60 @@ void RBISIndexedMeasurement::updateFilter(const RBIS & prior_state, const RBIM &
   //    std::cout << std::endl;
 }
 
-void RBISIndexedPlusOrientationMeasurement::updateFilter(const RBIS & prior_state, const RBIM & prior_cov,
-    double prior_loglikelihood)
+void RBISIndexedPlusOrientationMeasurement::updateFilter(const RBIS & prior_state,
+                                                         const RBIM & prior_cov,
+                                                         double prior_loglikelihood)
 {
   RBIS dstate;
   RBIM dcov;
-  double current_likelihood = indexedPlusOrientationMeasurement(measurement, orientation, measurement_cov, index,
-      prior_state, prior_cov, dstate,
-      dcov);
+  double current_likelihood = indexedPlusOrientationMeasurement(measurement,
+                                                                orientation,
+                                                                measurement_cov,
+                                                                index,
+                                                                prior_state,
+                                                                prior_cov,
+                                                                dstate,
+                                                                dcov);
+
+
   rbisApplyDelta(prior_state, prior_cov, dstate, dcov, posterior_state, posterior_covariance);
   loglikelihood = prior_loglikelihood + current_likelihood;
+
+  if(sensor_id == yawlock){
+    std::cerr << "?????????????????????" << std::endl;
+
+    std::cerr << "Prior gyro bias: " << prior_state.gyroBias().transpose() << std::endl;
+    Eigen::Vector3d rpy = eigen_utils::getEulerAngles(prior_state.orientation()) * 180.0 / M_PI;
+    std::cerr << "Prior accel bias: " << prior_state.accelBias().transpose() << std::endl;
+    std::cerr << "Prior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
+
+
+    std::cerr << "Measurement gyro bias: " << (measurement.head<3>(0)).transpose() << std::endl;
+    std::cerr << "Measurement accel bias: " << (measurement.head<3>(3)).transpose() << std::endl;
+    std::cerr << "Measurement roll pitch: " << (measurement.head<2>(6) *180 / M_PI).transpose()<< std::endl;
+    std::cerr << "Measurement covariance" << std::endl;
+    std::cerr << measurement_cov << std::endl;
+
+
+    std::cerr << "Posterior gyro bias: " << posterior_state.gyroBias().transpose() << std::endl;
+    std::cerr << "Posterior accel bias: " << posterior_state.accelBias().transpose() << std::endl;
+    rpy = eigen_utils::getEulerAngles(posterior_state.orientation()) * 180.0 / M_PI;
+    std::cerr << "Posterior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
+
+
+    std::cerr << "dstate gyro bias: " << (dstate.gyroBias()).transpose() << std::endl;
+    std::cerr << "dstate accel bias: " << (dstate.accelBias()).transpose() << std::endl;
+    std::cerr << "dstate roll, pitch, yaw [deg]: " << (dstate.getEulerAngles() *180.0 / M_PI).transpose() << std::endl;
+    std::cerr << "dstate gyro cov" << std::endl;
+    std::cerr << dcov.block<3,3>(RBIS::gyro_bias_ind, RBIS::gyro_bias_ind) << std::endl;
+    std::cerr << "dstate accel cov" << std::endl;
+    std::cerr << dcov.block<3,3>(RBIS::accel_bias_ind, RBIS::accel_bias_ind) << std::endl;
+    std::cerr << "dstate gyro cov" << std::endl;
+    std::cerr << dcov.block<2,2>(RBIS::chi_ind, RBIS::chi_ind) << std::endl;
+
+    std::cerr << "?????????????????????" << std::endl << std::endl;
+  }
+
 }
 
 const int RBISOpticalFlowMeasurement::m;

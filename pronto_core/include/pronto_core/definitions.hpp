@@ -103,6 +103,14 @@ public:
 };
 
 struct JointState {
+    inline explicit JointState(const int N_DOF = 12) {
+        joint_position.resize(N_DOF);
+        joint_velocity.resize(N_DOF);
+        joint_acceleration.resize(N_DOF);
+        joint_effort.resize(N_DOF);
+        joint_name.resize(N_DOF);
+
+    }
   uint64_t utime;
   std::vector<double> joint_position;
   std::vector<double> joint_velocity;
