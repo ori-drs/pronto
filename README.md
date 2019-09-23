@@ -1,4 +1,4 @@
-[<img src="pronto_core/doc/pronto_logotype.svg" width="640" height="247">]()
+[<img src="pronto_core/doc/pronto_logotype.svg" width="480" height="185.3">]()
 
 
 ## Introduction
