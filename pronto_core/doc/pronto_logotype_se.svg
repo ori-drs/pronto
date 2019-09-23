@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1062.3593"
-   height="410.125"
-   viewBox="0 0 281.08255 108.51224"
+   width="480.00119"
+   height="185.30501"
+   viewBox="0 0 127.00031 49.028617"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0000001"
-     inkscape:cx="301.61912"
-     inkscape:cy="57.274379"
+     inkscape:zoom="1"
+     inkscape:cx="66.708851"
+     inkscape:cy="311.93734"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -44,7 +44,7 @@
      fit-margin-bottom="0"
      units="px">
     <sodipodi:guide
-       position="80.964873,21.28789"
+       position="80.964872,21.287887"
        orientation="0,1"
        id="guide960"
        inkscape:locked="false" />
@@ -65,7 +65,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(24.1701,8.3162862)">
+     transform="translate(24.1701,-51.167336)">
     <g
        id="g1014"
        transform="matrix(0.45182567,0,0,0.45182567,-13.249428,54.924848)">
@@ -112,17 +112,81 @@
          id="path999"
          inkscape:connector-curvature="0" />
     </g>
-    <text
-       xml:space="preserve"
+    <g
+       aria-label="STATE ESTIMATOR"
+       transform="scale(1.0190458,0.98131017)"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.50215197px;line-height:1.25;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.18755381"
-       x="-4.9558692"
-       y="100.8288"
-       id="text827"
-       transform="scale(1.0190458,0.98131017)"><tspan
-         sodipodi:role="line"
-         id="tspan825"
-         x="-4.9558692"
-         y="100.8288"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381">STATE ESTIMATOR</tspan></text>
+       id="text827">
+      <path
+         d="m -1.5198836,99.440898 q 0,-0.637683 -0.4351248,-1.065305 -0.1575452,-0.157545 -0.4126184,-0.307589 -0.2550731,-0.157545 -0.6076743,-0.31509 -0.5626614,-0.255073 -0.7502152,-0.405116 -0.3300947,-0.285082 -0.3300947,-0.667692 0,-0.427622 0.3150904,-0.690198 0.2925839,-0.247571 0.7352109,-0.247571 0.4201205,0 0.6826958,0.165048 0.2100603,0.120034 0.3601033,0.367605 l 0.292584,-0.127536 q -0.3901119,-0.705203 -1.3353831,-0.705203 -0.5701635,0 -0.9602754,0.345099 -0.3976141,0.337597 -0.3976141,0.892756 0,0.55516 0.3901119,0.892756 0.2325667,0.210061 0.8702496,0.495142 0.3375969,0.150044 0.5551593,0.270078 0.2175624,0.120034 0.3225925,0.217562 0.3976141,0.352601 0.3976141,0.885254 0,0.562662 -0.3375969,0.855242 -0.3300947,0.28509 -0.9077604,0.28509 -1.0127905,0 -1.2753658,-0.96028 l -0.3075882,0.10503 q 0.3526011,1.16283 1.582954,1.16283 0.3976141,0 0.690198,-0.10503 0.8627475,-0.32259 0.8627475,-1.342882 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path863"
+         inkscape:connector-curvature="0" />
+      <path
+         d="M 5.3207009,95.779848 V 95.47226 H 2.6424326 v 0.307588 h 1.18534 v 5.048952 h 0.3075883 v -5.048952 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path865"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 13.129414,100.8288 -2.145615,-5.52909 -2.1381136,5.52909 h 0.300086 l 0.6226787,-1.605464 h 2.4381989 l 0.615177,1.605464 z M 12.079113,98.915748 H 9.8884845 l 1.0953145,-2.835814 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path867"
+         inkscape:connector-curvature="0" />
+      <path
+         d="M 19.336594,95.779848 V 95.47226 h -2.678268 v 0.307588 h 1.18534 v 5.048952 h 0.307588 v -5.048952 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path869"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 26.269725,100.8288 v -0.30759 h -2.26565 v -2.460708 h 2.26565 v -0.330094 h -2.26565 v -1.95056 h 2.26565 V 95.47226 h -2.573238 v 5.35654 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path871"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 39.545659,100.8288 v -0.30759 h -2.26565 v -2.460708 h 2.26565 v -0.330094 h -2.26565 v -1.95056 h 2.26565 V 95.47226 h -2.573238 v 5.35654 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path873"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 46.682227,99.440898 q 0,-0.637683 -0.435125,-1.065305 -0.157545,-0.157545 -0.412618,-0.307589 -0.255074,-0.157545 -0.607675,-0.31509 -0.562661,-0.255073 -0.750215,-0.405116 -0.330095,-0.285082 -0.330095,-0.667692 0,-0.427622 0.315091,-0.690198 0.292584,-0.247571 0.735211,-0.247571 0.42012,0 0.682695,0.165048 0.210061,0.120034 0.360104,0.367605 l 0.292584,-0.127536 q -0.390112,-0.705203 -1.335383,-0.705203 -0.570164,0 -0.960276,0.345099 -0.397614,0.337597 -0.397614,0.892756 0,0.55516 0.390112,0.892756 0.232567,0.210061 0.87025,0.495142 0.337596,0.150044 0.555159,0.270078 0.217562,0.120034 0.322592,0.217562 0.397614,0.352601 0.397614,0.885254 0,0.562662 -0.337596,0.855242 -0.330095,0.28509 -0.907761,0.28509 -1.01279,0 -1.275366,-0.96028 l -0.307588,0.10503 q 0.352601,1.16283 1.582954,1.16283 0.397614,0 0.690198,-0.10503 0.862748,-0.32259 0.862748,-1.342882 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path875"
+         inkscape:connector-curvature="0" />
+      <path
+         d="M 53.522814,95.779848 V 95.47226 h -2.678268 v 0.307588 h 1.18534 v 5.048952 h 0.307588 v -5.048952 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path877"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 58.183845,100.8288 v -5.35654 h -0.300086 v 5.35654 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path879"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 69.264023,100.8288 -1.3954,-5.521587 -1.823023,4.786377 -1.823023,-4.778875 -1.3954,5.514085 h 0.307588 l 1.147829,-4.508797 1.763006,4.643837 1.763006,-4.636335 1.140327,4.501295 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path881"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 77.845697,100.8288 -2.145615,-5.52909 -2.138114,5.52909 h 0.300086 l 0.622679,-1.605464 h 2.438199 l 0.615177,1.605464 z m -1.050301,-1.913052 h -2.190629 l 1.095315,-2.835814 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path883"
+         inkscape:connector-curvature="0" />
+      <path
+         d="M 84.052878,95.779848 V 95.47226 h -2.678269 v 0.307588 h 1.18534 v 5.048952 h 0.307589 v -5.048952 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path885"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 93.212503,98.150528 q 0,-1.215348 -0.772722,-1.98807 -0.780224,-0.76522 -1.98807,-0.76522 -1.215349,0 -1.988071,0.772722 -0.765219,0.76522 -0.765219,1.980568 0,1.215349 0.772721,1.988072 0.76522,0.76522 1.980569,0.76522 1.215348,0 1.98807,-0.77272 0.772722,-0.765223 0.772722,-1.980572 z m -0.307589,0 q 0,1.087812 -0.682696,1.770508 -0.690198,0.675194 -1.770507,0.675194 -1.072808,0 -1.763006,-0.690198 -0.682696,-0.682696 -0.682696,-1.755504 0,-1.072808 0.690198,-1.763006 0.690198,-0.690198 1.755504,-0.690198 1.080309,0 1.770507,0.690198 0.682696,0.682696 0.682696,1.763006 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path887"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 100.90833,100.8288 -1.71799,-2.678272 q 0.322593,0 0.59267,-0.07502 0.27008,-0.08252 0.46513,-0.247571 0.20256,-0.165048 0.30759,-0.420121 0.11253,-0.255073 0.11253,-0.607674 0,-0.322593 -0.12003,-0.570164 -0.11253,-0.247571 -0.30759,-0.412618 -0.19505,-0.17255 -0.465132,-0.255073 -0.270077,-0.09003 -0.570163,-0.09003 H 97.96749 v 5.356543 h 0.300086 v -2.678275 h 0.577665 l 1.702989,2.678275 z m -0.55516,-4.036161 q 0,0.510146 -0.30008,0.780223 -0.292586,0.270078 -0.772724,0.270078 h -1.01279 v -2.063092 h 0.930266 q 0.240069,0 0.45013,0.06752 0.21006,0.06002 0.367608,0.187554 0.15754,0.120035 0.24757,0.315091 0.09,0.187553 0.09,0.442627 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:GeosansLight;-inkscape-font-specification:GeosansLight;letter-spacing:3.90525031px;stroke-width:0.18755381"
+         id="path889"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
 </svg>
