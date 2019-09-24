@@ -62,12 +62,15 @@ quadruped robot. This is a fork of the `iit_commons` package (see
 - `*_ros` ROS wrappers of the above modules
 - other support packages for filtering
 
+## System Requirements
+Pronto depends on Eigen, Boost, and on the catkin packages in the following repositories (likely to be removed in future)
+- [common\_utils](https://github.com/ori-drs/common_utils)
+- [kinematics\_utils](https://github.com/ori-drs/kinematic_utils)
+
 ## Building the Code
 Pronto is organized as a collection of catkin packages. To build the code,
 just run `catkin build` followed by the name of the packages you are 
 interested to build.
-
-
 
 ## Publications
 If you use part of this work in academic context, please cite the appropriate
