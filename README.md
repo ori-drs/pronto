@@ -139,7 +139,7 @@ the [MIT DARPA Robotics Challenge Team](http://www.drc.mit.edu).
 Support for quadruped robots, full ROS conversion and logo design by 
 Marco Camurri  ([IIT Dynamic Legged System Lab](http://dls.iit.it) and [ORI Dynamic Robot Systems Group](https://ori.ox.ac.uk/labs/drs/))
 
-Additional contributions from: Andy Barry, Pat Marion, 
+Additional contributions from: Andy Barry, Pat Marion, Dehann Fourie, Marco Frigerio, Michele Focchi, Benoit Casseau.
 
 ## License
 Pronto is released under the LGPL v2.1 license. Please see the LICENSE file attached to
