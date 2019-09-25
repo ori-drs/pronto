@@ -24,26 +24,8 @@ Tecnologia, and the ANYmal quadruped robot at the University of Oxford.
 [Pronto on HyQ](https://www.youtube.com/watch?v=39Y1Jx1DMO8)
 
 ### Micro Aerial Vehicles
-
 Pronto was originally developed for Micro Aerial Vehicle state
-estimation.
-
-[![image](http://img.youtube.com/vi/kYs215TgI7c/0.jpg)](https://www.youtube.com/watch?v=kYs215TgI7c)
-
-[Pronto on a MAV](https://www.youtube.com/watch?v=kYs215TgI7c)
-
-Log files demonstrating flight with Quadrotators and Fixed-wing RC
-Planes can be provided on request.
-
-Supported sensor of interest to aerial flight:
-
--   GPS - x, y, z
--   Vicon - x, y, z and orientation
--   Laser Scanmatcher - x, y, z and yaw or velocity and yaw rate
--   Optical Flow - velocity, yaw rate (downward facing camera)
--   Airspeed - forward velocity
--   Altimeter - z
--   Sideslip - lateral velocity
+estimation. The modules specific to MAVs (e.g., altimeter, GPS) are not currently supported.
 
 ## Software Overview
 The algorithms (and their ROS wrappers) are written in C/C++ and organized as
@@ -149,19 +131,17 @@ month={May},}
 ## Credits
 
 Originally Developed by Adam Bry, Abe Bachrach and Nicholas Roy of the
-[MIT Robust Robotics Group](http://groups.csail.mit.edu/rrg/).
+[MIT Robust Robotics Group](http://groups.csail.mit.edu/rrg/) for Micro Aerial Vehicles.
 
 Extended to support humanoid motion by Maurice Fallon with the help of
 the [MIT DARPA Robotics Challenge Team](http://www.drc.mit.edu).
 
-Support for quadruped robots, full ROS conversion and logo by 
+Support for quadruped robots, full ROS conversion and logo design by 
 Marco Camurri  ([IIT Dynamic Legged System Lab](http://dls.iit.it) and [ORI Dynamic Robot Systems Group](https://ori.ox.ac.uk/labs/drs/))
 
-Additional contributions from:
+Additional contributions from: Andy Barry, Pat Marion, 
 
--   Andy Barry
--   Pat Marion
-
-The License information is available in the LICENSE file attached to
-this document.
+## License
+Pronto is released under the LGPL v2.1 license. Please see the LICENSE file attached to
+this document for more information.
 
