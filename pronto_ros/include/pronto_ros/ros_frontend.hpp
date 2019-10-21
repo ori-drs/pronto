@@ -335,8 +335,8 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
 
             for(int i=0; i<3; i++){
               for(int j=0; j<3; j++){
-                twist_msg_.twist.covariance[3*i+j] = vel_cov(i,j);
-                twist_msg_.twist.covariance[3*(i+3)+j+3] = omega_cov(i,j);
+                twist_msg_.twist.covariance[6*i+j] = vel_cov(i,j);
+                twist_msg_.twist.covariance[6*(i+3)+j+3] = omega_cov(i,j);
               }
             }
 
