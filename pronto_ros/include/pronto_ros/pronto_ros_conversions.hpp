@@ -9,6 +9,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <sensor_msgs/JointState.h>
+#include <pronto_msgs/VisualOdometryUpdate.h>
 
 namespace pronto {
 
@@ -36,5 +37,8 @@ void rigidTransformFromROS(const geometry_msgs::TransformStamped& msg,
 
 void jointStateFromROS(const sensor_msgs::JointState& ros_msg,
                        JointState& msg);
+
+void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
+                           VisualOdometryUpdate& msg);
 
 }

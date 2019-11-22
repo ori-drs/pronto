@@ -43,20 +43,11 @@ protected:
     VisualOdometryMode mode_;
     Eigen::VectorXi z_indices;
     Eigen::MatrixXd cov_vo_;
-    Transform prev_t0_body_;
-    Transform prev_t0_body_internal_;
-    uint64_t prev_t0_body_utime_;
 
-    Transform t0_body;
-    Transform t0_body_internal;
-
+    Transform t0_body_filter_;
     updateHistory::historyMapIterator lower_it;
     double diff_utime;
-    RBISUpdateInterface * t0_body_RBISInterface;
-    RBIS t0_body_RBIS;
-    Transform t1_body;
-    Transform t0t1_body_vo;
-    Transform t1_body_vo;
+    Transform t1_body_vo_;
     Eigen::VectorXd z_meas;
     Quaternion quat;
 };

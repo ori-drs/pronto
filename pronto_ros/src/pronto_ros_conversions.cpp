@@ -122,4 +122,13 @@ void jointStateFromROS(const sensor_msgs::JointState &ros_msg, JointState &msg){
     msg.joint_velocity = std::move(ros_msg.velocity);
     msg.joint_effort = std::move(ros_msg.effort);
 }
+
+void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
+                           VisualOdometryUpdate& msg){
+  msg.curr_utime = ros_msg.curr_timestamp.toNSec() / 1000;
+  msg.status = ros_msg.estimate_status;
+  msg.prev_utime = ros_msg.prev_timestamp.toNSec() / 1000;
+  tf::transformMsgToEigen(ros_msg.relative_transform, msg.relative_pose);
+  msg.pose_covariance = Eigen::Map<const PoseCovariance, Eigen::Unaligned>(ros_msg.covariance.data(),6,6);
+}
 }
