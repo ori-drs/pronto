@@ -11,7 +11,7 @@ typedef Eigen::Vector3d LinearVelocity;
 typedef Eigen::Vector3d AngularVelocity;
 typedef Eigen::Vector3d ProperAcceleration;
 typedef Eigen::Vector3d Acceleration;
-typedef Eigen::Affine3d Transform;
+typedef Eigen::Isometry3d Transform;
 typedef Eigen::Matrix<double,6,6> PoseCovariance;
 struct ImuMeasurement {
 public:

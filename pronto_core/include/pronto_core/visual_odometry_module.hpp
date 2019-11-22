@@ -21,7 +21,7 @@ struct VisualOdometryConfig {
 
 class VisualOdometryModule : public SensingModule<VisualOdometryUpdate> {
 public:
-    typedef Eigen::Affine3d Transform;
+    typedef Eigen::Isometry3d Transform;
     typedef Eigen::Quaterniond Quaternion;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
