@@ -55,6 +55,22 @@ public:
     uint8_t status;
 };
 
+struct LidarOdometryUpdate {
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+public:
+    enum Status{NO_DATA = 0,
+                REGISTRATION_VALID = 1,
+                REGISTRATION_FAILURE = 2};
+public:
+    uint64_t curr_utime;
+    uint64_t prev_utime;
+    Transform relative_pose; // relative pose between prev_utime and curr_utime
+    Transform prev_pose; // pose of the robot in world frame at time prev_utime
+    PoseCovariance pose_covariance;
+    uint8_t status = REGISTRATION_VALID; // assuming ok unless otherwise
+};
+
 struct RigidTransform {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

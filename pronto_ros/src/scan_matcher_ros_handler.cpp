@@ -113,14 +113,14 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
   scan_matcher_module_ = ScanMatcherModule(mode, z_indices, cov_scan_match);
 }
 
-RBISUpdateInterface * ScanMatcherHandler::processMessage(const nav_msgs::Odometry * msg,
+RBISUpdateInterface * ScanMatcherHandler::processMessage(const geometry_msgs::PoseWithCovarianceStamped * msg,
                                                          StateEstimator* state_estimator)
 {
-    poseMeasurementFromROS(*msg, pose_meas_);
+    poseMsgFromROS(*msg, pose_meas_);
     return scan_matcher_module_.processMessage(&pose_meas_, state_estimator);
 }
 
-bool ScanMatcherHandler::processMessageInit(const nav_msgs::Odometry *msg,
+bool ScanMatcherHandler::processMessageInit(const geometry_msgs::PoseWithCovarianceStamped *msg,
                                             const std::map<std::string, bool> &sensor_initialized,
                                             const RBIS &default_state,
                                             const RBIM &default_cov,

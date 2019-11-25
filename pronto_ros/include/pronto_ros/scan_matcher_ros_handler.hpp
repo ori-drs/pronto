@@ -4,19 +4,19 @@
 #include <pronto_core/state_est.hpp>
 #include <pronto_core/scan_matcher_module.hpp>
 #include <ros/node_handle.h>
-#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <tf/LinearMath/Quaternion.h>
 
 namespace pronto {
 
-class ScanMatcherHandler : SensingModule<nav_msgs::Odometry>{
+class ScanMatcherHandler : public SensingModule<geometry_msgs::PoseWithCovarianceStamped>{
 public:
   ScanMatcherHandler(ros::NodeHandle& nh);
 
-  RBISUpdateInterface * processMessage(const nav_msgs::Odometry * msg,
+  RBISUpdateInterface * processMessage(const geometry_msgs::PoseWithCovarianceStamped* msg,
                                        StateEstimator* state_estimator) override;
 
-  bool processMessageInit(const nav_msgs::Odometry *msg,
+  bool processMessageInit(const geometry_msgs::PoseWithCovarianceStamped *msg,
                           const std::map<std::string, bool> &sensor_initialized,
                           const RBIS &default_state,
                           const RBIM &default_cov,

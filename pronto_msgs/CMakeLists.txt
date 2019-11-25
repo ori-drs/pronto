@@ -46,7 +46,8 @@ add_message_files(FILES  VisualOdometryUpdate.msg
                          FilterState.msg
                          GPSData.msg
                          IndexedMeasurement.msg
-                         QuadrupedStance.msg)
+                         QuadrupedStance.msg
+			 LidarOdometryUpdate.msg)
 
 ## Generate services in the 'srv' folder
 # add_service_files(

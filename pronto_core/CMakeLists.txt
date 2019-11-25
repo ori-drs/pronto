@@ -25,6 +25,7 @@ add_library (${PRONTO_CORE_LIB} src/rbis.cpp
                                 src/state_est.cpp
                                 src/update_history.cpp
                                 src/visual_odometry_module.cpp
+                                src/lidar_odometry_module.cpp
                                 src/vicon_module.cpp
                                 src/indexed_meas_module.cpp
                                 src/init_message_module.cpp

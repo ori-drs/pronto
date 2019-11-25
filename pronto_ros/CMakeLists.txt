@@ -105,6 +105,7 @@ add_library(${PROJECT_NAME} src/ins_ros_handler.cpp
                             src/init_message_ros_handler.cpp
                             src/scan_matcher_ros_handler.cpp
                             src/visual_odometry_ros_handler.cpp
+                            src/lidar_odometry_ros_handler.cpp
                             src/ros_frontend.cpp
                             src/pose_msg_ros_handler.cpp
                             src/pronto_ros_conversions.cpp)

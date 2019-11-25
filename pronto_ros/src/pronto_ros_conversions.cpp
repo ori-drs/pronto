@@ -79,13 +79,23 @@ void msgToImuMeasurement(const sensor_msgs::Imu &imu_msg,
 void poseMsgFromROS(const geometry_msgs::PoseWithCovarianceStamped &msg,
                     PoseMeasurement &pose_meas)
 {
-    pose_meas.orientation = Orientation(msg.pose.pose.orientation.w,
-                                        msg.pose.pose.orientation.x,
-                                        msg.pose.pose.orientation.y,
-                                        msg.pose.pose.orientation.z);
-    pose_meas.pos << msg.pose.pose.position.x,
-                     msg.pose.pose.position.y,
-                     msg.pose.pose.position.z;
+  // covariance is not implemented yet,
+  //  we just forward to non covariance overload
+  geometry_msgs::PoseStamped p;
+  p.pose = msg.pose.pose;
+  p.header = msg.header;
+  poseMsgFromROS(p, pose_meas);
+}
+void poseMsgFromROS(const geometry_msgs::PoseStamped &msg,
+                    PoseMeasurement &pose_meas)
+{
+    pose_meas.orientation = Orientation(msg.pose.orientation.w,
+                                        msg.pose.orientation.x,
+                                        msg.pose.orientation.y,
+                                        msg.pose.orientation.z);
+    pose_meas.pos << msg.pose.position.x,
+                     msg.pose.position.y,
+                     msg.pose.position.z;
     pose_meas.utime = (uint64_t) msg.header.stamp.toNSec() / 1000;
 }
 
@@ -93,6 +103,11 @@ void poseMeasurementFromROS(const nav_msgs::Odometry &ros_msg,
                             PoseMeasurement &msg)
 {
     msg.utime = ros_msg.header.stamp.toNSec() / 1000;
+
+    msg.angular_vel << ros_msg.twist.twist.angular.x,
+                       ros_msg.twist.twist.angular.y,
+                       ros_msg.twist.twist.angular.z;
+
     msg.linear_vel << ros_msg.twist.twist.linear.x,
             ros_msg.twist.twist.linear.y,
             ros_msg.twist.twist.linear.z;
@@ -103,6 +118,11 @@ void poseMeasurementFromROS(const nav_msgs::Odometry &ros_msg,
     tf::Quaternion tf_q;
     tf::quaternionMsgToTF(ros_msg.pose.pose.orientation, tf_q);
     tf::quaternionTFToEigen(tf_q, msg.orientation);
+}
+
+void poseMeasurementFromROS(const geometry_msgs::Pose& ros_msg,
+                            PoseMeasurement &msg) {
+
 }
 
 void rigidTransformFromROS(const geometry_msgs::TransformStamped &msg,
@@ -129,6 +149,16 @@ void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
   msg.status = ros_msg.estimate_status;
   msg.prev_utime = ros_msg.prev_timestamp.toNSec() / 1000;
   tf::transformMsgToEigen(ros_msg.relative_transform, msg.relative_pose);
+  msg.pose_covariance = Eigen::Map<const PoseCovariance, Eigen::Unaligned>(ros_msg.covariance.data(),6,6);  
+}
+
+void lidarOdometryFromROS(const pronto_msgs::LidarOdometryUpdate &ros_msg,
+                          LidarOdometryUpdate &msg)
+{
+  msg.curr_utime = ros_msg.curr_timestamp.toNSec() / 1000;
+  msg.prev_utime = ros_msg.prev_timestamp.toNSec() / 1000;
+  tf::transformMsgToEigen(ros_msg.relative_transform, msg.relative_pose);
   msg.pose_covariance = Eigen::Map<const PoseCovariance, Eigen::Unaligned>(ros_msg.covariance.data(),6,6);
 }
+
 }
