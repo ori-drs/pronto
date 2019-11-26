@@ -31,6 +31,7 @@ namespace quadruped {
 struct ImuBiasLockConfig {
   double torque_threshold_ = 13;
   double velocity_threshold_ = 0.006;
+  double dt_ = 0.0025;
 };
 
 class ImuBiasLock : public DualSensingModule<ImuMeasurement,pronto::JointState>
@@ -44,7 +45,8 @@ public:
     using IndexVector = Eigen::Matrix<int, 8, 1>;
     using CovMatrix = Eigen::Matrix<double, 8, 8>;
 public:
-    ImuBiasLock(const Eigen::Isometry3d& ins_to_body_ = Eigen::Isometry3d::Identity(), const ImuBiasLockConfig& cfg = ImuBiasLockConfig());
+    ImuBiasLock(const Eigen::Isometry3d& ins_to_body_ = Eigen::Isometry3d::Identity(),
+                const ImuBiasLockConfig& cfg = ImuBiasLockConfig());
     inline virtual ~ImuBiasLock()  {}
 
     RBISUpdateInterface* processMessage(const ImuMeasurement *msg,
@@ -114,7 +116,8 @@ protected:
     Eigen::Quaterniond quat_g_vec;
     double torque_threshold_ = 13;
     double eps_ = 0.006;
-    Eigen::Affine3d ins_to_body_;
+    double dt_ = 0.0025;
+    Eigen::Isometry3d ins_to_body_;
 protected:
     bool isStatic(const pronto::JointState& state);
     Eigen::Vector3d getBias(const std::vector<Eigen::Vector3d>& history) const;

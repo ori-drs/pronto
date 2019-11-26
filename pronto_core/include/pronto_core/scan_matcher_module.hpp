@@ -35,7 +35,7 @@ public:
 protected:
     ScanMatchingMode mode;
     Eigen::VectorXi z_indices;
-    Eigen::MatrixXd cov_scan_match;
+    Eigen::MatrixXd cov_scan_match_;
 };
 
 }

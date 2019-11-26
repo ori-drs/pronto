@@ -153,8 +153,6 @@ public:
  * measurement computed indirectly as a function of the state - requires
  * measurement Jacobian matrix (specifically for optic flow in this case)
  */
-// #include <lcmtypes/pronto_optical_flow_t.h>
-// #include <lcm/lcm.h>
 class RBISOpticalFlowMeasurement: public RBISUpdateInterface {
 public:
   RBISOpticalFlowMeasurement(const Eigen::VectorXd & z_meas_,
@@ -191,7 +189,6 @@ private:
 
 private:
   Eigen::Matrix<double, m, 1> measure(const RBIS::VectorNd & state_vec);
-  void publish(const Eigen::VectorXd & z);
 };
 
 

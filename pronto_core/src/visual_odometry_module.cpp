@@ -7,7 +7,10 @@ namespace pronto {
 VisualOdometryModule::VisualOdometryModule(const VisualOdometryConfig &cfg) :
     mode_(cfg.mode), z_indices(cfg.z_indices), cov_vo_(cfg.cov_vo)
 {
-  z_meas.resize(3);
+  z_meas.resize(z_indices.rows());
+  z_meas.setZero();
+  std::cerr << "[ VisualOdometryModule ] Covariance: " << std::endl
+            << cov_vo_ << std::endl;
 }
 
 Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
@@ -30,21 +33,29 @@ Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
         return NULL;
     }
 
-
-
     // get the robot pose at time t0 according to the filter
     if(!est->getInterpolatedPose(msg->prev_utime, t0_body_filter_)){
       return nullptr;
     }
+#if DEBUG_MODE
+    std::cerr << "++++++++++++++++++++++++ UPDATE " << std::endl
+              << msg->relative_pose.translation().transpose() << std::endl
+    << eigen_utils::getEulerAnglesDeg(msg->relative_pose.rotation()).transpose() << std::endl;
+    std::cerr << "+++++++++++++++++++++++++ FILTER T0 " << std::endl
+          << t0_body_filter_.translation().transpose() << std::endl
+          << eigen_utils::getEulerAnglesDeg(t0_body_filter_.rotation()).transpose() << std::endl;
+#endif
 
     // get VO estimate at time t1 as relative motion from time t0 to t1
     t1_body_vo_ = t0_body_filter_ * msg->relative_pose;
-
+#if DEBUG_MODE
+    std::cerr << "+++++++++++++++++++++++++ FILTER T1 "
+          << t1_body_vo_.translation().transpose() << std::endl
+             << eigen_utils::getEulerAnglesDeg(t1_body_vo_.rotation()).transpose() << std::endl;
+#endif
     // at this point, the mode is either position or position_orient
     if (mode_ == VisualOdometryMode::MODE_POSITION) {
-      z_meas.head<3>() = Eigen::Vector3d(t1_body_vo_.translation().x(),
-                                         t1_body_vo_.translation().y(),
-                                         t1_body_vo_.translation().z());
+      z_meas.head<3>() = t1_body_vo_.translation();
 
       return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
                                         z_meas,
@@ -53,9 +64,7 @@ Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
                                         msg->curr_utime);
     } else {
       quat = Eigen::Quaterniond(t1_body_vo_.rotation());
-      z_meas.head<3>() = Eigen::Vector3d(t1_body_vo_.translation().x(),
-                                         t1_body_vo_.translation().y(),
-                                         t1_body_vo_.translation().z());
+      z_meas.head<3>() = t1_body_vo_.translation();
 
       return new RBISIndexedPlusOrientationMeasurement(z_indices,
                                                        z_meas,

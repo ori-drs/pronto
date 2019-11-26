@@ -161,8 +161,12 @@ void insUpdateCovariance(double q_gyro, double q_accel, double q_gyro_bias, doub
   cov.block<3, 3>(RBIS::angular_velocity_ind, RBIS::angular_velocity_ind).noalias() = q_gyro * Matrix3d::Identity();
 }
 
-double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R, const Eigen::MatrixXd & C, const RBIM & cov,
-    const Eigen::VectorXd & z_resid, RBIM & cov_delta, Eigen::MatrixXd & K)
+double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R,
+                                        const Eigen::MatrixXd & C,
+                                        const RBIM & cov,
+                                        const Eigen::VectorXd & z_resid,
+                                        RBIM & cov_delta,
+                                        Eigen::MatrixXd & K)
 {
   int m = R.rows();
 
@@ -182,8 +186,14 @@ double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R, const Eigen::
   return -log(S.determinant()) - z_resid.transpose() * Sldlt.solve(z_resid);
 }
 
-double matrixMeasurement(const Eigen::VectorXd & z, const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & R,
-    const Eigen::MatrixXd & C, const RBIS & state, const RBIM & cov, RBIS & dstate, RBIM & dcov)
+double matrixMeasurement(const Eigen::VectorXd & z,
+                         const Eigen::VectorXd & z_pred,
+                         const Eigen::MatrixXd & R,
+                         const Eigen::MatrixXd & C,
+                         const RBIS & state,
+                         const RBIM & cov,
+                         RBIS & dstate,
+                         RBIM & dcov)
 {
   int m = z.rows();
 
@@ -197,8 +207,13 @@ double matrixMeasurement(const Eigen::VectorXd & z, const Eigen::VectorXd & z_pr
   return loglikelihood;
 }
 
-double indexedMeasurement(const Eigen::VectorXd & z, const Eigen::MatrixXd & R, const Eigen::VectorXi & z_indices,
-    const RBIS & state, const RBIM & cov, RBIS & dstate, RBIM & dcov)
+double indexedMeasurement(const Eigen::VectorXd & z,
+                          const Eigen::MatrixXd & R,
+                          const Eigen::VectorXi & z_indices,
+                          const RBIS & state,
+                          const RBIM & cov,
+                          RBIS & dstate,
+                          RBIM & dcov)
 {
   int m = z_indices.rows();
   VectorXd z_resid(m);

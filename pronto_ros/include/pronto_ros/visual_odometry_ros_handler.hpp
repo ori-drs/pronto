@@ -22,6 +22,7 @@ public:
 private:
   std::shared_ptr<VisualOdometryModule> vo_module_;
   VisualOdometryUpdate vo_update_;
+  ros::Duration msg_time_offset_;
 };
 
 }

@@ -33,6 +33,7 @@ void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_
   posterior_state = reset_state;
   posterior_covariance = reset_cov;
   loglikelihood = 0;
+#if DEBUG
   if(sensor_id == yawlock){
     std::cerr << "?????????????????????" << std::endl;
 
@@ -49,6 +50,7 @@ void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_
 
     std::cerr << "?????????????????????" << std::endl << std::endl;
   }
+#endif
 }
 
 void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & prior_cov, double prior_loglikelihood)
@@ -207,30 +209,9 @@ Eigen::Matrix<double, RBISOpticalFlowMeasurement::m, 1> RBISOpticalFlowMeasureme
 
 }
 
-void RBISOpticalFlowMeasurement::publish(const Eigen::VectorXd & z)
-{
-  // pronto_optical_flow_t flow;
-  // flow.dt = 0;
-  // flow.ux = z(0);
-  // flow.uy = z(1);
-  // flow.theta = z(2);
-  // flow.scale = z(3);
-  // flow.conf_rs = 0;
-  // flow.conf_xy = 0;
-  //
-  // flow.alpha1 = alpha1;
-  // flow.alpha2 = alpha2;
-  // flow.gamma = gamma;
-
-  // NOT PUBLISHING ON LCM ANYMORE!
-  // TODO move this somewhere else
-  // lcm_t * lcm = lcm_create(NULL);
-  // pronto_optical_flow_t_publish(lcm, "OPTICAL_FLOW_PSEUDO", &flow);
-  // lcm_destroy(lcm);
-}
-
-void RBISOpticalFlowMeasurement::updateFilter(const RBIS & prior_state, const RBIM & prior_cov,
-    double prior_loglikelihood)
+void RBISOpticalFlowMeasurement::updateFilter(const RBIS & prior_state,
+                                              const RBIM & prior_cov,
+                                              double prior_loglikelihood)
 {
   loglikelihood = prior_loglikelihood;
   //    RBIS dstate;
@@ -305,7 +286,6 @@ void RBISOpticalFlowMeasurement::updateFilter(const RBIS & prior_state, const RB
     else
       zhat += (Wi * z.col(i));
   }
-  publish(zhat);
 
   // 3. Compute Kalman gain
   Eigen::MatrixXd Pxz(n, m), Pzz(m, m);

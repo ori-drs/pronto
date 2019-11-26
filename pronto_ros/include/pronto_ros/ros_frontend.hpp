@@ -304,6 +304,11 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
             }
             return;
         }
+#if DEBUG_MODE
+        if(sensor_id.compare("fovis") == 0){
+          ROS_INFO_STREAM("fovis update posterior: " << update->posterior_state.position().transpose());
+        }
+#endif
         // tell also the filter if we need to roll forward
         state_est_->addUpdate(update, roll_forward_[sensor_id]);
 #if DEBUG_MODE
@@ -343,6 +348,9 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
 
             // publish the twist
             twist_pub_.publish(twist_msg_);
+
+            // make sure stuff is non-NAN before publishing
+            assert(head_state.position().allFinite());
 
             // fill in message position
             tf::vectorEigenToTF(head_state.position(), temp_v3);

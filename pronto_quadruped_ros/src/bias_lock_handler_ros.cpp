@@ -32,12 +32,18 @@ ImuBiasLockROS::ImuBiasLockROS(ros::NodeHandle& nh) : nh_(nh)
 
   if(!nh_.getParam("torque_threshold", cfg.torque_threshold_)){
     ROS_WARN("Param torque treshold not found setting to default");
+  } else {
+
   }
   if(!nh_.getParam("velocity_threshold", cfg.velocity_threshold_)){
     ROS_WARN("Param velocity treshold not found setting to default");
   }
 
-  bias_lock_module_ = std::make_shared<ImuBiasLock>(Eigen::Isometry3d::Identity(),cfg);
+  if(!nh_.getParam("dt", cfg.dt_)){
+    ROS_WARN_STREAM("Param dt not found. Setting to default: " << cfg.dt_);
+  }
+
+  bias_lock_module_ = std::make_shared<ImuBiasLock>(Eigen::Isometry3d::Identity(), cfg);
 
 }
 

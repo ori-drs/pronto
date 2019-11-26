@@ -44,10 +44,8 @@ protected:
     Eigen::VectorXi z_indices;
     Eigen::MatrixXd cov_vo_;
 
-    Transform t0_body_filter_;
-    updateHistory::historyMapIterator lower_it;
-    double diff_utime;
-    Transform t1_body_vo_;
+    Transform t0_body_filter_ = Transform::Identity();
+    Transform t1_body_vo_ = Transform::Identity();
     Eigen::VectorXd z_meas;
     Quaternion quat;
 };

@@ -128,27 +128,133 @@ void insUpdateState(const Eigen::Vector3d & gyro,
                     RBIS & state,
                     const bool &ignore_accel = false);
 
-void insUpdateCovariance(double q_gyro, double q_accel, double q_gyro_bias, double q_accel_bias, const RBIS & state,
-    RBIM & cov, double dt);
+/**
+ * @brief propagates the covariance matrix
+ * @param[in] q_gyro
+ * @param[in] q_accel
+ * @param[in] q_gyro_bias
+ * @param[in] q_accel_bias
+ * @param[in] state
+ * @param[out] cov
+ * @param[in] dt
+ */
+void insUpdateCovariance(double q_gyro,
+                         double q_accel,
+                         double q_gyro_bias,
+                         double q_accel_bias,
+                         const RBIS & state,
+                         RBIM & cov,
+                         double dt);
 
-double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R, const Eigen::MatrixXd & H, const RBIM & cov,
-    const Eigen::VectorXd & z_resid, RBIM & dcov, Eigen::MatrixXd & K);
+/**
+ * @brief matrixMeasurementGetKandCovDelta
+ * @param R
+ * @param H
+ * @param cov
+ * @param z_resid
+ * @param dcov
+ * @param K
+ * @return
+ */
+double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R,
+                                        const Eigen::MatrixXd & H,
+                                        const RBIM & cov,
+                                        const Eigen::VectorXd & z_resid,
+                                        RBIM & dcov,
+                                        Eigen::MatrixXd & K);
+/**
+ * @brief matrixMeasurement
+ * @param z
+ * @param z_pred
+ * @param R
+ * @param H
+ * @param state
+ * @param cov
+ * @param dstate
+ * @param dcov
+ * @return
+ */
+double matrixMeasurement(const Eigen::VectorXd & z,
+                         const Eigen::VectorXd & z_pred,
+                         const Eigen::MatrixXd & R,
+                         const Eigen::MatrixXd & H,
+                         const RBIS & state,
+                         const RBIM & cov,
+                         RBIS & dstate,
+                         RBIM & dcov);
+/**
+ * @brief indexedMeasurement
+ * @param z
+ * @param R
+ * @param z_indices
+ * @param state
+ * @param cov
+ * @param dstate
+ * @param dcov
+ * @return
+ */
+double indexedMeasurement(const Eigen::VectorXd & z,
+                          const Eigen::MatrixXd & R,
+                          const Eigen::VectorXi & z_indices,
+                          const RBIS & state,
+                          const RBIM & cov,
+                          RBIS & dstate,
+                          RBIM & dcov);
+/**
+ * @brief indexedPlusOrientationMeasurement
+ * @param z
+ * @param quat
+ * @param R
+ * @param z_indices
+ * @param state
+ * @param cov
+ * @param dstate
+ * @param dcov
+ * @param verbose
+ * @return
+ */
+double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
+                                         const Eigen::Quaterniond & quat,
+                                         const Eigen::MatrixXd & R,
+                                         const Eigen::VectorXi & z_indices,
+                                         const RBIS & state,
+                                         const RBIM & cov,
+                                         RBIS & dstate,
+                                         RBIM & dcov,
+                                         bool verbose = false);
+/**
+ * @brief rbisApplyDelta
+ * @param prior_state
+ * @param prior_cov
+ * @param dstate
+ * @param dcov
+ * @param posterior_state
+ * @param posterior_cov
+ */
+void rbisApplyDelta(const RBIS & prior_state,
+                    const RBIM & prior_cov,
+                    const RBIS & dstate,
+                    const RBIM & dcov,
+                    RBIS & posterior_state,
+                    RBIM & posterior_cov);
 
-double matrixMeasurement(const Eigen::VectorXd & z, const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & R,
-    const Eigen::MatrixXd & H, const RBIS & state, const RBIM & cov, RBIS & dstate, RBIM & dcov);
-
-double indexedMeasurement(const Eigen::VectorXd & z, const Eigen::MatrixXd & R, const Eigen::VectorXi & z_indices,
-    const RBIS & state, const RBIM & cov, RBIS & dstate, RBIM & dcov);
-
-double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z, const Eigen::Quaterniond & quat,
-    const Eigen::MatrixXd & R, const Eigen::VectorXi & z_indices, const RBIS & state, const RBIM & cov, RBIS & dstate,
-    RBIM & dcov);
-
-void rbisApplyDelta(const RBIS & prior_state, const RBIM & prior_cov, const RBIS & dstate, const RBIM & dcov,
-    RBIS & posterior_state, RBIM & posterior_cov);
-
-void ekfSmoothingStep(const RBIS & next_state_pred, const RBIM & next_cov_pred, const RBIS & next_state,
-    const RBIM & next_state_cov, double dt, RBIS & cur_state, RBIM & cur_cov);
+/**
+ * @brief ekfSmoothingStep
+ * @param next_state_pred
+ * @param next_cov_pred
+ * @param next_state
+ * @param next_state_cov
+ * @param dt
+ * @param cur_state
+ * @param cur_cov
+ */
+void ekfSmoothingStep(const RBIS & next_state_pred,
+                      const RBIM & next_cov_pred,
+                      const RBIS & next_state,
+                      const RBIM & next_state_cov,
+                      double dt,
+                      RBIS & cur_state,
+                      RBIM & cur_cov);
 
 }
 #endif

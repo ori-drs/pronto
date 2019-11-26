@@ -21,7 +21,7 @@ ScanMatcherModule::ScanMatcherModule() : ScanMatcherModule(MODE_POSITION,
 ScanMatcherModule::ScanMatcherModule(const ScanMatchingMode &mode,
                                      const Eigen::VectorXi &z_indices,
                                      const Eigen::MatrixXd &cov_scan_match) :
-    mode(mode), z_indices(z_indices), cov_scan_match(cov_scan_match)
+    mode(mode), z_indices(z_indices), cov_scan_match_(cov_scan_match)
 {
 
 }
@@ -32,14 +32,14 @@ RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *m
     if (mode == MODE_POSITION) {
       return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
                                         msg->pos,
-                                        cov_scan_match,
+                                        cov_scan_match_,
                                         RBISUpdateInterface::scan_matcher,
                                         msg->utime);
     }
     else if (mode == MODE_VELOCITY) {
       return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
                                         msg->linear_vel,
-                                        cov_scan_match,
+                                        cov_scan_match_,
                                         RBISUpdateInterface::scan_matcher,
                                         msg->utime);
     }
@@ -47,7 +47,7 @@ RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *m
       Eigen::Vector4d z_meas = Eigen::Vector4d(0,0,0,0); // unused, I believe
       return new RBISIndexedPlusOrientationMeasurement(z_indices,
                                                        z_meas,
-                                                       cov_scan_match,
+                                                       cov_scan_match_,
                                                        msg->orientation,
                                                        RBISUpdateInterface::scan_matcher,
                                                        msg->utime);
@@ -62,7 +62,7 @@ RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *m
       }
       return new RBISIndexedPlusOrientationMeasurement(z_indices,
                                                        z_meas,
-                                                       cov_scan_match,
+                                                       cov_scan_match_,
                                                        msg->orientation,
                                                        RBISUpdateInterface::scan_matcher,
                                                        msg->utime);
