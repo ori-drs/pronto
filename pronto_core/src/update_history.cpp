@@ -50,6 +50,17 @@ std::string updateHistory::toString() const{
     return ss.str();
 }
 
+std::string updateHistory::toString(uint64_t utime, int pos_shift) const{
+    std::stringstream ss;
+    auto it = updateMap.lower_bound(utime);
+    // move the iterator back of pos_shift positions
+    std::advance(it, -pos_shift);
+    for(; it != updateMap.end(); ++it){
+        ss << "Updatemap <" << it->first << ", " << it->second->getSensorIdString() << ">" << std::endl;
+    }
+    return ss.str();
+}
+
 void updateHistory::clearHistoryBeforeUtime(int64_t utime)
 {
   historyMapIterator it_before;

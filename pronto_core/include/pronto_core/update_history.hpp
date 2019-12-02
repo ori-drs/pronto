@@ -33,6 +33,7 @@ public:
   void clearHistoryBeforeUtime(int64_t utime);
 
   std::string toString() const;
+  std::string toString(uint64_t utime, int pos_shift = 1) const;
 
 };
 
