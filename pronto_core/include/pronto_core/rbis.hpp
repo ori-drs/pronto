@@ -107,6 +107,10 @@ private:
 
 };
 
+inline void setAlmostZeroToZero(Eigen::MatrixXd& m, double eps = 1e-5){
+  m.unaryExpr([eps](double x){return (abs(x)<eps)?0.:x;});
+}
+
 typedef RBIS::MatrixNd RBIM;
 
 void getIMUProcessLinearizationContinuous(const RBIS & state, RBIM & Ac);
