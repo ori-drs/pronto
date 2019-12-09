@@ -12,6 +12,8 @@
 #include <string>
 #include <cstdlib>
 #include <cxxabi.h>
+#include <nav_msgs/Path.h>
+#include <eigen_conversions/eigen_msg.h>
 
 template<typename T>
 std::string type_name()
@@ -133,6 +135,9 @@ private:
 
     geometry_msgs::PoseWithCovarianceStamped pose_msg_;
     geometry_msgs::TwistWithCovarianceStamped twist_msg_;
+
+    nav_msgs::Path aicp_path;
+    ros::Publisher aicp_path_publisher;
 
     uint64_t history_span_;
 
@@ -309,8 +314,37 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
           ROS_INFO_STREAM("fovis update posterior: " << update->posterior_state.position().transpose());
         }
 #endif
+#define DEBUG_AICP 0
+#if DEBUG_AICP
+
+        if(sensor_id.compare("scan_matcher") == 0){
+          aicp_path.header.frame_id = "odom";
+          Eigen::Vector3d p = dynamic_cast<RBISIndexedPlusOrientationMeasurement*>(update)->measurement.head<3>();
+          Eigen::Quaterniond q = dynamic_cast<RBISIndexedPlusOrientationMeasurement*>(update)->orientation;
+
+          std::cerr << "MEASR    : " << p.transpose() << "   " << eigen_utils::getEulerAnglesDeg(q).transpose() << std::endl;
+
+         // Eigen::Vector3d p = dynamic_cast<RBISIndexedMeasurement*>(update)->measurement.head<3>();
+
+          // std::cerr << "ABOUT TO SEND TO FILTER THE FOLLOWING: " << p.transpose() << std::endl;
+
+        }
+#endif
+        RBIS prior;
+        RBIS posterior;
+        RBIM prior_cov;
+        RBIM posterior_cov;
+state_est_->getHeadState(prior,prior_cov);
         // tell also the filter if we need to roll forward
         state_est_->addUpdate(update, roll_forward_[sensor_id]);
+state_est_->getHeadState(posterior,posterior_cov);
+
+if(sensor_id.compare("scan_matcher") == 0){
+std::cerr << "PRIOR    : " << prior.position().transpose() << " " << eigen_utils::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
+std::cerr << "POSTERIOR: " << posterior.position().transpose() << " " << eigen_utils::getEulerAnglesDeg(posterior.orientation()).transpose() << std::endl;
+std::cerr << ":::::::" << std::endl;
+        }
+
 #if DEBUG_MODE
         end = std::chrono::high_resolution_clock::now();
         ROS_INFO_STREAM("Time elapsed process addupdate: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());

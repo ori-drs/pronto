@@ -7,16 +7,13 @@
 
 namespace pronto {
 
-//enum ScanMatchingMode {
-//    MODE_POSITION, MODE_POSITION_YAW, MODE_VELOCITY, MODE_VELOCITY_YAW, MODE_YAW
-//};
-
 class ScanMatcherModule : public SensingModule<PoseMeasurement> {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-        enum ScanMatchingMode {
-            MODE_POSITION, MODE_POSITION_YAW, MODE_VELOCITY, MODE_VELOCITY_YAW, MODE_YAW
+        enum class ScanMatchingMode {
+            POSITION, POSITION_YAW, POSITION_ORIENT, YAW,
+                     VELOCITY, VELOCITY_YAW // velocity shouldn't exist
         };
     ScanMatcherModule();
 

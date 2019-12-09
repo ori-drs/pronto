@@ -92,11 +92,25 @@ bool StateEstimator::getInterpolatedPose(const uint64_t &utime,
 
 void StateEstimator::addUpdate(RBISUpdateInterface * update, bool roll_forward)
 {
-    if(verbose_){
-        std::cout << "[ " << update->utime <<" ] "<< update->getSensorIdString() << std::endl;
-    }
-  // Add current update to history
+#if DEBUG_MODE
+   if(verbose_){
+       std::cout << "[ " << update->utime <<" ] "<< update->getSensorIdString() << std::endl;
+   }
+ // Add current update to history
+
+  if(update->sensor_id == RBISUpdateInterface::scan_matcher){
+    std::cerr << "==================== RECEIVED SCAN MATCHER UPDATE" << std::endl;
+    std::cerr << "HISTORY BEFORE: " << std::endl;
+    std::cerr << history.toString(update->utime,3) << std::endl;
+  }
+#endif
   updateHistory::historyMapIterator added_it = history.addToHistory(update);
+#if DEBUG_MODE
+  if(update->sensor_id == RBISUpdateInterface::scan_matcher){
+    std::cerr << "HISTORY AFTER: " << std::endl;
+    std::cerr << history.toString(update->utime,3) << std::endl;
+  }
+#endif
 
   // If there are no unprocessed updates other than the current one,
   // the current one only is where the "unprocessed" queue starts

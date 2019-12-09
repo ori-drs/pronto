@@ -109,10 +109,15 @@ public:
   Eigen::VectorXd measurement;
   Eigen::MatrixXd measurement_cov;
 
-  RBISIndexedMeasurement(const Eigen::VectorXi & index_, const Eigen::VectorXd & measurement_,
-      const Eigen::MatrixXd & measurement_cov_, RBISUpdateInterface::sensor_enum sensor_id_, int64_t utime) :
-      RBISUpdateInterface(sensor_id_, utime), index(index_), measurement(measurement_), measurement_cov(
-          measurement_cov_)
+  RBISIndexedMeasurement(const Eigen::VectorXi & index_,
+                         const Eigen::VectorXd & measurement_,
+                         const Eigen::MatrixXd & measurement_cov_,
+                         RBISUpdateInterface::sensor_enum sensor_id_,
+                         int64_t utime) :
+      RBISUpdateInterface(sensor_id_, utime),
+      index(index_),
+      measurement(measurement_),
+      measurement_cov(measurement_cov_)
   {
 
   }

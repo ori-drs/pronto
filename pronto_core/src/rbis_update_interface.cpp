@@ -33,7 +33,7 @@ void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_
   posterior_state = reset_state;
   posterior_covariance = reset_cov;
   loglikelihood = 0;
-#if DEBUG
+#if DEBUG_MODE
   if(sensor_id == yawlock){
     std::cerr << "?????????????????????" << std::endl;
 
@@ -57,15 +57,22 @@ void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & pri
 {
   posterior_state = prior_state;
   posterior_covariance = prior_cov;
-
-  // mfallon: only called when ins data flows
-  // i think this is only called for IMU
+#if DEBUG_MODE
+  std::cerr << "======================================" << std::endl;
+  std::cerr << "       INS process " << std::endl;
+  std::cerr << "======================================"  << std::endl;
+  std::cerr << "              Time: " << utime << std::endl;
+  Eigen::IOFormat CleanFmt(3, 0, ", ", "\n", "[", "]");
   // TODO if this was meant to measure some sort of performance
-  // replace with non-libbot calls
-  // bot_tictoc("insUpdateState");
+#endif
   insUpdateState(gyro, accelerometer, dt, posterior_state, ignore_accel_);
   insUpdateCovariance(q_gyro, q_accel, q_gyro_bias, q_accel_bias, prior_state, posterior_covariance, dt);
-  // bot_tictoc("insUpdateState");
+#if DEBUG_MODE
+  std::cerr << "    Prior velocity: " << prior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "Posterior velocity: " << posterior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "    Prior position: " << prior_state.position().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "Posterior position: " << posterior_state.position().transpose().format(CleanFmt) << std::endl;
+#endif
 
   loglikelihood = prior_loglikelihood;
   //    eigen_dump(prior_state);
@@ -84,33 +91,50 @@ void RBISIndexedMeasurement::updateFilter(const RBIS & prior_state, const RBIM &
   RBIS dstate;
   RBIM dcov;
 
-  bool verbose= false;
-  bool verbose_cov = false;
-  if (verbose){
+#if DEBUG_MODE
     std::cout << "mfallon a\n";
     std::cout << " meas: " << measurement.transpose() << "\n";
     std::cout << " mcov: " << measurement_cov << "\n";
     std::cout << "index: " << index.transpose() << "\n";
     std::cout << "prior: " << prior_state << "\n";
-    if (verbose_cov) std::cout << "pcov : " << prior_cov << "\n";
+    std::cout << "pcov : " << prior_cov << "\n";
   }
-
+#endif
   double current_loglikelihood = indexedMeasurement(measurement, measurement_cov, index, prior_state, prior_cov, dstate,
       dcov);
 
-  if (verbose){
-    std::cout << "dstat: " << dstate <<"\n";
-    if (verbose_cov) std::cout << " dcov: " << dcov <<"\n";
-    std::cout << dstate.position() << " pos\n";
-  }
+#if DEBUG_MODE
+  std::cout << "dstat: " << dstate <<"\n";
+  std::cout << " dcov: " << dcov <<"\n";
+  std::cout << dstate.position() << " pos\n";
+
+  std::cerr << "======================================" << std::endl;
+  std::cerr << "       " << sensorIdToString(sensor_id) << std::endl;
+  std::cerr << "======================================" << std::endl;
+  Eigen::IOFormat CleanFmt(3, 0, ", ", "\n", "[", "]");
+  std::cerr << "              Time: " << utime << std::endl;
+  std::cerr << "       Measurement: " << measurement.transpose().format(CleanFmt) << std::endl
+     << "           Indices: " << index.transpose().format(CleanFmt) << std::endl
+     << std::endl;
+#endif
+
 
   rbisApplyDelta(prior_state, prior_cov, dstate, dcov, posterior_state, posterior_covariance);
 
-  if (verbose){
+
+#if DEBUG_MODE
+  is << "    Prior velocity: " << prior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  is << "Posterior velocity: " << posterior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  is << "    Prior position: " << prior_state.position().transpose().format(CleanFmt) << std::endl;
+  is << "Posterior position: " << posterior_state.position().transpose().format(CleanFmt) << std::endl;
+#endif
+
+
+#if DEBUG_MODE
     std::cout << " post: " << posterior_state <<"\n";
     if (verbose_cov) std::cout << "ptcov: " << posterior_covariance <<"\n";
     std::cout << "mfallon b\n";
-  }
+#endif
 
   loglikelihood = prior_loglikelihood + current_loglikelihood;
   //    eigen_dump(prior_state);
@@ -136,46 +160,24 @@ void RBISIndexedPlusOrientationMeasurement::updateFilter(const RBIS & prior_stat
                                                                 prior_cov,
                                                                 dstate,
                                                                 dcov);
-
-
+#if DEBUG_MODE
+  std::cerr << "======================================" << std::endl;
+  std::cerr << sensorIdToString(sensor_id)  << std::endl;
+  std::cerr << "======================================" << std::endl;
+  Eigen::IOFormat CleanFmt(3, 0, ", ", "\n", "[", "]");
+  std::cerr << "              Time: " << utime << std::endl;
+  std::cerr << "       Measurement: " << measurement.transpose() << std::endl
+            << "           Indices: " << index.transpose() << std::endl;
+#endif
   rbisApplyDelta(prior_state, prior_cov, dstate, dcov, posterior_state, posterior_covariance);
+
+#if DEBUG_MODE
+  std::cerr << "    Prior velocity: " << prior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "Posterior velocity: " << posterior_state.velocity().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "    Prior position: " << prior_state.position().transpose().format(CleanFmt) << std::endl;
+  std::cerr << "Posterior position: " << posterior_state.position().transpose().format(CleanFmt) << std::endl;
+#endif
   loglikelihood = prior_loglikelihood + current_likelihood;
-
-  if(sensor_id == yawlock){
-    std::cerr << "?????????????????????" << std::endl;
-
-    std::cerr << "Prior gyro bias: " << prior_state.gyroBias().transpose() << std::endl;
-    Eigen::Vector3d rpy = eigen_utils::getEulerAngles(prior_state.orientation()) * 180.0 / M_PI;
-    std::cerr << "Prior accel bias: " << prior_state.accelBias().transpose() << std::endl;
-    std::cerr << "Prior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
-
-
-    std::cerr << "Measurement gyro bias: " << (measurement.head<3>(0)).transpose() << std::endl;
-    std::cerr << "Measurement accel bias: " << (measurement.head<3>(3)).transpose() << std::endl;
-    std::cerr << "Measurement roll pitch: " << (measurement.head<2>(6) *180 / M_PI).transpose()<< std::endl;
-    std::cerr << "Measurement covariance" << std::endl;
-    std::cerr << measurement_cov << std::endl;
-
-
-    std::cerr << "Posterior gyro bias: " << posterior_state.gyroBias().transpose() << std::endl;
-    std::cerr << "Posterior accel bias: " << posterior_state.accelBias().transpose() << std::endl;
-    rpy = eigen_utils::getEulerAngles(posterior_state.orientation()) * 180.0 / M_PI;
-    std::cerr << "Posterior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
-
-
-    std::cerr << "dstate gyro bias: " << (dstate.gyroBias()).transpose() << std::endl;
-    std::cerr << "dstate accel bias: " << (dstate.accelBias()).transpose() << std::endl;
-    std::cerr << "dstate roll, pitch, yaw [deg]: " << (dstate.getEulerAngles() *180.0 / M_PI).transpose() << std::endl;
-    std::cerr << "dstate gyro cov" << std::endl;
-    std::cerr << dcov.block<3,3>(RBIS::gyro_bias_ind, RBIS::gyro_bias_ind) << std::endl;
-    std::cerr << "dstate accel cov" << std::endl;
-    std::cerr << dcov.block<3,3>(RBIS::accel_bias_ind, RBIS::accel_bias_ind) << std::endl;
-    std::cerr << "dstate gyro cov" << std::endl;
-    std::cerr << dcov.block<2,2>(RBIS::chi_ind, RBIS::chi_ind) << std::endl;
-
-    std::cerr << "?????????????????????" << std::endl << std::endl;
-  }
-
 }
 
 const int RBISOpticalFlowMeasurement::m;

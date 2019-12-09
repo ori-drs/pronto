@@ -224,8 +224,7 @@ double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
                                          const RBIS & state,
                                          const RBIM & cov,
                                          RBIS & dstate,
-                                         RBIM & dcov,
-                                         bool verbose = false);
+                                         RBIM & dcov);
 /**
  * @brief rbisApplyDelta
  * @param prior_state

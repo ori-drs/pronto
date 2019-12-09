@@ -9,9 +9,9 @@ namespace pronto {
 // using MODE_VELOCITY_YAW = ScanMatchingMode::MODE_VELOCITY_YAW;
 // using MODE_YAW          = ScanMatchingMode::MODE_YAW;
 
-//using ScanMatchingMode;
+using Mode = ScanMatcherModule::ScanMatchingMode;
 
-ScanMatcherModule::ScanMatcherModule() : ScanMatcherModule(MODE_POSITION,
+ScanMatcherModule::ScanMatcherModule() : ScanMatcherModule(Mode::POSITION,
                                                            eigen_utils::RigidBodyState::positionInds(),
                                                            Eigen::Matrix3d::Identity())
 {
@@ -23,50 +23,78 @@ ScanMatcherModule::ScanMatcherModule(const ScanMatchingMode &mode,
                                      const Eigen::MatrixXd &cov_scan_match) :
     mode(mode), z_indices(z_indices), cov_scan_match_(cov_scan_match)
 {
+  std::cout << "[ ScanMatcherModule ] covariance: " << std::endl
+            << cov_scan_match_ << std::endl;
 
 }
 
 RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *msg,
                                                         StateEstimator *state_estimator)
 {
-    if (mode == MODE_POSITION) {
-      return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
-                                        msg->pos,
-                                        cov_scan_match_,
-                                        RBISUpdateInterface::scan_matcher,
-                                        msg->utime);
-    }
-    else if (mode == MODE_VELOCITY) {
-      return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
-                                        msg->linear_vel,
-                                        cov_scan_match_,
-                                        RBISUpdateInterface::scan_matcher,
-                                        msg->utime);
-    }
-    else if (mode == MODE_YAW) {
-      Eigen::Vector4d z_meas = Eigen::Vector4d(0,0,0,0); // unused, I believe
-      return new RBISIndexedPlusOrientationMeasurement(z_indices,
-                                                       z_meas,
-                                                       cov_scan_match_,
-                                                       msg->orientation,
-                                                       RBISUpdateInterface::scan_matcher,
-                                                       msg->utime);
-    }
-    else if (mode == MODE_POSITION_YAW || mode == MODE_VELOCITY_YAW) {
-      Eigen::Vector4d z_meas;
-      if (mode == MODE_POSITION_YAW) {
-        z_meas.head<3>() = msg->pos;
-      }
-      else {
-        z_meas.head<3>() = msg->linear_vel;
-      }
-      return new RBISIndexedPlusOrientationMeasurement(z_indices,
-                                                       z_meas,
-                                                       cov_scan_match_,
-                                                       msg->orientation,
-                                                       RBISUpdateInterface::scan_matcher,
-                                                       msg->utime);
-    }
+  // always return, no need to break
+  switch(mode) {
+  case Mode::POSITION :
+  {
+    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
+                                      msg->pos,
+                                      cov_scan_match_,
+                                      RBISUpdateInterface::scan_matcher,
+                                      msg->utime);
+  }
+  case Mode::VELOCITY :
+  {
+    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
+                                      msg->linear_vel,
+                                      cov_scan_match_,
+                                      RBISUpdateInterface::scan_matcher,
+                                      msg->utime);
+  }
+  case Mode::YAW:
+  {
+    return new RBISIndexedPlusOrientationMeasurement(z_indices,
+                                                     Eigen::Vector4d(0, 0, 0, 0),
+                                                     cov_scan_match_,
+                                                     msg->orientation,
+                                                     RBISUpdateInterface::scan_matcher,
+                                                     msg->utime);
+  }
+  case Mode::POSITION_YAW :
+  {
+    Eigen::Vector4d z_meas(Eigen::Vector4d::Zero());
+    z_meas.head<3>() = msg->pos;
+    return new RBISIndexedPlusOrientationMeasurement(z_indices,
+                                                     z_meas,
+                                                     cov_scan_match_,
+                                                     msg->orientation,
+                                                     RBISUpdateInterface::scan_matcher,
+                                                     msg->utime);
+  }
+  case Mode::VELOCITY_YAW :
+  {
+    Eigen::Vector4d z_meas(Eigen::Vector4d::Zero());
+    z_meas.head<3>() = msg->linear_vel;
+    return new RBISIndexedPlusOrientationMeasurement(z_indices,
+                                                     z_meas,
+                                                     cov_scan_match_,
+                                                     msg->orientation,
+                                                     RBISUpdateInterface::scan_matcher,
+                                                     msg->utime);
+  }
+  case Mode::POSITION_ORIENT :
+  {
+    Eigen::Matrix<double,6,1> z_meas;
+    z_meas.head<3>() = msg->pos;
+    z_meas.tail<3>() = Eigen::Vector3d::Zero();
+    return new RBISIndexedPlusOrientationMeasurement(z_indices,
+                                                     z_meas,
+                                                     cov_scan_match_,
+                                                     msg->orientation,
+                                                     RBISUpdateInterface::scan_matcher,
+                                                     msg->utime);
+  }
+  default:
+    return nullptr;
+  }
 }
 
 

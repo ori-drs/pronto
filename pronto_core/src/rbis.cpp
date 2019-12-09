@@ -281,6 +281,32 @@ double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
 
   double loglikelihood = matrixMeasurementGetKandCovDelta(R, C, cov, z_resid, dcov, K);
   dstate = RBIS(K * z_resid);
+#if DEBUG_MODE
+    Eigen::IOFormat mformat(5, 0, ", ", "\n", "[", "]");
+    std::cerr << "Indices: " << z_indices.transpose().format(mformat) << std::endl;
+
+    std::cerr << "Measurement: " << z.transpose().format(mformat) << std::endl;
+
+    std::cerr << "Matrix K:" << std::endl;
+    std::cerr << K.format(mformat) << std::endl;
+
+    setAlmostZeroToZero(K,1e-4);
+
+    std::cerr << "Matrix K after setzero:" << std::endl;
+    std::cerr << K.format(mformat) << std::endl;
+
+    std::cerr << "Matrix C:" << std::endl;
+    std::cerr << C.format(mformat) << std::endl;
+
+    std::cerr << "Vector residual z_resid:" << std::endl;
+    std::cerr << z_resid.transpose().format(mformat) << std::endl;
+
+    std::cerr << "Vector dstate K * z_resid:" << std::endl;
+    std::cerr << (K*z_resid).transpose().format(mformat) << std::endl;
+
+    std::cerr << "What it should be: " << std::endl;
+    std::cerr <<  (v.asDiagonal()*vv).transpose().format(mformat) << std::endl;
+#endif
 
   return loglikelihood; //TODO get this right
 }

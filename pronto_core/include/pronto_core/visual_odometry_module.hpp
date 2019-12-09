@@ -13,9 +13,9 @@ enum class VisualOdometryMode {MODE_VELOCITY,
 
 struct VisualOdometryConfig {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    VisualOdometryMode mode;
-    Eigen::VectorXi z_indices;
-    Eigen::MatrixXd cov_vo;
+    VisualOdometryMode mode = VisualOdometryMode::MODE_POSITION;
+    Eigen::VectorXi z_indices = RBIS::positionInds();
+    Eigen::MatrixXd cov_vo = Eigen::Matrix3d::Identity();
 };
 
 

@@ -47,7 +47,7 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
 
     }
 
-    int history_span = 1e6; // keep 1 second as default
+    double history_span = 1e6; // keep 1 second as default
     if(!nh_.getParam("utime_history_span", history_span)){
      ROS_WARN_STREAM("Couldn't get param \"utime_history_span\". Setting default to \"" << history_span << "\"");
     }
@@ -57,6 +57,8 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
     if(verbose_){
         ROS_INFO_STREAM("Frontend constructed.");
     }
+
+    aicp_path_publisher = nh_.advertise<nav_msgs::Path>("/aicp/relative_path",100);
 }
 
 void ROSFrontEnd::initializeState()
