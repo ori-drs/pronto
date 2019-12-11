@@ -124,6 +124,10 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 add_executable(${PROJECT_NAME}_node src/pronto_ros_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 
+add_executable(lidar_odometry_visualizer src/lidar_odom_viz.cpp)
+target_link_libraries(lidar_odometry_visualizer ${catkin_LIBRARIES})
+add_dependencies(lidar_odometry_visualizer ${catkin_EXPORTED_TARGETS})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
