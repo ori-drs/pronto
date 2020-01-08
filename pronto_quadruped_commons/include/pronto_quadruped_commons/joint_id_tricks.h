@@ -35,6 +35,8 @@
 namespace pronto {
 namespace quadruped {
 
+using Vector3d = iit::rbd::Vector3d;
+
 inline JointIdentifiers toJointID(LegID leg, LegJoints j) {
     return orderedJointIDs[ leg * 3 + j ];
 }
@@ -49,12 +51,12 @@ inline bool isHAA(JointIdentifiers j) {
 }
 
 //it assumes the legs are always the first joints
-inline void getLegJointState(LegID leg, const JointState& jstate, rbd::Vector3d& vecout) {
+inline void getLegJointState(LegID leg, const JointState& jstate, Vector3d& vecout) {
     // WARNING: assuming three joints per leg
     vecout = (jstate.block<3, 1>(leg * 3, 0));
 }
 
-inline rbd::Vector3d getLegJointState(LegID leg, const JointState& jstate) {
+inline Vector3d getLegJointState(LegID leg, const JointState& jstate) {
     // WARNING: assuming three joints per leg
     return jstate.block<3, 1>(leg * 3, 0);
 }
@@ -66,7 +68,7 @@ inline rbd::Vector3d getLegJointState(LegID leg, const JointState& jstate) {
  * @param[in] vecin the state of the joints of that leg
  * @param[out] jstate the full joint state variable to be set
  */
-inline void setLegJointState(LegID leg, const rbd::Vector3d& vecin,  JointState& jstate)
+inline void setLegJointState(LegID leg, const Vector3d& vecin,  JointState& jstate)
 {
     // WARNING: assuming three joints per leg
     jstate.block<3,1>(leg*3,0) = vecin;

@@ -29,6 +29,7 @@
 #include <pronto_quadruped_commons/geometry/algebra.h>
 #include <bitset>
 
+using namespace iit;
 using namespace pronto;
 using namespace pronto::commons;
 using namespace pronto::quadruped;

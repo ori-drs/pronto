@@ -49,9 +49,9 @@ using pronto::quadruped::RF;
 using pronto::quadruped::LH;
 using pronto::quadruped::RH;
 
-using pronto::rbd::X;
-using pronto::rbd::Y;
-using pronto::rbd::Z;
+using iit::rbd::X;
+using iit::rbd::Y;
+using iit::rbd::Z;
 
 struct GRFStat {
     uint64_t tic_stance;

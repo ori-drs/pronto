@@ -42,7 +42,8 @@ typedef typename pronto::quadruped::JSIMBase JSIM;
 typedef typename pronto::quadruped::LegDataMap<Eigen::Vector3d> LegVector3Map;
 typedef typename pronto::quadruped::LegDataMap<double> LegScalarMap;
 typedef typename pronto::quadruped::ForwardKinematics ForwardKinematics;
-typedef pronto::rbd::ForceVector Wrench;
+
+using Wrench = iit::rbd::ForceVector;
 
 /**
  * @brief The DynamicStanceEstimator class computes the stance status from
