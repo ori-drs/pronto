@@ -60,7 +60,7 @@ template<typename ROBOT_TRAITS> using VoidIfDef = void_t<typename ROBOT_TRAITS::
 template <typename ROBOT_TRAITS, typename = void>
 struct ScalarTraitsSelector
 {
-    typedef typename pronto::rbd::DoubleTraits trait; // "default value"
+    typedef typename iit::rbd::DoubleTraits trait; // "default value"
 };
 
 // #2: A _partial specialization_ that resolves to ...<ROBOT_TRAITS, void> when

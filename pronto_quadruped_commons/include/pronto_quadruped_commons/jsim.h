@@ -35,11 +35,11 @@
 namespace pronto {
 namespace quadruped {
 
-typedef pronto::rbd::InertiaMatrixDense InertiaMatrix;
+typedef iit::rbd::InertiaMatrixDense InertiaMatrix;
 /**
  * The type of the Joint Space Inertia Matrix (JSIM) of the robot HyQ.
  */
-class JSIMBase : public pronto::rbd::StateDependentMatrix<pronto::quadruped::JointState, 18, 18, JSIMBase>
+class JSIMBase : public iit::rbd::StateDependentMatrix<pronto::quadruped::JointState, 18, 18, JSIMBase>
 {
 public:
     typedef Eigen::Matrix<double,18,18> MatrixType;

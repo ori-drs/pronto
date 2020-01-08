@@ -28,7 +28,7 @@
 
 #include "StateDependentMatrix.h"
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 
 

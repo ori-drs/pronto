@@ -32,7 +32,7 @@
 #include "pronto_quadruped_commons/rbd/scalar_traits.h"
 
 
-namespace pronto {
+namespace iit {
 namespace robcogen {
 
 namespace cppad {
@@ -81,7 +81,7 @@ template<> struct ScalarTraits<robcogen::cppad::Double>: public robcogen::CppADD
 
 }
 
-} // namespace pronto
+} // namespace iit
 
 
 

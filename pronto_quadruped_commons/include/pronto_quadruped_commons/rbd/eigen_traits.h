@@ -32,19 +32,19 @@
 /**
  * \file
  * This header file contains some instantiations of the \c traits template (in
- * the \c Eigen::internal namespace) for matrix types defined in \c pronto::rbd
+ * the \c Eigen::internal namespace) for matrix types defined in \c iit::rbd
  */
 
 namespace Eigen {
 namespace internal {
 
 /**
- * The Eigen traits for the pronto::rbd::HomogeneousTransformBase type
+ * The Eigen traits for the iit::rbd::HomogeneousTransformBase type
  */
 template<typename State, typename M>
-struct traits< pronto::rbd::HomogeneousTransformBase<State, M> >
+struct traits< iit::rbd::HomogeneousTransformBase<State, M> >
 {
-        typedef typename pronto::rbd::HomogeneousTransformBase<State, M>::MatrixType MxType;
+        typedef typename iit::rbd::HomogeneousTransformBase<State, M>::MatrixType MxType;
         typedef traits<MxType> Traits;
         typedef typename Traits::Scalar Scalar;
         typedef typename Traits::StorageKind StorageKind;
@@ -64,12 +64,12 @@ struct traits< pronto::rbd::HomogeneousTransformBase<State, M> >
 };
 
 /**
- * The Eigen traits for the pronto::rbd::RotationTransformBase type
+ * The Eigen traits for the iit::rbd::RotationTransformBase type
  */
 template<typename State, typename M>
-struct traits< pronto::rbd::RotationTransformBase<State, M> >
+struct traits< iit::rbd::RotationTransformBase<State, M> >
 {
-        typedef typename pronto::rbd::RotationTransformBase<State, M>::MatrixType MxType;
+        typedef typename iit::rbd::RotationTransformBase<State, M>::MatrixType MxType;
         typedef traits<MxType> Traits;
         typedef typename Traits::Scalar Scalar;
         typedef typename Traits::StorageKind StorageKind;

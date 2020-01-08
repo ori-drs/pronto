@@ -28,7 +28,7 @@
 
 #include "rbd.h"
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 
 /**

@@ -28,7 +28,7 @@
 
 #include "pronto_quadruped_commons/rbd/rbd.h"
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 
 

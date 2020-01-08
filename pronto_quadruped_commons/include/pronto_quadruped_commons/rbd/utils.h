@@ -33,7 +33,7 @@
 #include "rbd.h"
 #include "scalar_traits.h"
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 
 class Utils {
@@ -206,12 +206,12 @@ public:
         g(LX) = ((double)std::rand()) / RAND_MAX;
         g(LY) = ((double)std::rand()) / RAND_MAX;
         g(LZ) = ((double)std::rand()) / RAND_MAX;
-        linearPart(g) = (linearPart(g) / linearPart(g).norm()) * pronto::rbd::g;
+        linearPart(g) = (linearPart(g) / linearPart(g).norm()) * iit::rbd::g;
     }
 
     template <class RT>
     static void cmdlineargs_spatialv(int argc, char** argv,
-            pronto::rbd::Vector6D& vec)
+            iit::rbd::Vector6D& vec)
     {
         if(argc < 6) {
             std::cerr << "Not enough arguments" << std::endl;

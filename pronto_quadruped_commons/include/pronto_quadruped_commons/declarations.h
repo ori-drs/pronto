@@ -52,9 +52,9 @@ typedef Eigen::Matrix<double, 12, 1> Column12d;
 typedef Column12d JointState;
 typedef Eigen::Array<bool, 3, 1> LegJointBool;
 
-typedef pronto::rbd::Vector3d Vector3d;
-typedef pronto::rbd::Matrix33d Matrix3d;
-typedef pronto::rbd::PlainMatrix<double, 3, 3 > FootJac;
+typedef iit::rbd::Vector3d Vector3d;
+typedef iit::rbd::Matrix33d Matrix3d;
+typedef iit::rbd::PlainMatrix<double, 3, 3 > FootJac;
 
 typedef Eigen::Vector3d LegJointState;
 

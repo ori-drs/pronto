@@ -35,8 +35,8 @@ namespace pronto {
 
 namespace quadruped {
 
-typedef typename pronto::rbd::PlainMatrix<double, 6, 6> SpatialTransformPlain ;
-typedef typename pronto::rbd::PlainMatrix<double, 4, 4> HomogeneousTransformPlain ;
+typedef typename iit::rbd::PlainMatrix<double, 6, 6> SpatialTransformPlain ;
+typedef typename iit::rbd::PlainMatrix<double, 4, 4> HomogeneousTransformPlain ;
 
 enum class DestFrame {TRUNK = 0, LF_LOWERLEG, RF_LOWERLEG, LH_LOWERLEG, RH_LOWERLEG,
                       LF_FOOT, RF_FOOT, LH_FOOT, RH_FOOT,

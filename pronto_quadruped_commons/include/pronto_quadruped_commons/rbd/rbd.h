@@ -31,7 +31,7 @@
 #include <Eigen/Sparse>
 
 
-namespace pronto {
+namespace iit {
 /**
  * This namespace contains some basic types and functions related to spatial
  * vectors and Rigid Body Dynamics (RBD).
@@ -59,13 +59,13 @@ namespace rbd {
  * defining a complete type in client code. For individual types one can use
  * something like this:
  * \code
- *      typedef pronto::rbd::Velocity< float > myVelocity;
+ *      typedef iit::rbd::Velocity< float > myVelocity;
  * \endcode
  *
  * An alternative, maybe neater in the case of multiple types, is the following:
  * \code
  *      typedef float Scalar;
- *      typedef pronto::rbd::Core< Scalar > mycore;
+ *      typedef iit::rbd::Core< Scalar > mycore;
  *
  *      using Matrix33 = mycore::Matrix33;
  *      using Vector3  = mycore::Vector3;

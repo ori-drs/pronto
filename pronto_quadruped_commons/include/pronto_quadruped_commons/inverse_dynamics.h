@@ -49,10 +49,10 @@ namespace quadruped {
  */
 class InverseDynamicsBase {
 public:
-    typedef pronto::rbd::ForceVector Force;
-    typedef pronto::rbd::VelocityVector Velocity;
-    typedef pronto::rbd::VelocityVector Acceleration;
-    typedef LinkDataMap<pronto::rbd::ForceVector> ExtForces;
+    typedef iit::rbd::ForceVector Force;
+    typedef iit::rbd::VelocityVector Velocity;
+    typedef iit::rbd::VelocityVector Acceleration;
+    typedef LinkDataMap<iit::rbd::ForceVector> ExtForces;
 
 public:
 
@@ -68,7 +68,7 @@ public:
                     const JointState& q,
                     const JointState& qd,
                     const JointState& qdd,
-                    const ExtForces& fext = LinkDataMap<pronto::rbd::ForceVector>(Force::Zero()) ) = 0;
+                    const ExtForces& fext = LinkDataMap<iit::rbd::ForceVector>(Force::Zero()) ) = 0;
 
     ///@}
     /** \name Inverse dynamics, fully actuated base
@@ -83,7 +83,7 @@ public:
                                    const JointState& q,
                                    const JointState& qd,
                                    const JointState& qdd,
-                                   const ExtForces& fext = LinkDataMap<pronto::rbd::ForceVector>(Force::Zero())) = 0;
+                                   const ExtForces& fext = LinkDataMap<iit::rbd::ForceVector>(Force::Zero())) = 0;
 
     ///@}
     /** \name Gravity terms, fully actuated base

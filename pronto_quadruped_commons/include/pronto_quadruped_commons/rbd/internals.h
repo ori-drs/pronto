@@ -28,7 +28,7 @@
 
 #include "InertiaMatrix.h"
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 namespace internal {
 

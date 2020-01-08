@@ -33,7 +33,7 @@
 #include "internals.h"
 
 
-namespace pronto {
+namespace iit {
 namespace rbd {
 
 /**

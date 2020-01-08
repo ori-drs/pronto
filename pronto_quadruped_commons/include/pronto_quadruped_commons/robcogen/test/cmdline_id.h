@@ -91,7 +91,7 @@ void cmdline_id_fb(int argc, char** argv, typename ROB::InvDynEngine& id)
     a0.setZero();
     v0.setZero();
     grav.setZero();
-    grav(rbd::LZ) = -pronto::rbd::g;
+    grav(rbd::LZ) = -iit::rbd::g;
 
     // the number of "consumed" arguments so far
     int arg = ROB::joints_count * 3 + 1;

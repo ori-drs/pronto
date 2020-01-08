@@ -40,7 +40,7 @@ class InertiaPropertiesBase {
 public:
     virtual ~InertiaPropertiesBase() {}
 
-    virtual const pronto::rbd::Vector3d& getTrunkCOM() = 0;
+    virtual const iit::rbd::Vector3d& getTrunkCOM() = 0;
     virtual double getTrunkMass()  = 0;
 
     virtual double getHipAssemblyMass(const LegID& leg) const = 0;
