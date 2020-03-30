@@ -26,32 +26,23 @@
 using namespace pronto;
 using namespace pronto::quadruped;
 
-ImuBiasLockROS::ImuBiasLockROS(ros::NodeHandle& nh) : nh_(nh)
+ImuBiasLockROS::ImuBiasLockROS(ros::NodeHandle& nh) : ImuBiasLockBaseROS(nh)
 {
-  ImuBiasLockConfig cfg;
-
-  if(!nh_.getParam("torque_threshold", cfg.torque_threshold_)){
-    ROS_WARN("Param torque treshold not found setting to default");
-  } else {
-
-  }
-  if(!nh_.getParam("velocity_threshold", cfg.velocity_threshold_)){
-    ROS_WARN("Param velocity treshold not found setting to default");
-  }
-
-  if(!nh_.getParam("dt", cfg.dt_)){
-    ROS_WARN_STREAM("Param dt not found. Setting to default: " << cfg.dt_);
-  }
-
-  bias_lock_module_ = std::make_shared<ImuBiasLock>(Eigen::Isometry3d::Identity(), cfg);
-
 }
 
 RBISUpdateInterface* ImuBiasLockROS::processMessage(const sensor_msgs::Imu *msg,
                                                     StateEstimator *est)
 {
   msgToImuMeasurement(*msg, bias_lock_imu_msg_);
-  return bias_lock_module_->processMessage(&bias_lock_imu_msg_, est);
+  RBISUpdateInterface* update = bias_lock_module_->processMessage(&bias_lock_imu_msg_, est);
+  RBIS head_state;
+  RBIM head_cov;
+  est->getHeadState(head_state, head_cov);
+  if(update != nullptr){
+    ROS_INFO_STREAM("Bias update. Prior accel bias: " << head_state.accelBias().transpose() << std::endl
+                              <<  "Prior gyro bias: " << head_state.gyroBias().transpose());
+  }
+  return update;
 }
 
 bool ImuBiasLockROS::processMessageInit(const sensor_msgs::Imu *msg,

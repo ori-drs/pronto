@@ -226,9 +226,14 @@ bool LegodoHandlerROS::jointStateFromROS(const sensor_msgs::JointState& msg,
     }
     // store message time in microseconds
     utime = msg.header.stamp.toNSec() / 1000;
-    q = Eigen::Map<const JointState>(msg.position.data());
-    qd = Eigen::Map<const JointState>(msg.velocity.data());
-    tau = Eigen::Map<const JointState>(msg.effort.data());
+    for(int i=0; i<12; i++){
+      q(i) = msg.position[i];
+      qd(i) = msg.velocity[i];
+      tau(i) = msg.effort[i];
+    }
+    //q = Eigen::Map<const JointState>(msg.position.data());
+    //qd = Eigen::Map<const JointState>(msg.velocity.data());
+    //tau = Eigen::Map<const JointState>(msg.effort.data());
 
     qdd = JointState::Zero(); // TODO compute the acceleration
     return true;

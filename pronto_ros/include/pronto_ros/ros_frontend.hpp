@@ -272,7 +272,7 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
 }
 
 //TODO come up with a better way to activate / deactivate debug mode
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
@@ -289,7 +289,19 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // function to get the update
         // Record start time
 #if DEBUG_MODE
+
         auto start = std::chrono::high_resolution_clock::now();
+
+        std::cerr << sensor_id << " module address: " << active_modules_[sensor_id] << std::endl;
+        std::cerr << "message address " << msg.get() << std::endl;
+        std::cerr << "state estimator address " << state_est_.get() << std::endl;
+        std::cerr << "Before cast to SensingModule<" <<type_name<MsgT>() <<">*" << std::endl;
+        SensingModule<MsgT>* temp = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id]);
+        std::cerr << "after cast before call" << std::endl;
+        std::cerr << "address " << temp << std::endl;
+        temp->processMessage(msg.get(), state_est_.get());
+        std::cerr << "after call" << std::endl;
+
 #endif
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
 #if DEBUG_MODE

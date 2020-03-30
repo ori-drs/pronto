@@ -1,6 +1,6 @@
 #include "pronto_ros/ins_ros_handler.hpp"
 #include <eigen_conversions/eigen_msg.h>
-#include <tf/transform_listener.h>
+#include <tf2_ros/transform_listener.h>
 
 #include "pronto_ros/pronto_ros_conversions.hpp"
 
@@ -9,26 +9,25 @@ namespace pronto {
 
 InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
 {
-
-    tf::TransformListener tf_imu_to_body_listener_;
-    tf::StampedTransform tf_imu_to_body_;
+  tf2_ros::Buffer tf_imu_to_body_buffer_;
+  tf2_ros::TransformListener tf_imu_to_body_listener_(tf_imu_to_body_buffer_);
 
     std::string ins_param_prefix = "ins/";
-    std::string imu_frame = "/imu";
+    std::string imu_frame = "imu";
 
     nh_.getParam(ins_param_prefix + "frame", imu_frame);
-    std::string base_frame = "/base";
+    std::string base_frame = "base";
     Eigen::Affine3d ins_to_body;
     while(nh_.ok()){
         try{
-              tf_imu_to_body_listener_.lookupTransform(imu_frame, base_frame,
-                                       ros::Time(0), tf_imu_to_body_);
-              geometry_msgs::Transform temp_transform;
-              tf::transformTFToMsg(tf_imu_to_body_,temp_transform);
-              tf::transformMsgToEigen(temp_transform, ins_to_body);
+        geometry_msgs::TransformStamped temp_transform;
+              temp_transform = tf_imu_to_body_buffer_.lookupTransform(imu_frame, base_frame,
+                                       ros::Time(0));
+
+              tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
               break;
             }
-            catch (tf::TransformException ex){
+            catch (tf2::TransformException ex){
               ROS_ERROR("%s",ex.what());
               ros::Duration(1.0).sleep();
             }
