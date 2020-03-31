@@ -214,7 +214,7 @@ bool LegodoHandlerROS::jointStateFromROS(const sensor_msgs::JointState& msg,
                                                          JointState& q,
                                                          JointState& qd,
                                                          JointState& qdd,
-                                                         JointState tau)
+                                                         JointState& tau)
 {
     // if the size of the joint state message does not match our own,
     // we silently return an invalid update

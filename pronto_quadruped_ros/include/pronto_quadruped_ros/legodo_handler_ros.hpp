@@ -133,7 +133,7 @@ private:
                            JointState& q,
                            JointState& qd,
                            JointState& qdd,
-                           JointState tau);
+                           JointState& tau);
 };
 
 
