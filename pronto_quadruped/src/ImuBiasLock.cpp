@@ -98,7 +98,7 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
     accel_bias_history_.clear();
 
     // don't update the acceleration bias for now
-    // prior.accelBias() = accel_bias_;
+    prior.accelBias() = accel_bias_;
     prior.gyroBias() = gyro_bias_;
 
     return new RBISResetUpdate(prior, prior_cov, RBISUpdateInterface::yawlock, prior.utime);
