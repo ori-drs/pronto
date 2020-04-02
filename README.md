@@ -54,6 +54,8 @@ Pronto is organized as a collection of catkin packages. To build the code,
 just run `catkin build` followed by the name of the packages you are 
 interested to build.
 
+## Robot Implementation Example
+To learn how to use Pronto on your robot, you can have a look at [this repository](https://github.com/ori-drs/pronto_anymal_example), which contains a full implementation on the ANYmal quadruped robot. 
 ## Publications
 If you use part of this work in academic context, please cite the appropriate
 publication from the list below:
