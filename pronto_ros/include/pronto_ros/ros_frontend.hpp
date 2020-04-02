@@ -272,7 +272,7 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
 }
 
 //TODO come up with a better way to activate / deactivate debug mode
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0 
 
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
