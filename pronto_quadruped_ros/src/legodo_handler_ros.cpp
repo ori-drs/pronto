@@ -243,7 +243,7 @@ LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::Jo
                                                            StateEstimator *est)
 {
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
-            return NULL;
+      return nullptr;
     }
     getPreviousState(est);
 

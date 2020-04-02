@@ -18,19 +18,19 @@ Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
 {
     // TODO more appropriate check to distinguish different situations
     if(msg->status != VisualOdometryUpdate::ESTIMATE_VALID){
-        return NULL;
+        return nullptr;
     }
 
     // if there are NaN or inf in the translation, we leave.
     if(!msg->relative_pose.translation().allFinite()){
         cerr << "Visual Odometry: NaN or inf in the translation." << endl;
-        return NULL;
+        return nullptr;
     }
 
     // supported modalities are only position or position and orientation
     if((mode_ != VisualOdometryMode::MODE_POSITION) && (mode_ != VisualOdometryMode::MODE_POSITION_ORIENT)){
         cerr << "Visual Odometry: unsupported mode." << endl;
-        return NULL;
+        return nullptr;
     }
 
     // get the robot pose at time t0 according to the filter
