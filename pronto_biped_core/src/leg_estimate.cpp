@@ -40,7 +40,7 @@ LegEstimator::~LegEstimator(){
     }
 }
 
-LegEstimator::LegEstimator(const std::string& urdf_string, const LegOdometerConfig& cfg) :
+LegEstimator::LegEstimator(const LegOdometerConfig& cfg) :
   lfoot_sensing_(0,0,0),
   rfoot_sensing_(0,0,0),
   n_control_contacts_left_(-1),
@@ -89,14 +89,15 @@ LegEstimator::LegEstimator(const std::string& urdf_string, const LegOdometerConf
   std::cout << "Leg Odometry Filter Contact Events: " << filter_contact_events_ << " \n";
 
   // publish_diagnostics_ = bot_param_get_boolean_or_fail(botparam_, "state_estimator.legodo.publish_diagnostics");
-
+/*
   KDL::Tree tree;
   if (!kdl_parser::treeFromString(urdf_string ,tree)){
     cerr << "ERROR: Failed to extract kdl tree from xml robot description" << endl;
     exit(-1);
   }
-  fksolver_.reset(new KDL::TreeFkSolverPosFull_recursive(tree));
 
+  fksolver_.reset(new KDL::TreeFkSolverPosFull_recursive(tree));
+  */
   /*
   // Vis Config:
   pc_vis_ = new pronto_vis( lcm_publish_->getUnderlyingLCM());

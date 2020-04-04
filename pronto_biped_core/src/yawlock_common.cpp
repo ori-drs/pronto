@@ -48,7 +48,7 @@ namespace biped {
 
 YawLock::YawLock(const std::string& urdf_string) : is_robot_standing_(false)
 {
-
+/*
   KDL::Tree tree;
   if (!kdl_parser::treeFromString(urdf_string ,tree)) {
     std::cerr << "ERROR: Failed to extract kdl tree from "
@@ -56,6 +56,7 @@ YawLock::YawLock(const std::string& urdf_string) : is_robot_standing_(false)
     return;
   }
   fksolver_.reset(new KDL::TreeFkSolverPosFull_recursive(tree));
+  */
 }
 
 

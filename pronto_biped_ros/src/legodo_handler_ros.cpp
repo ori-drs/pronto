@@ -5,7 +5,7 @@ namespace pronto {
 namespace biped {
 
 LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
-                                       ros::NodeHandle& nh) : nh_(nh) {
+                                       ros::NodeHandle& nh) : nh_(nh), legodo_msg_(28) {
   std::string prefix = "/state_estimator_pronto/legodo/";
   if(!nh_.getParam(prefix + "torque_adjustment", legodo_cfg_.use_torque_adjustment_)){
     ROS_WARN_STREAM("Couldn't find parameter \"torque_adjustment\"."
@@ -100,8 +100,19 @@ LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
                     << " Using default: "
                     << std::boolalpha << legodo_cfg_.odometer_cfg.use_controller_input);
   }
+  std::string force_torque_topic;
+  if(!nh_.getParam(prefix + "force_torque_topic", force_torque_topic)){
+    ROS_WARN_STREAM("Couldn't find parameter \"force_torque_topic\".");
+  }
+  force_torque_sub_ = nh_.subscribe(force_torque_topic, 10, &LegOdometryHandler::forceTorqueCallback, this);
 
-  legodo_module_.reset(new LegOdometryModule(urdf_string, legodo_cfg_));
+  std::string ctrl_input_topic;
+  if(!nh_.getParam(prefix + "controller_input_topic", ctrl_input_topic)){
+    ROS_WARN_STREAM("Couldn't find parameter \"controller_input_topic\".");
+  }
+  ctrl_foot_contact_sub_ = nh_.subscribe(ctrl_input_topic, 10, &LegOdometryHandler::ctrlFootContactCallback, this);
+
+  legodo_module_.reset(new LegOdometryModule(legodo_cfg_));
 }
 
 RBISUpdateInterface* LegOdometryHandler::processMessage(const sensor_msgs::JointState *msg,
@@ -120,6 +131,15 @@ bool LegOdometryHandler::processMessageInit(const sensor_msgs::JointState *msg,
 {
   jointStateFromROS(*msg, legodo_msg_);
   return legodo_module_->processMessageInit(&legodo_msg_, sensor_initialized, default_state, default_cov, init_state, init_cov);
+}
+
+void LegOdometryHandler::ctrlFootContactCallback(const pronto_msgs::ControllerFootContactConstPtr & msg){
+  legodo_module_->setControllerInput(msg->num_left_foot_contacts, msg->num_right_foot_contacts);
+}
+
+void LegOdometryHandler::forceTorqueCallback(const pronto_msgs::BipedForceTorqueSensorsConstPtr &msg){
+  forceTorqueFromROS(*msg, ft_msg_);
+  legodo_module_->setForceTorque(ft_msg_);
 }
 
 }

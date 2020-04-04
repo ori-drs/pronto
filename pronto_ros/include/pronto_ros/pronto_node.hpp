@@ -1,16 +1,13 @@
 #pragma once
 
 #include <ros/node_handle.h>
-#include <pronto_ros/ros_frontend.hpp>
-#include <pronto_ros/ins_ros_handler.hpp>
-#include <pronto_ros/vicon_ros_handler.hpp>
-#include <pronto_ros/pose_msg_ros_handler.hpp>
-#include <pronto_ros/visual_odometry_ros_handler.hpp>
-#include <pronto_quadruped_ros/legodo_handler_ros.hpp>
-#include <pronto_quadruped/StanceEstimator.hpp>
-#include <pronto_quadruped/LegOdometer.hpp>
-#include <pronto_ros/lidar_odometry_ros_handler.hpp>
-#include <pronto_ros/scan_matcher_ros_handler.hpp>
+#include "pronto_ros/ros_frontend.hpp"
+#include "pronto_ros/ins_ros_handler.hpp"
+#include "pronto_ros/vicon_ros_handler.hpp"
+#include "pronto_ros/pose_msg_ros_handler.hpp"
+#include "pronto_ros/visual_odometry_ros_handler.hpp"
+#include "pronto_ros/lidar_odometry_ros_handler.hpp"
+#include "pronto_ros/scan_matcher_ros_handler.hpp"
 
 namespace pronto {
 

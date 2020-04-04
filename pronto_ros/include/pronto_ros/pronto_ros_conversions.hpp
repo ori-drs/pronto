@@ -12,6 +12,7 @@
 #include <sensor_msgs/JointState.h>
 #include <pronto_msgs/VisualOdometryUpdate.h>
 #include <pronto_msgs/LidarOdometryUpdate.h>
+#include <pronto_msgs/BipedForceTorqueSensors.h>
 
 namespace pronto {
 
@@ -48,5 +49,8 @@ void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
 
 void lidarOdometryFromROS(const pronto_msgs::LidarOdometryUpdate& ros_msg,
                           LidarOdometryUpdate& msg);
+
+void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
+                        pronto::ForceTorqueSensorArray& msg);
 
 }

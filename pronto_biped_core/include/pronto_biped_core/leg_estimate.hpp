@@ -3,15 +3,16 @@
 #include <fstream>      // std::ofstream
 
 #include <map>
-#include <urdf/model.h>
+//#include <urdf/model.h>
 #include <kdl/tree.hpp>
-#include <kdl_parser/kdl_parser.hpp>
+//#include <kdl_parser/kdl_parser.hpp>
 #include <forward_kinematics/treefksolverposfull_recursive.hpp>
 #include <filter_tools/simple_kalman_filter.hpp> // SimpleKalmanFilter
 
 #include "pronto_biped_core/FootContact.hpp"
 #include "pronto_biped_core/FootContactAlt.hpp"
 #include "pronto_biped_core/foot_contact_classify.hpp"
+#include <memory>
 
 namespace pronto {
 namespace biped {
@@ -28,7 +29,7 @@ class LegEstimator {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   public:
-    LegEstimator(const std::string& urdf_string, const LegOdometerConfig& cfg);
+    LegEstimator(const LegOdometerConfig& cfg);
     
     virtual ~LegEstimator();
     

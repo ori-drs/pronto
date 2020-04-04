@@ -36,7 +36,6 @@ YawLockModule::YawLockModule(const std::string& urdf_string,
   // Bias Estimation
   // TODO replace subscription IMU with something else
   /*
-  lcm_recv->subscribe( "IMU_pelvisRearImu" ,&YawLockModule::insHandler,this);
   char * ins_frame = bot_param_get_str_or_fail(param, "state_estimator.ins.frame");
   bot_frames_get_trans(frames, ins_frame, "body", &ins_to_body);
   free(ins_frame);
@@ -78,8 +77,11 @@ YawLockModule::YawLockModule(const std::string& urdf_string,
   cov_scan_match = R_scan_match.asDiagonal();
 }
 
-void YawLockModule::addIMUMeasurement(const ImuMeasurement &imu_msg){
-    body_gyro = ins_to_body.rotation() * imu_msg.omega;
+void YawLockModule::processSecondaryMessage(const pronto::JointState & msg){
+  if (mode == YawLockMode::YAW || mode == YawLockMode::YAWBIAS_YAW)
+  {
+    yaw_lock_.setJointState(msg.joint_position, msg.joint_name);
+  }
 }
 
 void YawLockModule::addControlStatus(const ControlStatus &ctrl_status) {
@@ -91,8 +93,11 @@ void YawLockModule::addControlStatus(const ControlStatus &ctrl_status) {
     }
 }
 
-RBISUpdateInterface * YawLockModule::processMessage(const JointState *msg,
+RBISUpdateInterface * YawLockModule::processMessage(const ImuMeasurement *msg,
                                                     StateEstimator* state_estimator){
+  body_gyro = ins_to_body.rotation() * msg->omega;
+
+
   state_estimator->getHeadState(head_state, head_cov);
 
   // Get the Yaw Rate Bias Estimate:
@@ -106,8 +111,6 @@ RBISUpdateInterface * YawLockModule::processMessage(const JointState *msg,
   // Get the Yaw estimate:
   if (mode == YawLockMode::YAW || mode == YawLockMode::YAWBIAS_YAW)
   {
-    yaw_lock_.setJointState(msg->joint_position, msg->joint_name);
-
     yawLockValid = yaw_lock_.getCorrection(head_state.getPoseAsIsometry3d(),
                                            msg->utime,
                                            world_to_body_quat_lock);
@@ -151,7 +154,7 @@ RBISUpdateInterface * YawLockModule::processMessage(const JointState *msg,
   }
 }
 
-bool YawLockModule::processMessageInit(const JointState *msg,
+bool YawLockModule::processMessageInit(const ImuMeasurement* msg,
                                        const std::map<std::string, bool> &sensor_initialized,
                                        const RBIS &default_state,
                                        const RBIM &default_cov,

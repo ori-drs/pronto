@@ -3,15 +3,14 @@
 namespace pronto {
 namespace biped {
 
-LegOdometryModule::LegOdometryModule(const std::string &urdf_string,
-                                     const LegOdometryConfig &cfg) :
-    leg_est_(new LegEstimator(urdf_string, cfg.odometer_cfg)),
+LegOdometryModule::LegOdometryModule(const LegOdometryConfig &cfg) :
+    leg_est_(new LegEstimator(cfg.odometer_cfg)),
     leg_odo_common_(new LegOdoCommon(cfg.common_cfg)),
     use_torque_adjustment_(cfg.use_torque_adjustment_),
     zero_initial_velocity(cfg.zero_initial_velocity)
 
 {
-    std::cout << "LegOdo will compute directly, in thread\n";
+    std::cout << "LegOdo will compute directly, in thread" << std::endl;
 
     if (use_torque_adjustment_){
       std::cout << "Torque-based joint angle adjustment: Using\n";
@@ -37,7 +36,8 @@ RBISUpdateInterface* LegOdometryModule::processMessage(const JointState *msg,
       return NULL;
     }
 
-    // TODO: this was changed to allow head_state to be calculated here, but are the assumptions still valid?
+    // TODO: this was changed to allow head_state to be calculated here,
+    // but are the assumptions still valid?
     RBIS head_state;
     RBIM head_cov;
     est->getHeadState(head_state, head_cov);
@@ -72,7 +72,7 @@ RBISUpdateInterface* LegOdometryModule::processMessage(const JointState *msg,
           std::cout << "Leg Odometry is not valid"
                     << " not integrating =========================\n";
       }
-      return NULL;
+      return nullptr;
     }
 
     // 2. If successful make a RBIS Measurement

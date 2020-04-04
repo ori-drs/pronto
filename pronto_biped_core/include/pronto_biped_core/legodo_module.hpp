@@ -20,8 +20,7 @@ struct LegOdometryConfig {
 
 class LegOdometryModule : SensingModule<JointState> {
 public:
-    LegOdometryModule(const std::string& urdf_string,
-                      const LegOdometryConfig& cfg);
+    LegOdometryModule(const LegOdometryConfig& cfg);
 
     RBISUpdateInterface* processMessage(const JointState *msg,
                                         StateEstimator *est);

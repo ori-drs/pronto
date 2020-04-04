@@ -1,11 +1,12 @@
 #pragma once
 
-#include <urdf/model.h>
+//#include <urdf/model.h>
 #include <kdl/tree.hpp>
-#include <kdl_parser/kdl_parser.hpp>
+//#include <kdl_parser/kdl_parser.hpp>
 #include <forward_kinematics/treefksolverposfull_recursive.hpp>
 
 #include <Eigen/Dense>
+#include <memory>
 
 namespace pronto {
 namespace biped {

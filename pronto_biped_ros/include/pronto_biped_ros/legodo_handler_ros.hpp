@@ -3,6 +3,10 @@
 #include <sensor_msgs/JointState.h>
 #include <ros/node_handle.h>
 #include <pronto_biped_core/legodo_module.hpp>
+#include <pronto_msgs/BipedForceTorqueSensors.h>
+#include <pronto_msgs/ControllerFootContact.h>
+#include <pronto_ros/pronto_ros_conversions.hpp>
+
 
 namespace pronto {
 namespace biped {
@@ -22,11 +26,17 @@ public:
                           const RBIM &default_cov,
                           RBIS &init_state,
                           RBIM &init_cov) override;
+public:
+  void forceTorqueCallback(const pronto_msgs::BipedForceTorqueSensorsConstPtr& msg);
+  void ctrlFootContactCallback(const pronto_msgs::ControllerFootContactConstPtr& msg);
 protected:
   ros::NodeHandle nh_;
   std::unique_ptr<LegOdometryModule> legodo_module_;
+  ros::Subscriber ctrl_foot_contact_sub_;
+  ros::Subscriber force_torque_sub_;
   JointState legodo_msg_;
   LegOdometryConfig legodo_cfg_;
+  pronto::ForceTorqueSensorArray ft_msg_;
 };
 
 }

@@ -35,7 +35,7 @@ enum class ControlStatus {
     MANIPULATING
 };
 
-class YawLockModule : public SensingModule<JointState> {
+class YawLockModule : public DualSensingModule<ImuMeasurement, pronto::JointState> {
 public:
     // max size in memory will be 2
     typedef Eigen::Matrix<int, Eigen::Dynamic, 1, 0, 2> MeasIndices;
@@ -46,20 +46,19 @@ public:
                 const YawLockConfig& cfg,
                 const Transform& ins_to_body);
 
-  RBISUpdateInterface * processMessage(const JointState *msg,
-                                       StateEstimator* state_estimator);
+  RBISUpdateInterface * processMessage(const ImuMeasurement* imu_msg,
+                                       StateEstimator* state_estimator) override;
 
-  bool processMessageInit(const JointState *msg,
+  bool processMessageInit(const ImuMeasurement *msg,
                           const std::map<std::string, bool> &sensor_initialized,
                           const RBIS &default_state,
                           const RBIM &default_cov,
                           RBIS &init_state,
-                          RBIM &init_cov);
+                          RBIM &init_cov) override;
 
-  void addIMUMeasurement(const ImuMeasurement& imu_msg);
+  void processSecondaryMessage(const JointState &msg) override;
   void addControlStatus(const ControlStatus& ctrl_msg);
 protected:
-  // Classes:
   YawLock yaw_lock_;
   YawLockMode mode;
 
