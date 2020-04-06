@@ -141,6 +141,7 @@ void jointStateFromROS(const sensor_msgs::JointState &ros_msg, JointState &msg){
   msg.joint_position = std::move(ros_msg.position);
   msg.joint_velocity = std::move(ros_msg.velocity);
   msg.joint_effort = std::move(ros_msg.effort);
+  msg.joint_name = std::move(ros_msg.name);
 }
 
 void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
