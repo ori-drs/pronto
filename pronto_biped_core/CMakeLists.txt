@@ -5,7 +5,6 @@ add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS filter_tools
                                         pronto_math
-                                        forward_kinematics
                                         pronto_core)
 
 
@@ -15,7 +14,6 @@ catkin_package(INCLUDE_DIRS include
                LIBRARIES ${LEGODO_LIB_NAME}
                CATKIN_DEPENDS filter_tools
                               pronto_math
-                              forward_kinematics
                               pronto_core)
 
 include_directories(include ${catkin_INCLUDE_DIRS})

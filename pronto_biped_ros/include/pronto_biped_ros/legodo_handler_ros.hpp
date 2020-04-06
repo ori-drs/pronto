@@ -16,7 +16,7 @@ class LegOdometryHandler : public pronto::SensingModule<sensor_msgs::JointState>
 public:
 
   LegOdometryHandler() = delete;
-  LegOdometryHandler(std::string urdf_string, ros::NodeHandle& nh);
+  LegOdometryHandler(ros::NodeHandle& nh, std::string urdf_string);
 
   RBISUpdateInterface* processMessage(const sensor_msgs::JointState *msg,
                                       StateEstimator *est) override;
@@ -41,6 +41,7 @@ protected:
   LegOdometryConfig legodo_cfg_;
   pronto::ForceTorqueSensorArray ft_msg_;
   std::vector<std::string> joint_names_;
+  int active_joints_ = 30;
   std::unique_ptr<BipedForwardKinematicsROS> fk_;
 };
 

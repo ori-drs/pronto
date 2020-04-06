@@ -19,7 +19,7 @@ FootContactClassifier::FootContactClassifier(bool publish_diagnostics_) :
   initialized_ = false;
   mode_ = WalkMode::UNKNOWN;
   previous_mode_ = WalkMode::UNKNOWN;
-  verbose_ = -1; // 3 lots, 2 some, 1 v.important, 0 typical for debug, -1 typical for operation
+  verbose_ = 3; // 3 lots, 2 some, 1 v.important, 0 typical for debug, -1 typical for operation
 
   // defaults dehann used: 0, 5, 5000 but foot doesnt 'hang' like in VRC
   left_contact_state_weak_  = new SchmittTrigger(20.0, 30.0, 5000, 5000);

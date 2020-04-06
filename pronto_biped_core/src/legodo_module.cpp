@@ -43,6 +43,8 @@ RBISUpdateInterface* LegOdometryModule::processMessage(const JointState *msg,
     est->getHeadState(head_state, head_cov);
     leg_est_->setPoseBody(head_state.getPoseAsIsometry3d());
 
+    std::cerr << "force_torque_.sensors[0].force[2] = " <<  force_torque_.sensors[0].force[2] << std::endl;
+
     // 1. Do the Leg Odometry Integration
     leg_est_->setFootSensing(FootSensing(fabs(force_torque_.sensors[0].force[2]),
                                               force_torque_.sensors[0].moment[0],
@@ -119,8 +121,8 @@ bool LegOdometryModule::processMessageInit(const JointState *msg,
 }
 
 void LegOdometryModule::setForceTorque(const ForceTorqueSensorArray &array){
-    force_torque_init_ = true;
     force_torque_ = array;
+    force_torque_init_ = true;
 }
 
 } // namespace biped

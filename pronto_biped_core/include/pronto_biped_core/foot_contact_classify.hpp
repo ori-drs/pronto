@@ -21,8 +21,8 @@ namespace biped {
 
 class FootSensing { 
 public:
-  FootSensing(double force_z, double torque_x, double torque_y) :
-    force_z (force_z), torque_x (torque_x), torque_y(torque_y)
+  FootSensing(double force_z_in, double torque_x_in, double torque_y_in) :
+    force_z (force_z_in), torque_x (torque_x_in), torque_y(torque_y_in)
   {
 
   }
@@ -48,6 +48,10 @@ class FootContactClassifier {
                         const FootSensing& rfoot_sensing_in ){
       lfoot_sensing_ = lfoot_sensing_in; 
       rfoot_sensing_ = rfoot_sensing_in;
+      std::cerr << "Setting Foot Sensing : " << std::endl;
+      std::cerr << "Left Fz Tx Ty"<< lfoot_sensing_.force_z << " " << lfoot_sensing_.torque_x << " " << lfoot_sensing_.torque_y << std::endl;
+      std::cerr << "Right Fz Tx Ty"<< rfoot_sensing_.force_z << " " << rfoot_sensing_.torque_x << " " << rfoot_sensing_.torque_y << std::endl;
+
     }
     
     inline WalkMode getMode() const{
@@ -127,7 +131,7 @@ class FootContactClassifier {
     // initialization condition is both feet in contact with the ground
     bool initialized_;
     // Publish Debug Data e.g. kinematic velocities and foot contacts
-    bool print_diagnostics_;
+    bool print_diagnostics_ = true;
     
     WalkMode mode_;
     // the mode in the most previous iteration.

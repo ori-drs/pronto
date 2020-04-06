@@ -176,7 +176,7 @@ void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
   ft.moment[0] = ros_msg.l_foot.torque.x;
   ft.moment[1] = ros_msg.l_foot.torque.y;
   ft.moment[2] = ros_msg.l_foot.torque.z;
-  msg.sensors.push_back(ft);
+  msg.sensors[0] = ft;
 
   ft.force[0] = ros_msg.r_foot.force.x;
   ft.force[1] = ros_msg.r_foot.force.y;
@@ -184,7 +184,7 @@ void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
   ft.moment[0] = ros_msg.r_foot.torque.x;
   ft.moment[1] = ros_msg.r_foot.torque.y;
   ft.moment[2] = ros_msg.r_foot.torque.z;
-  msg.sensors.push_back(ft);
+  msg.sensors[1] = ft;
 
   ft.force[0] = ros_msg.l_hand.force.x;
   ft.force[1] = ros_msg.l_hand.force.y;
@@ -192,7 +192,7 @@ void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
   ft.moment[0] = ros_msg.l_hand.torque.x;
   ft.moment[1] = ros_msg.l_hand.torque.y;
   ft.moment[2] = ros_msg.l_hand.torque.z;
-  msg.sensors.push_back(ft);
+  msg.sensors[2] = ft;
 
   ft.force[0] = ros_msg.r_hand.force.x;
   ft.force[1] = ros_msg.r_hand.force.y;
@@ -200,7 +200,7 @@ void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
   ft.moment[0] = ros_msg.r_hand.torque.x;
   ft.moment[1] = ros_msg.r_hand.torque.y;
   ft.moment[2] = ros_msg.r_hand.torque.z;
-  msg.sensors.push_back(ft);
+  msg.sensors[3] = ft;
 }
 
 }

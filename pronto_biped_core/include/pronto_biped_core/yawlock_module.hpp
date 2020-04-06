@@ -4,6 +4,7 @@
 #include <pronto_core/rbis_update_interface.hpp>
 #include <pronto_core/definitions.hpp>
 
+#include "pronto_biped_core/biped_forward_kinematics.hpp"
 #include "pronto_biped_core/yawlock_common.hpp"
 
 namespace  pronto {
@@ -42,7 +43,7 @@ public:
     typedef Eigen::Matrix<double, Eigen::Dynamic,  1, 0, 2> MeasVector;
     typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 2, 2> MeasCovMatrix;
 public:
-  YawLockModule(const std::string& urdf_string,
+  YawLockModule(BipedForwardKinematics& fk,
                 const YawLockConfig& cfg,
                 const Transform& ins_to_body);
 
@@ -66,7 +67,7 @@ protected:
   MeasVector z_meas;
   MeasCovMatrix cov_scan_match;
 
-  Transform ins_to_body;
+  Transform ins_to_body_;
   Eigen::Vector3d body_gyro;
 
   RBIS head_state;

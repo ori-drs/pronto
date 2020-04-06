@@ -1,5 +1,4 @@
 #include "pronto_biped_core/yawlock_common.hpp"
-#include <forward_kinematics/treefksolverposfull_recursive.hpp>
 #include <eigen_utils/eigen_utils.hpp>
 
 // if transitioned to standing, capture yaw
@@ -46,28 +45,8 @@ detection
 namespace pronto {
 namespace biped {
 
-YawLock::YawLock(const std::string& urdf_string) : is_robot_standing_(false)
+YawLock::YawLock(BipedForwardKinematics& fk) : fk_(fk), is_robot_standing_(false)
 {
-/*
-  KDL::Tree tree;
-  if (!kdl_parser::treeFromString(urdf_string ,tree)) {
-    std::cerr << "ERROR: Failed to extract kdl tree from "
-              << "xml robot description" << std::endl;
-    return;
-  }
-  fksolver_.reset(new KDL::TreeFkSolverPosFull_recursive(tree));
-  */
-}
-
-
-Eigen::Isometry3d KDLToEigen(KDL::Frame tf){
-  Eigen::Isometry3d tf_out;
-  tf_out.setIdentity();
-  tf_out.translation()  << tf.p[0], tf.p[1], tf.p[2];
-  Eigen::Quaterniond q;
-  tf.M.GetQuaternion( q.x() , q.y(), q.z(), q.w());
-  tf_out.rotate(q);
-  return tf_out;
 }
 
 bool YawLock::getCorrection(const Eigen::Isometry3d& world_to_body,
@@ -98,24 +77,16 @@ bool YawLock::getCorrection(const Eigen::Isometry3d& world_to_body,
     }
   }
 
+  Eigen::Isometry3d body_to_l_foot(Eigen::Isometry3d::Identity());
+  Eigen::Isometry3d body_to_r_foot(Eigen::Isometry3d::Identity());
 
-  // Solve FK for feet:
-  std::map<std::string, double> jointpos_in;
-  std::map<std::string, KDL::Frame > cartpos_out;
-  //cast to uint to suppress compiler warning
-  for (size_t i = 0; i < joint_name_.size(); i++) {
-    jointpos_in.insert(make_pair(joint_name_[i], joint_position_[i]));
-  }
   // true = flatten tree to absolute transforms
-  bool kinematics_status = fksolver_->JntToCart(jointpos_in, cartpos_out, true);
-  if(kinematics_status >= 0) {
-    // cout << "Success!" <<endl;
-  } else {
+  bool kinematics_status = fk_.getLeftFootPose(joint_position_, body_to_l_foot)
+                           && fk_.getRightFootPose(joint_position_, body_to_r_foot);
+  if(!kinematics_status) {
     std::cerr << "Error: could not calculate forward kinematics!" <<std::endl;
     exit(-1);
   }
-  Eigen::Isometry3d body_to_l_foot = KDLToEigen(cartpos_out.find( left_standing_link_ )->second);
-  Eigen::Isometry3d body_to_r_foot = KDLToEigen(cartpos_out.find( right_standing_link_ )->second);
 
   Eigen::Isometry3d l_foot_to_r_foot = body_to_l_foot.inverse() *body_to_r_foot ;
 

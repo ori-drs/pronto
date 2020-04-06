@@ -5,7 +5,6 @@
 #include <fstream>
 
 #include "pronto_biped_core/leg_estimate.hpp"
-#include "pronto_biped_core/common_conversions.hpp"
 #include "pronto_biped_core/biped_forward_kinematics.hpp"
 
 
@@ -87,6 +86,10 @@ LegEstimator::LegEstimator(BipedForwardKinematics& fk, const LegOdometerConfig& 
   }else{
     filter_joint_positions_ = FilterJointMode::NONE;
   }
+
+  filtered_joint_position_.resize(NUM_FILT_JOINTS);
+  filtered_joint_velocity_.resize(NUM_FILT_JOINTS);
+  filtered_joint_effort_.resize(NUM_FILT_JOINTS);
 
   std::cout << "Leg Odometry Filter Contact Events: " << filter_contact_events_ << " \n";
 
@@ -460,35 +463,17 @@ float LegEstimator::updateOdometry(const std::vector<std::string>& joint_name,
 
 
   // 1. Solve for Forward Kinematics:
-  // call a routine that calculates the transforms the joint_state_t* msg.
-  //map<string, double> jointpos_in;
-  //map<string, KDL::Frame> cartpos_out;
-
-  //cast to uint to suppress compiler warning
-  //for (size_t i = 0; i < joint_name.size(); i++) {
-  //  jointpos_in.insert(make_pair(joint_name[i], filtered_joint_position_[i]));
- // }
-  // true = flatten tree to absolute transforms
-  Eigen::Isometry3d body_to_l_foot;
-  Eigen::Isometry3d body_to_r_foot;
+  Eigen::Isometry3d body_to_l_foot = Eigen::Isometry3d::Identity();
+  Eigen::Isometry3d body_to_r_foot = Eigen::Isometry3d::Identity();
 
   bool kinematics_status = fk_.getLeftFootPose(filtered_joint_position_, body_to_l_foot);
   kinematics_status = kinematics_status & fk_.getRightFootPose(filtered_joint_position_, body_to_r_foot);
 
 
-  //    fksolver_->JntToCart(jointpos_in,cartpos_out, true);
-
-  if (kinematics_status >= 0) {
-    // cout << "Success!" <<endl;
-  } else {
+  if (!kinematics_status) {
     cerr << "Error: could not calculate forward kinematics!" << endl;
     exit(-1);
   }
-  // TODO replace kdltoeigen classes from ProntoVis
-//   = fk_.getLeftFootPose(filtered_joint_position_);
- // KDLToEigen(cartpos_out.find(l_standing_link_)->second);
-  //Eigen::Isometry3d body_to_r_foot = KDLToEigen(cartpos_out.find(r_standing_link_)->second);
-//   = fk_.getRightFootPose(filter_joint_positions_);
   // 2. Determine Primary Foot State
 
   // 5. Analyse signals to infer covariance

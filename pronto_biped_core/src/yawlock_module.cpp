@@ -3,10 +3,10 @@
 namespace pronto {
 namespace biped {
 
-YawLockModule::YawLockModule(const std::string& urdf_string,
+YawLockModule::YawLockModule(BipedForwardKinematics& fk,
                              const YawLockConfig &cfg,
                              const Transform &ins_to_body) :
-    yaw_lock_(urdf_string), mode(cfg.mode)
+    yaw_lock_(fk), mode(cfg.mode), ins_to_body_(ins_to_body)
 {
 
 
@@ -95,7 +95,7 @@ void YawLockModule::addControlStatus(const ControlStatus &ctrl_status) {
 
 RBISUpdateInterface * YawLockModule::processMessage(const ImuMeasurement *msg,
                                                     StateEstimator* state_estimator){
-  body_gyro = ins_to_body.rotation() * msg->omega;
+  body_gyro = ins_to_body_.rotation() * msg->omega;
 
 
   state_estimator->getHeadState(head_state, head_cov);

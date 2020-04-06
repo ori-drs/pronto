@@ -14,7 +14,7 @@
 namespace pronto {
 namespace biped {
 
-constexpr int NUM_FILT_JOINTS = 28;
+constexpr int NUM_FILT_JOINTS = 30;
 
 struct LegOdometerConfig {
     ControlMode control_mode = ControlMode::CONTROLLER_UNKNOWN;
@@ -162,7 +162,7 @@ private:
     Eigen::Isometry3d previous_odom_to_body_;
     // The incremental motion of the pelvis: transform between previous_odom_to_body_ and odom_to_body_
     Eigen::Isometry3d odom_to_body_delta_;
-    bool leg_odo_init_; // has the leg odometry been initialized. (set to false when an anomoly is detected)
+    bool leg_odo_init_ = false; // has the leg odometry been initialized. (set to false when an anomoly is detected)
     FootID primary_foot_; // the foot assumed to be fixed for the leg odometry. TODO: unify the foot ids
     Eigen::Isometry3d odom_to_primary_foot_fixed_; // Position in the odom frame in which the fixed foot is kept
     Eigen::Isometry3d odom_to_secondary_foot_; // Ditto for moving foot (entirely defined by kinematics)

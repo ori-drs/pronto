@@ -33,12 +33,20 @@ void BipedForwardKinematicsROS::setJointNames(const JointName &names){
     cartpos_out.insert(std::make_pair(joint_names_[i], KDL::Frame::Identity()));
   }
 
-  if(!joint_names_.empty() && joint_names_.size() == 28){
+  if(!joint_names_.empty() && joint_names_.size() == 30){
     joint_names_ok_ = true;
   }
 }
 
 bool BipedForwardKinematicsROS::getLeftFootPose(const JointState &q, Transform &x){
+#if DEBUG_MODE
+  std::cerr <<"Joint names ok: " << std::boolalpha << joint_names_ok_ << std::endl;
+  std::cerr << "nr. " << joint_names_.size() << std::endl;
+
+  for(const auto& el : joint_names_){
+    std::cerr << "name: " << el << std::endl;
+  }
+#endif
   return joint_names_ok_ && computeFK(q, x, left_foot_name_);
 }
 
@@ -52,6 +60,11 @@ bool BipedForwardKinematicsROS::computeFK(const JointState& q, Transform& t, std
   for (size_t i = 0; i < joint_names_.size(); i++) {
     jointpos_in[joint_names_[i]] = q[i];
   }
+#if DEBUG_MODE
+  for(const auto& kv : jointpos_in){
+    std::cerr << "jointpos_in[" << kv.first << "] = " << kv.second << std::endl;
+  }
+#endif
   // compute FK
   int res = fk_solver_->JntToCart(jointpos_in, cartpos_out, true);
   // convert to Eigen

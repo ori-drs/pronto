@@ -1,10 +1,6 @@
 #pragma once
 
-//#include <urdf/model.h>
-#include <kdl/tree.hpp>
-//#include <kdl_parser/kdl_parser.hpp>
-#include <forward_kinematics/treefksolverposfull_recursive.hpp>
-
+#include "pronto_biped_core/biped_forward_kinematics.hpp"
 #include <Eigen/Dense>
 #include <memory>
 
@@ -15,7 +11,7 @@ class YawLock {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    YawLock(const std::string& urdf_string);
+    YawLock(pronto::biped::BipedForwardKinematics& fk);
 
     ~YawLock(){
     }
@@ -40,7 +36,7 @@ public:
     }
 
     inline void setJointState(const std::vector<double>& joint_position_in,
-                       const std::vector<std::string>& joint_name_in)
+                              const std::vector<std::string>& joint_name_in)
     {
       joint_angles_init_ = true;
       joint_position_ = joint_position_in;
@@ -68,7 +64,7 @@ public:
 
 
   private:
-    std::shared_ptr<KDL::TreeFkSolverPosFull_recursive> fksolver_;
+    BipedForwardKinematics& fk_;
     std::vector<std::string> joint_name_;
     std::vector<double> joint_position_;
 
@@ -97,7 +93,6 @@ public:
 
     std::string left_standing_link_;
     std::string right_standing_link_;
-
 };
 }
 } // namespace pronto

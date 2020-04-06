@@ -4,8 +4,12 @@
 namespace pronto {
 namespace biped {
 
-LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
-                                       ros::NodeHandle& nh) : nh_(nh), legodo_msg_(28), urdf_string_(urdf_string) {
+LegOdometryHandler::LegOdometryHandler(ros::NodeHandle& nh,
+                                       std::string urdf_string) :
+  nh_(nh),
+  legodo_msg_(30),
+  urdf_string_(urdf_string)
+{
   std::string prefix = "/state_estimator_pronto/legodo/";
   if(!nh_.getParam(prefix + "torque_adjustment", legodo_cfg_.use_torque_adjustment_)){
     ROS_WARN_STREAM("Couldn't find parameter \"torque_adjustment\"."
@@ -149,6 +153,10 @@ LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
     ROS_WARN_STREAM("Couldn't find parameter \"publish_diagnostics\".");
   }
 
+  if(!nh_.getParam(prefix + "active_joints", active_joints_)){
+    ROS_WARN_STREAM("Couldn't find parameter \"active_joints\".");
+  }
+
 
   fk_.reset(new BipedForwardKinematicsROS(urdf_string,
                                           legodo_cfg_.odometer_cfg.left_foot_name,
@@ -160,6 +168,12 @@ LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
 RBISUpdateInterface* LegOdometryHandler::processMessage(const sensor_msgs::JointState *msg,
                                                         StateEstimator *est)
 {
+  if(msg->position.size() < active_joints_){
+    // different publisher might send messages to the /joint_state topic
+    // we use the expected length of the joint vector to check that we
+    // are processing the right one
+    return nullptr;
+  }
   if(!init){
     joint_names_ = msg->name;
     fk_->setJointNames(joint_names_);
