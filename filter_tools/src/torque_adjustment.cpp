@@ -48,7 +48,11 @@ void TorqueAdjustment::processSample(const std::vector<std::string>& names,
     int pos = std::find(names.begin(), names.end(), this_joint) - names.begin();
 
     if(pos >= names.size()) {
-      std::cout << "TorqueAdjustment: " << this_joint << " joint not found\n";
+      std::cerr << "TorqueAdjustment: " << this_joint << " joint not found\n";
+      std::cerr << "Names given: " << std::endl;
+      for(const auto& el : names){
+        std::cerr << el << std::endl;
+      }
       exit(-1);
     }else{
 
