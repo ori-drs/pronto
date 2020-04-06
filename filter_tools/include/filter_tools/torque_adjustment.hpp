@@ -12,7 +12,7 @@ class TorqueAdjustment{
     TorqueAdjustment(const std::vector<std::string>& jointsToFilter_,
                      const std::vector<float>& filterGains_);
 
-    ~TorqueAdjustment(){
+    virtual ~TorqueAdjustment(){
     }
 
     void processSample(const std::vector<std::string>& names,
