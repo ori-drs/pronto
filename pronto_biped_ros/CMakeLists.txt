@@ -6,7 +6,7 @@ add_compile_options(-std=c++11)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS pronto_biped_core pronto_ros sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS pronto_biped_core pronto_ros sensor_msgs kdl_parser)
 
 find_package(Eigen3 REQUIRED)
 
@@ -58,15 +58,17 @@ find_package(Eigen3 REQUIRED)
 # )
 
 catkin_package(INCLUDE_DIRS include
-	       LIBRARIES ${PROJECT_NAME}
-               CATKIN_DEPENDS pronto_biped_core sensor_msgs
+               LIBRARIES ${PROJECT_NAME}
+               CATKIN_DEPENDS pronto_biped_core sensor_msgs kdl_parser
                DEPENDS EIGEN3)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} src/pronto_biped_ros.cpp
                             src/legodo_handler_ros.cpp
-                            src/yaw_lock_handler_ros.cpp)
+                            src/yaw_lock_handler_ros.cpp
+                            src/treefksolverposfull_recursive.cpp
+                            src/forward_kinematics_ros.cpp)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable

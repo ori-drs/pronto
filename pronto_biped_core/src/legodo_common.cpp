@@ -74,6 +74,26 @@ void LegOdoCommon::getCovariance(const LegOdometryMode &mode_current,
     cov_legodo = R_legodo.asDiagonal();
 }
 
+LegOdoCommon::Transform LegOdoCommon::getTransAsVelocityTrans(const Transform &msgT,
+                                                              int64_t utime,
+                                                              int64_t prev_utime) const
+{
+  Transform msgT_vel(Transform::Identity());
+
+  Eigen::Vector3d rpy = eigen_utils::getEulerAngles(Eigen::Quaterniond(msgT.rotation()));
+
+  double elapsed_time = ((double)(utime - prev_utime)) / 1e6;
+  Eigen::Vector3d rpy_rate = rpy / elapsed_time;
+
+  msgT_vel.translate(msgT.translation() / elapsed_time);
+
+  Eigen::Quaterniond quat_vel = eigen_utils::setQuatEulerAngles(rpy_rate);
+
+  msgT_vel.rotate(quat_vel);
+
+  return msgT_vel;
+}
+
 RBISUpdateInterface * LegOdoCommon::createMeasurement(const Transform &odo_positionT,
                                                       const Transform &delta_odoT,
                                                       const uint64_t &utime,
@@ -81,15 +101,12 @@ RBISUpdateInterface * LegOdoCommon::createMeasurement(const Transform &odo_posit
                                                       const int &odo_position_status,
                                                       const float &odo_delta_status)
 {
-    // TODO convert in the appropriate format
-    // BotTrans odo_velT = getTransAsVelocityTrans(odo_deltaT, utime, prev_utime);
-    Transform odo_velT;
-    Eigen::MatrixXd cov_legodo_use;
+    Transform odo_velT = getTransAsVelocityTrans(delta_odoT, utime, prev_utime);
+    //Eigen::MatrixXd cov_legodo_use;
 
     LegOdometryMode mode_current = mode_;
     if ((mode_current == LegOdometryMode::POSITION_AND_LIN_RATE) && (!odo_position_status) ){
       if (verbose){
-
           std::cout << "LegOdo Mode is MODE_POSITION_AND_LIN_RATE but position is not suitable\n";
           std::cout << "Falling back to lin rate only for this iteration\n";
       }
@@ -157,7 +174,7 @@ RBISUpdateInterface * LegOdoCommon::createMeasurement(const Transform &odo_posit
     default:
     {
         std::cout << "LegOdometry Mode not supported, exiting\n";
-        return NULL;
+        return nullptr;
     }
     } // end switch
 }

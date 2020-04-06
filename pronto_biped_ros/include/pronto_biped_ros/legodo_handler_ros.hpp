@@ -6,6 +6,7 @@
 #include <pronto_msgs/BipedForceTorqueSensors.h>
 #include <pronto_msgs/ControllerFootContact.h>
 #include <pronto_ros/pronto_ros_conversions.hpp>
+#include "pronto_biped_ros/forward_kinematics_ros.hpp"
 
 
 namespace pronto {
@@ -31,12 +32,16 @@ public:
   void ctrlFootContactCallback(const pronto_msgs::ControllerFootContactConstPtr& msg);
 protected:
   ros::NodeHandle nh_;
+  bool init = false;
   std::unique_ptr<LegOdometryModule> legodo_module_;
   ros::Subscriber ctrl_foot_contact_sub_;
   ros::Subscriber force_torque_sub_;
+  std::string urdf_string_;
   JointState legodo_msg_;
   LegOdometryConfig legodo_cfg_;
   pronto::ForceTorqueSensorArray ft_msg_;
+  std::vector<std::string> joint_names_;
+  std::unique_ptr<BipedForwardKinematicsROS> fk_;
 };
 
 }

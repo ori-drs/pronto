@@ -55,7 +55,7 @@
   <exec_depend>pronto_biped_core</exec_depend>
   <depend>sensor_msgs</depend>
   <depend>pronto_ros</depend>
-
+<depend>kdl_parser</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

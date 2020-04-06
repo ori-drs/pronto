@@ -6,6 +6,7 @@
 
 #include "pronto_biped_core/leg_estimate.hpp"
 #include "pronto_biped_core/common_conversions.hpp"
+#include "pronto_biped_core/biped_forward_kinematics.hpp"
 
 
 using namespace std;
@@ -40,13 +41,19 @@ LegEstimator::~LegEstimator(){
     }
 }
 
-LegEstimator::LegEstimator(const LegOdometerConfig& cfg) :
+LegEstimator::LegEstimator(BipedForwardKinematics& fk, const LegOdometerConfig& cfg) :
+  initialization_mode_(cfg.initialization_mode),
+  l_standing_link_(cfg.left_foot_name),
+  r_standing_link_(cfg.right_foot_name),
+  filter_joint_positions_(cfg.filter_mode),
+  filter_contact_events_(cfg.filter_contact_events),
+  publish_diagnostics_(cfg.publish_diagnostics),
+  fk_(fk),
   lfoot_sensing_(0,0,0),
   rfoot_sensing_(0,0,0),
   n_control_contacts_left_(-1),
   n_control_contacts_right_(-1),
   control_mode_(cfg.control_mode),
-  filter_joint_positions_(cfg.filter_mode),
   use_controller_input_(cfg.use_controller_input)
 {
 
@@ -57,11 +64,7 @@ LegEstimator::LegEstimator(const LegOdometerConfig& cfg) :
      otherwise it would become ROS-dependent and we would have the same problem
      as we are dealing with now.
     */
-  //initialization_mode_ = bot_param_get_str_or_fail(botparam_, "state_estimator.legodo.initialization_mode");
   std::cout << "Leg Odometry Initialize Mode: " << initialization_mode_ << " \n";
-
-  //l_standing_link_ = bot_param_get_str_or_fail(botparam_, "state_estimator.legodo.left_standing_link");
-  //r_standing_link_ = bot_param_get_str_or_fail(botparam_, "state_estimator.legodo.right_standing_link");
   std::cout << "Leg Odometry Standing Links: " << l_standing_link_ << " "<< r_standing_link_ << " \n";
 
 
@@ -85,59 +88,20 @@ LegEstimator::LegEstimator(const LegOdometerConfig& cfg) :
     filter_joint_positions_ = FilterJointMode::NONE;
   }
 
-  //filter_contact_events_ = bot_param_get_boolean_or_fail(botparam_, "state_estimator.legodo.filter_contact_events");
   std::cout << "Leg Odometry Filter Contact Events: " << filter_contact_events_ << " \n";
 
-  // publish_diagnostics_ = bot_param_get_boolean_or_fail(botparam_, "state_estimator.legodo.publish_diagnostics");
-/*
-  KDL::Tree tree;
-  if (!kdl_parser::treeFromString(urdf_string ,tree)){
-    cerr << "ERROR: Failed to extract kdl tree from xml robot description" << endl;
-    exit(-1);
-  }
-
-  fksolver_.reset(new KDL::TreeFkSolverPosFull_recursive(tree));
-  */
-  /*
-  // Vis Config:
-  pc_vis_ = new pronto_vis( lcm_publish_->getUnderlyingLCM());
-  // obj: id name type reset
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1001,"Body Pose [odom]",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1002,"Primary Foot [odom] ",5,1) );
-  pc_vis_->ptcld_cfg_list.push_back( ptcld_cfg(1004,"Primary Contacts [odom] ",1,0, 1002,1, { 0.0, 1.0, 0.0} ));
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1003,"Secondary Foot [odom] ",5,1) );
-  pc_vis_->ptcld_cfg_list.push_back( ptcld_cfg(1005,"Secondary Contacts [odom] ",1,0, 1003,1, { 1.0, 0.0, 0.0} ));
-
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1011,"Body Pose [world]",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1012,"Primary Foot [world] ",5,0) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1013,"Secondary Foot [world] ",5,1) );
-
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1014,"Primary Foot transition [world] ",5,0) );
-
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1021,"Body Pose [const]",5,1) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1022,"Primary Foot [const] ",5,0) );
-  pc_vis_->obj_cfg_list.push_back( obj_cfg(1023,"Secondary Foot [const] ",5,1) );
-*/
   // actually more like 1540N when standing still in Jan 2014, but don't change
-  //TODO take me from data structure
-  float total_force = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.total_force");
 
-  float standing_schmitt_level = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.standing_schmitt_level");
   // originally foot shift was when s_foot - 1400*0.65  > p_foot   ... typically s_foot = 1180 | p_foot =200 (~75%)
-  foot_contact_logic_.reset(new biped::FootContact(total_force, standing_schmitt_level));
+  foot_contact_logic_.reset(new biped::FootContact(cfg.total_force, cfg.standing_schmitt_level));
   foot_contact_logic_->setStandingFoot( FootID::LEFT );
 
-  float schmitt_low_threshold = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.schmitt_low_threshold");
-  float schmitt_high_threshold = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.schmitt_high_threshold");
-  int schmitt_low_delay = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.schmitt_low_delay");
-  int schmitt_high_delay = 0;//bot_param_get_double_or_fail(botparam_, "state_estimator.legodo.schmitt_high_delay");
-
   foot_contact_logic_alt_.reset(new biped::FootContactAlt(false,
-                                                            schmitt_low_threshold,
-                                                            schmitt_high_threshold,
-                                                            schmitt_low_delay,
-                                                            schmitt_high_delay));
-  foot_contact_logic_alt_->setStandingFoot( FootID::LEFT );
+                                                          cfg.schmitt_low_threshold,
+                                                          cfg.schmitt_high_threshold,
+                                                          cfg.schmitt_low_delay,
+                                                          cfg.schmitt_high_delay));
+  foot_contact_logic_alt_->setStandingFoot(FootID::LEFT);
 
   // Should I use a very heavy contact classifier (standing) or one that allows toe off (typical)?
   std::cout << "Leg Odometry Contact Mode: " << control_mode_strings(control_mode_) << "\n";
@@ -168,8 +132,9 @@ LegEstimator::LegEstimator(const LegOdometerConfig& cfg) :
 }
 
 bool LegEstimator::getLegOdometryDelta(Eigen::Isometry3d &odom_to_body_delta,
-                         int64_t &current_utime,
-                         int64_t &previous_utime) {
+                                       int64_t &current_utime,
+                                       int64_t &previous_utime)
+{
   odom_to_body_delta = odom_to_body_delta_;
   current_utime = current_utime_;
   previous_utime = previous_utime_;
@@ -213,7 +178,7 @@ Eigen::Isometry3d getSecondaryFootFK(FootID main_id, Eigen::Isometry3d body_to_l
 // TODO: need to move this function outside of the class, down to app
 bool LegEstimator::initializePose(const Eigen::Isometry3d& body_to_foot)
 {
-  if (initialization_mode_ == "zero"){
+  if (initialization_mode_.compare("zero") == 0){
     // Initialize with primary foot at (0,0,0)
     // Otherwise, there is a discontinuity at the very start
     Eigen::Quaterniond q_slaved( world_to_body_.rotation() );
@@ -496,15 +461,22 @@ float LegEstimator::updateOdometry(const std::vector<std::string>& joint_name,
 
   // 1. Solve for Forward Kinematics:
   // call a routine that calculates the transforms the joint_state_t* msg.
-  map<string, double> jointpos_in;
-  map<string, KDL::Frame> cartpos_out;
+  //map<string, double> jointpos_in;
+  //map<string, KDL::Frame> cartpos_out;
 
   //cast to uint to suppress compiler warning
-  for (size_t i = 0; i < joint_name.size(); i++) {
-    jointpos_in.insert(make_pair(joint_name[i], filtered_joint_position_[i]));
-  }
+  //for (size_t i = 0; i < joint_name.size(); i++) {
+  //  jointpos_in.insert(make_pair(joint_name[i], filtered_joint_position_[i]));
+ // }
   // true = flatten tree to absolute transforms
-  bool kinematics_status = fksolver_->JntToCart(jointpos_in,cartpos_out, true);
+  Eigen::Isometry3d body_to_l_foot;
+  Eigen::Isometry3d body_to_r_foot;
+
+  bool kinematics_status = fk_.getLeftFootPose(filtered_joint_position_, body_to_l_foot);
+  kinematics_status = kinematics_status & fk_.getRightFootPose(filtered_joint_position_, body_to_r_foot);
+
+
+  //    fksolver_->JntToCart(jointpos_in,cartpos_out, true);
 
   if (kinematics_status >= 0) {
     // cout << "Success!" <<endl;
@@ -513,9 +485,10 @@ float LegEstimator::updateOdometry(const std::vector<std::string>& joint_name,
     exit(-1);
   }
   // TODO replace kdltoeigen classes from ProntoVis
-  Eigen::Isometry3d body_to_l_foot = KDLToEigen(cartpos_out.find(l_standing_link_)->second);
-  Eigen::Isometry3d body_to_r_foot = KDLToEigen(cartpos_out.find(r_standing_link_)->second);
-
+//   = fk_.getLeftFootPose(filtered_joint_position_);
+ // KDLToEigen(cartpos_out.find(l_standing_link_)->second);
+  //Eigen::Isometry3d body_to_r_foot = KDLToEigen(cartpos_out.find(r_standing_link_)->second);
+//   = fk_.getRightFootPose(filter_joint_positions_);
   // 2. Determine Primary Foot State
 
   // 5. Analyse signals to infer covariance

@@ -14,11 +14,20 @@ public:
 
 
   RBISUpdateInterface* processMessage(const sensor_msgs::Imu *msg, StateEstimator *est) override;
+
+  bool processMessageInit(const sensor_msgs::Imu *msg,
+                          const std::map<std::string, bool> &sensor_initialized,
+                          const RBIS &default_state,
+                          const RBIM &default_cov,
+                          RBIS &init_state,
+                          RBIM &init_cov) override;
+
   void processSecondaryMessage(const sensor_msgs::JointState& msg) override;
 
 
 protected:
   ros::NodeHandle& nh_;
+
 
 };
 

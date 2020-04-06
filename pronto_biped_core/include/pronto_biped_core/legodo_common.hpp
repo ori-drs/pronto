@@ -23,13 +23,13 @@ struct LegOdoCommonConfig {
 
 class LegOdoCommon {
 public:
-    typedef Eigen::Isometry3d Transform;
+    using Transform = Eigen::Isometry3d;
 public:
   LegOdoCommon(const LegOdoCommonConfig& cfg);
 
-  // BotTrans getTransAsVelocityTrans(BotTrans msgT,
-  //          int64_t utime, int64_t prev_utime);
-
+  Transform getTransAsVelocityTrans(const Transform& msgT,
+                                    int64_t utime,
+                                    int64_t prev_utime) const;
 
   // Determine the relevent covariance:
   void getCovariance(const LegOdometryMode& mode_current,

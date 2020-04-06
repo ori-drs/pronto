@@ -3,8 +3,8 @@
 namespace pronto {
 namespace biped {
 
-LegOdometryModule::LegOdometryModule(const LegOdometryConfig &cfg) :
-    leg_est_(new LegEstimator(cfg.odometer_cfg)),
+LegOdometryModule::LegOdometryModule(BipedForwardKinematics& fk, const LegOdometryConfig &cfg) :
+    leg_est_(new LegEstimator(fk, cfg.odometer_cfg)),
     leg_odo_common_(new LegOdoCommon(cfg.common_cfg)),
     use_torque_adjustment_(cfg.use_torque_adjustment_),
     zero_initial_velocity(cfg.zero_initial_velocity)
@@ -33,7 +33,7 @@ RBISUpdateInterface* LegOdometryModule::processMessage(const JointState *msg,
     if (!force_torque_init_){
       std::cout << "Force/Torque message not received yet,"
                 << " not integrating leg odometry =========================\n";
-      return NULL;
+      return nullptr;
     }
 
     // TODO: this was changed to allow head_state to be calculated here,

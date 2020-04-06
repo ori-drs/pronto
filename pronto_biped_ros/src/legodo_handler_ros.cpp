@@ -5,7 +5,7 @@ namespace pronto {
 namespace biped {
 
 LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
-                                       ros::NodeHandle& nh) : nh_(nh), legodo_msg_(28) {
+                                       ros::NodeHandle& nh) : nh_(nh), legodo_msg_(28), urdf_string_(urdf_string) {
   std::string prefix = "/state_estimator_pronto/legodo/";
   if(!nh_.getParam(prefix + "torque_adjustment", legodo_cfg_.use_torque_adjustment_)){
     ROS_WARN_STREAM("Couldn't find parameter \"torque_adjustment\"."
@@ -100,24 +100,74 @@ LegOdometryHandler::LegOdometryHandler(std::string urdf_string,
                     << " Using default: "
                     << std::boolalpha << legodo_cfg_.odometer_cfg.use_controller_input);
   }
-  std::string force_torque_topic;
-  if(!nh_.getParam(prefix + "force_torque_topic", force_torque_topic)){
-    ROS_WARN_STREAM("Couldn't find parameter \"force_torque_topic\".");
+  std::string topic_force_torque;
+  if(!nh_.getParam(prefix + "topic_force_torque", topic_force_torque)){
+    ROS_WARN_STREAM("Couldn't find parameter \"topic_force_torque\".");
   }
-  force_torque_sub_ = nh_.subscribe(force_torque_topic, 10, &LegOdometryHandler::forceTorqueCallback, this);
+  ROS_INFO_STREAM("Subscribing to auxiliary topic: " << topic_force_torque);
+  force_torque_sub_ = nh_.subscribe(topic_force_torque, 10, &LegOdometryHandler::forceTorqueCallback, this);
 
-  std::string ctrl_input_topic;
-  if(!nh_.getParam(prefix + "controller_input_topic", ctrl_input_topic)){
-    ROS_WARN_STREAM("Couldn't find parameter \"controller_input_topic\".");
+  std::string topic_ctrl_input;
+  if(!nh_.getParam(prefix + "topic_ctrl_input", topic_ctrl_input)){
+    ROS_WARN_STREAM("Couldn't find parameter \"topic_ctrl_input\".");
   }
-  ctrl_foot_contact_sub_ = nh_.subscribe(ctrl_input_topic, 10, &LegOdometryHandler::ctrlFootContactCallback, this);
+  ROS_INFO_STREAM("Subscribing to auxiliary topic: " << topic_force_torque);
+  ctrl_foot_contact_sub_ = nh_.subscribe(topic_ctrl_input, 10, &LegOdometryHandler::ctrlFootContactCallback, this);
 
-  legodo_module_.reset(new LegOdometryModule(legodo_cfg_));
+  if(!nh_.getParam(prefix + "initialization_mode", legodo_cfg_.odometer_cfg.initialization_mode)){
+    ROS_WARN_STREAM("Couldn't find parameter \"initialization_mode\".");
+  }
+
+  if(!nh_.getParam(prefix + "left_foot_name", legodo_cfg_.odometer_cfg.left_foot_name)){
+    ROS_WARN_STREAM("Couldn't find parameter \"left_foot_name\".");
+  }
+
+  if(!nh_.getParam(prefix + "right_foot_name", legodo_cfg_.odometer_cfg.right_foot_name)){
+    ROS_WARN_STREAM("Couldn't find parameter \"right_foot_name\".");
+  }
+
+
+  std::string filter_mode;
+
+  if(!nh_.getParam(prefix + "filter_joint_positions", filter_mode)){
+    ROS_WARN_STREAM("Couldn't find parameter \"filter_joint_positions\".");
+  }
+
+  if(filter_mode.compare("lowpass") == 0){
+    legodo_cfg_.odometer_cfg.filter_mode = FilterJointMode::LOWPASS;
+  } else if(filter_mode.compare("kalman") == 0){
+    legodo_cfg_.odometer_cfg.filter_mode = FilterJointMode::KALMAN;
+  } else {
+    legodo_cfg_.odometer_cfg.filter_mode = FilterJointMode::NONE;
+  }
+
+  if(!nh_.getParam(prefix + "filter_contact_events", legodo_cfg_.odometer_cfg.filter_contact_events)){
+    ROS_WARN_STREAM("Couldn't find parameter \"filter_contact_events\".");
+  }
+
+  if(!nh_.getParam(prefix + "publish_diagnostics", legodo_cfg_.odometer_cfg.publish_diagnostics)){
+    ROS_WARN_STREAM("Couldn't find parameter \"publish_diagnostics\".");
+  }
+
+
+  fk_.reset(new BipedForwardKinematicsROS(urdf_string,
+                                          legodo_cfg_.odometer_cfg.left_foot_name,
+                                          legodo_cfg_.odometer_cfg.right_foot_name));
+
+  legodo_module_.reset(new LegOdometryModule(*fk_, legodo_cfg_));
 }
 
 RBISUpdateInterface* LegOdometryHandler::processMessage(const sensor_msgs::JointState *msg,
                                                         StateEstimator *est)
 {
+  if(!init){
+    joint_names_ = msg->name;
+    fk_->setJointNames(joint_names_);
+    for(const auto& el : joint_names_){
+      std::cerr << "Joint " << el << std::endl;
+    }
+    init = true;
+  }
   jointStateFromROS(*msg, legodo_msg_);
   return legodo_module_->processMessage(&legodo_msg_, est);
 }
@@ -129,6 +179,11 @@ bool LegOdometryHandler::processMessageInit(const sensor_msgs::JointState *msg,
                                             RBIS &init_state,
                                             RBIM &init_cov)
 {
+  if(!init){
+    joint_names_ = msg->name;
+    fk_->setJointNames(joint_names_);
+    init = true;
+  }
   jointStateFromROS(*msg, legodo_msg_);
   return legodo_module_->processMessageInit(&legodo_msg_, sensor_initialized, default_state, default_cov, init_state, init_cov);
 }

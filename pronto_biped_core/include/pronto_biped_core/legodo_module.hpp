@@ -4,6 +4,7 @@
 #include <pronto_core/definitions.hpp>
 #include "pronto_biped_core/leg_estimate.hpp"
 #include "pronto_biped_core/legodo_common.hpp"
+#include "pronto_biped_core/biped_forward_kinematics.hpp"
 #include <filter_tools/torque_adjustment.hpp> // torque adjustment
 
 namespace pronto {
@@ -20,7 +21,7 @@ struct LegOdometryConfig {
 
 class LegOdometryModule : SensingModule<JointState> {
 public:
-    LegOdometryModule(const LegOdometryConfig& cfg);
+    LegOdometryModule(BipedForwardKinematics& fk, const LegOdometryConfig& cfg);
 
     RBISUpdateInterface* processMessage(const JointState *msg,
                                         StateEstimator *est);

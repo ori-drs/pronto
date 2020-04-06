@@ -3,15 +3,12 @@
 #include <fstream>      // std::ofstream
 
 #include <map>
-//#include <urdf/model.h>
-#include <kdl/tree.hpp>
-//#include <kdl_parser/kdl_parser.hpp>
-#include <forward_kinematics/treefksolverposfull_recursive.hpp>
 #include <filter_tools/simple_kalman_filter.hpp> // SimpleKalmanFilter
 
 #include "pronto_biped_core/FootContact.hpp"
 #include "pronto_biped_core/FootContactAlt.hpp"
 #include "pronto_biped_core/foot_contact_classify.hpp"
+#include "pronto_biped_core/biped_forward_kinematics.hpp"
 #include <memory>
 
 namespace pronto {
@@ -23,13 +20,24 @@ struct LegOdometerConfig {
     ControlMode control_mode = ControlMode::CONTROLLER_UNKNOWN;
     FilterJointMode filter_mode = FilterJointMode::NONE;
     bool use_controller_input = false;
+    std::string initialization_mode;
+    std::string left_foot_name = "l_foot";
+    std::string right_foot_name = "r_foot";
+    bool filter_contact_events = false;
+    bool publish_diagnostics = false;
+    float total_force = 0.0;
+    float standing_schmitt_level = 0.0;
+    float schmitt_low_threshold = 0;
+    float schmitt_high_threshold = 0;
+    int schmitt_low_delay = 0;
+    int schmitt_high_delay = 0;
 };
 
 class LegEstimator {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   public:
-    LegEstimator(const LegOdometerConfig& cfg);
+    LegEstimator(BipedForwardKinematics& fk, const LegOdometerConfig& cfg);
     
     virtual ~LegEstimator();
     
@@ -83,6 +91,7 @@ public:
     }
 
 private:
+    BipedForwardKinematics& fk_;
     // original method from Dehann uses a very conservative Schmitt trigger
     ContactStatusID footTransition();
     // a more aggressive trigger with different logic
@@ -105,10 +114,6 @@ private:
                                                  const Eigen::Isometry3d &body_to_r_foot);
 
   private:
-    /// Utilites
-    // boost::shared_ptr<ModelClient> model_;
-    std::shared_ptr<KDL::TreeFkSolverPosFull_recursive> fksolver_;
-    
     // joint position filters, optionally used
     std::vector<LowPassFilter*> lpfilter_; // previously were not pointers
     std::vector<EstimateTools::SimpleKalmanFilter*> joint_kf_;
