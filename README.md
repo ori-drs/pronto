@@ -44,10 +44,14 @@ quadruped robot. This is a fork of the `iit_commons` package (see
 - `*_ros` ROS wrappers of the above modules
 - other support packages for filtering
 
-## System Requirements
+## Dependencies
 Pronto depends on Eigen, Boost, and on the catkin packages in the following repositories (likely to be removed in future)
 - [common\_utils](https://github.com/ori-drs/common_utils)
 - [kinematics\_utils](https://github.com/ori-drs/kinematic_utils)
+
+## System Requirements
+The target operating system is **Ubuntu 18.04** equipped with **ROS Melodic**.  
+ Other versions of Ubuntu/ROS might work but they are **not** actively supported or tested.
 
 ## Building the Code
 Pronto is organized as a collection of catkin packages. To build the code,
