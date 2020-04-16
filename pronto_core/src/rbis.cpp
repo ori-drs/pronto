@@ -290,11 +290,6 @@ double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
     std::cerr << "Matrix K:" << std::endl;
     std::cerr << K.format(mformat) << std::endl;
 
-    setAlmostZeroToZero(K,1e-4);
-
-    std::cerr << "Matrix K after setzero:" << std::endl;
-    std::cerr << K.format(mformat) << std::endl;
-
     std::cerr << "Matrix C:" << std::endl;
     std::cerr << C.format(mformat) << std::endl;
 
@@ -303,9 +298,6 @@ double indexedPlusOrientationMeasurement(const Eigen::VectorXd & z,
 
     std::cerr << "Vector dstate K * z_resid:" << std::endl;
     std::cerr << (K*z_resid).transpose().format(mformat) << std::endl;
-
-    std::cerr << "What it should be: " << std::endl;
-    std::cerr <<  (v.asDiagonal()*vv).transpose().format(mformat) << std::endl;
 #endif
 
   return loglikelihood; //TODO get this right
