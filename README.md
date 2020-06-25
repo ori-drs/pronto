@@ -61,8 +61,27 @@ interested to build.
 ## Robot Implementation Example
 To learn how to use Pronto on your robot, you can have a look at [this repository](https://github.com/ori-drs/pronto_anymal_example), which contains a full implementation on the ANYmal quadruped robot. 
 ## Publications
-If you use part of this work in academic context, please cite the appropriate
-publication from the list below:
+If you use part of this work in academic context, please cite the following publication:
+
+*M. Camurri, M. Ramezani, S. Nobili, M. Fallon*  
+**Pronto: A Multi-Sensor State Estimator for Legged Robots in Real-World Scenarios**  
+in Frontiers on Robotics and AI, 2020 ([PDF](https://www.frontiersin.org/articles/10.3389/frobt.2020.00068/pdf)) **DOI:** [10.3389/frobt.2020.00068](https://doi.org/10.3389/frobt.2020.00068)
+```
+@article{camurri2020frontiers,
+  author = {Camurri, Marco and Ramezani, Milad and Nobili, Simona and Fallon, Maurice},   
+  title = {{Pronto: A Multi-Sensor State Estimator for Legged Robots in Real-World Scenarios}},      
+  journal = {Frontiers in Robotics and AI},
+  volume = {7},
+  number = {68},
+  pages = {1--18},     
+  year = {2020},      
+  url = {https://www.frontiersin.org/article/10.3389/frobt.2020.00068},
+  doi = {10.3389/frobt.2020.00068},	
+  issn = {2296-9144}
+}
+```
+
+Previous related publications include:
 
 *S. Nobili, M. Camurri, V. Barasuol, M. Focchi, D.G. Caldwell, C. Semini, M. Fallon*  
 **Heterogeneous Sensor Fusion for Accurate State Estimation of Dynamic Legged Robots**  
