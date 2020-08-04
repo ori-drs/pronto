@@ -81,7 +81,7 @@ bool StateEstimator::getInterpolatedPose(const uint64_t &utime,
     double alpha = (double)(it_high->first - utime) / (double)(it_high->first - it_low->first);
 
     Eigen::Isometry3d iso_low = (it_low->second)->posterior_state.getPoseAsIsometry3d();
-    Eigen::Isometry3d iso_high = (it_low->second)->posterior_state.getPoseAsIsometry3d();
+    Eigen::Isometry3d iso_high = (it_high->second)->posterior_state.getPoseAsIsometry3d();
 
     position = iso_low.translation() * alpha + iso_high.translation() * (1-alpha);
     // in slerp, the paramter t is used as the opposite of alpha
