@@ -65,7 +65,7 @@ void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & pri
   Eigen::IOFormat CleanFmt(3, 0, ", ", "\n", "[", "]");
   // TODO if this was meant to measure some sort of performance
 #endif
-  insUpdateState(gyro, accelerometer, dt, posterior_state, ignore_accel_);
+  insUpdateState(gyro, accelerometer, dt, posterior_state);
   insUpdateCovariance(q_gyro, q_accel, q_gyro_bias, q_accel_bias, prior_state, posterior_covariance, dt);
 #if DEBUG_MODE
   std::cerr << "    Prior velocity: " << prior_state.velocity().transpose().format(CleanFmt) << std::endl;

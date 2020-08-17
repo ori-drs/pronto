@@ -40,8 +40,7 @@ void getIMUProcessLinearizationContinuous(const RBIS & state, RBIM & Ac)
 void insUpdateState(const Eigen::Vector3d & gyro,
                     const Eigen::Vector3d & accelerometer,
                     double dt,
-                    RBIS & state,
-                    const bool& ignore_accel)
+                    RBIS & state)
 {
 #if DEBUG_MODE
         std::cout << "mfallon insUpdateState\n";
@@ -76,12 +75,8 @@ void insUpdateState(const Eigen::Vector3d & gyro,
   //compute derivatives
   RBIS dstate; //initialize everything to 0
 
-  if(ignore_accel){
-      dstate.velocity() = Eigen::Vector3d::Zero();
-  } else {
-      dstate.velocity() = -state.angularVelocity().cross(state.velocity());
-      dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
-  }
+  dstate.velocity() = -state.angularVelocity().cross(state.velocity());
+  dstate.velocity().noalias() += state.quat.inverse() * g_vec + state.acceleration();
 #if DEBUG_MODE
   std::cerr << "dstate.velocity() = [" << -state.angularVelocity().transpose() << "]' x [" << state.velocity().transpose()<< "]'" << std::endl;
   std::cerr << "dstate.velocity() += [" << (state.quat.inverse() * g_vec).transpose() << "]' + [" << state.acceleration().transpose()<< "]'" << std::endl;

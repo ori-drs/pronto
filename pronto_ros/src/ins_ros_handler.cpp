@@ -106,13 +106,6 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
                         << cfg.max_initial_gyro_bias);
     }
 
-    if(!nh_.getParam(ins_param_prefix + "ignore_accel", cfg.ignore_accel)){
-        ROS_WARN_STREAM("Couldn't get param \""
-                        << nh_.getNamespace()  << "/" << ins_param_prefix
-                        << "ignore_accel\". Using default: "
-                        << std::boolalpha << cfg.ignore_accel << std::noboolalpha);
-    }
-
     if(!nh_.getParam(ins_param_prefix + "topic", imu_topic_)){
         ROS_WARN_STREAM("Couldn't get param \""
                         << nh_.getNamespace()  << "/" << ins_param_prefix

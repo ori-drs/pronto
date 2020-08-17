@@ -123,14 +123,11 @@ void getIMUProcessLinearizationContinuous(const RBIS & state, RBIM & Ac);
  * @param[in] dt integration constant in s
  * @param[out] state resulting state. If the state had already linear velocity
  * values, they get integrated too.
- * @param[in] ignore_accel (optional) if true, this will skip the accelerometer
- * integration and use the velocity provided by state
  */
 void insUpdateState(const Eigen::Vector3d & gyro,
                     const Eigen::Vector3d & accelerometer,
                     double dt,
-                    RBIS & state,
-                    const bool &ignore_accel = false);
+                    RBIS & state);
 
 /**
  * @brief propagates the covariance matrix

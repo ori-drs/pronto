@@ -73,11 +73,11 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
 
         dl_pose_.reset(new pronto::DataLogger("prontopos.txt"));
         dl_pose_->setStartFromZero(false);
-	dl_vel_.reset(new pronto::DataLogger("prontovel.txt"));
-	dl_vel_->setStartFromZero(false);
+        dl_vel_.reset(new pronto::DataLogger("prontovel.txt"));
+        dl_vel_->setStartFromZero(false);
 
-    dl_vel_sigma_.reset(new pronto::DataLogger("velsigma.txt"));
-    dl_vel_->setStartFromZero(false);
+        dl_vel_sigma_.reset(new pronto::DataLogger("velsigma.txt"));
+        dl_vel_->setStartFromZero(false);
 
         wrench_msg_.wrench.torque.x = 0;
         wrench_msg_.wrench.torque.y = 0;
@@ -94,6 +94,7 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     // state of the filter
     xd_ = head_state_.velocity();
     xdd_ = head_state_.acceleration();
+    std::cerr << xdd_.transpose() << std::endl;
     omega_ = head_state_.angularVelocity();
     omegad_ = Eigen::Vector3d::Zero(); // TODO retrieve angular acceleration
 
@@ -197,7 +198,7 @@ LegodoHandlerBase::Update * LegodoHandlerBase::computeVelocity ()
                                                        utime_);
 
     }
-    return NULL;
+    return nullptr;
 }
 
 
