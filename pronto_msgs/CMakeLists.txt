@@ -49,7 +49,8 @@ add_message_files(FILES  VisualOdometryUpdate.msg
                          QuadrupedStance.msg
 			 LidarOdometryUpdate.msg
                          ControllerFootContact.msg
-                         BipedForceTorqueSensors.msg)
+                         BipedForceTorqueSensors.msg
+                         QuadrupedForceTorqueSensors.msg)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
