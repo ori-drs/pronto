@@ -28,7 +28,7 @@ namespace quadruped {
 
 StanceEstimatorROS::StanceEstimatorROS(ros::NodeHandle &nh,
                                        FeetContactForces &feet_forces) :
-     pronto::StanceEstimator(feet_forces), nh_(nh)
+     StanceEstimator(feet_forces), nh_(nh)
 {
     // get parameters for the leg odometry
     std::string legodo_prefix = "legodo/";

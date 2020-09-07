@@ -39,36 +39,23 @@ DynamicStanceEstimator::DynamicStanceEstimator(InverseDynamics &inverse_dynamics
         JSIM &jsim,
         FeetContactForces &feet_contact_forces,
         ForwardKinematics &forward_kinematics) :
+  StanceEstimator(feet_contact_forces),
+      forward_kinematics_(forward_kinematics),
     dynamics_violation_(std::vector<Wrench>(15)),
     wrench_legs(std::vector<Wrench>(15)),
     inverse_dynamics_(inverse_dynamics),
-    jsim_(jsim),
-    feet_contact_forces_(feet_contact_forces),
-    forward_kinematics_(forward_kinematics) {
+    jsim_(jsim)
+ {
 }
 
-LegVector3Map DynamicStanceEstimator::getGRF(){
-    return grf_;
-}
-
-bool DynamicStanceEstimator::getStance(const double time,
-                                       const JointState &q,
-                                       const JointState &qd,
-                                       const JointState &tau,
-                                       const Quaterniond& orient,
-                                       LegBoolMap &stance,
-                                       LegScalarMap &stance_probability,
-                                       const JointState &qdd,
-                                       const Vector3d &xd,
-                                       const Vector3d &xdd,
-                                       const Vector3d &omega,
-                                       const Vector3d &omegad) {
+bool DynamicStanceEstimator::getStance(LegBoolMap &stance,
+                                       LegScalarMap &stance_probability) {
     Eigen::Matrix<double, Eigen::Dynamic, 6, 0, 12, 6> Jcb;
     // Vector of GRFs
     Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 12, 1> grf_legs;
 
-    wrench_base = getBaseWrench(q, qd, orient, qdd, xd, xdd, omega, omegad);
-    grf_ = feet_contact_forces_.getFeetGRF(q, qd, tau, orient, qdd, xd, xdd, omega, omegad);
+    wrench_base = getBaseWrench(q_, qd_, orient_, qdd_, xd_, xdd_, omega_, omegad_);
+    grf_ = feet_contact_forces_.getFeetGRF(q_, qd_, tau_, orient_, qdd_, xd_, xdd_, omega_, omegad_);
 
     std::vector<std::pair<double,unsigned char> > items(15);
 
@@ -101,7 +88,7 @@ bool DynamicStanceEstimator::getStance(const double time,
             if (my_stance[quadruped::LegID(i)]) {
                 //base contribution to
                 //need to map from base to world frame cause feet is in base frame
-                Jcb.block(cleg_count * 3, rbd::AX, 3, 3) = -commons::skew_sim(forward_kinematics_.getFootPos(q, quadruped::LegID(i)));
+                Jcb.block(cleg_count * 3, rbd::AX, 3, 3) = -commons::skew_sim(forward_kinematics_.getFootPos(q_, quadruped::LegID(i)));
                 //base linear velocity is assumed in the base frame
                 Jcb.block(cleg_count * 3, rbd::LX, 3, 3) = Eigen::Matrix3d::Identity();
                 grf_legs.block<3, 1>(3 * cleg_count, 0) = grf_[LegID(i)];

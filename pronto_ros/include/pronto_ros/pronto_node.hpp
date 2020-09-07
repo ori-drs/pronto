@@ -11,22 +11,34 @@
 
 namespace pronto {
 
+
 template <class MsgT>
+struct is_dummy_msg {
+  static const bool value = false;
+};
+
+template <>
+struct is_dummy_msg<std_msgs::Header>{
+  static const bool value = true;
+};
+
+// use the std_msgs::Header as a placeholder for a dummy message type
+template <class JointStateMsgT, class ContactStateMsgT = std_msgs::Header>
 class ProntoNode {
 public:
     using SensorList = std::vector<std::string>;
     using SensorSet = std::set<std::string>;
 public:
     ProntoNode(ros::NodeHandle& nh,
-               SensingModule<MsgT>& legodo_handler,
-               DualSensingModule<sensor_msgs::Imu, MsgT>& imu_bias_lock);
+               SensingModule<JointStateMsgT>& legodo_handler,
+               DualSensingModule<sensor_msgs::Imu, JointStateMsgT>& imu_bias_lock);
     virtual void init(bool subscribe = true);
     virtual void run();
 
 protected:
     ros::NodeHandle& nh_;
-    SensingModule<MsgT>& legodo_handler_;
-    DualSensingModule<sensor_msgs::Imu, MsgT>& bias_lock_handler_;
+    SensingModule<JointStateMsgT>& legodo_handler_;
+    DualSensingModule<sensor_msgs::Imu, JointStateMsgT>& bias_lock_handler_;
     ROSFrontEnd front_end;
     SensorList init_sensors;
     SensorList active_sensors;
@@ -40,10 +52,10 @@ protected:
     std::shared_ptr<ScanMatcherHandler> sm2_handler_;
 };
 
-template <class MsgT>
-ProntoNode<MsgT>::ProntoNode(ros::NodeHandle &nh,
-                             SensingModule<MsgT>& legodo_handler,
-                             DualSensingModule<sensor_msgs::Imu, MsgT>& imu_bias_lock) :
+template <class JointStateMsgT, class ContactStateMsgT>
+ProntoNode<JointStateMsgT, ContactStateMsgT>::ProntoNode(ros::NodeHandle &nh,
+                             SensingModule<JointStateMsgT>& legodo_handler,
+                             DualSensingModule<sensor_msgs::Imu, JointStateMsgT>& imu_bias_lock) :
     nh_(nh), legodo_handler_(legodo_handler), bias_lock_handler_(imu_bias_lock), front_end(nh_)
 {
     // get the list of active and init sensors from the param server
@@ -60,8 +72,8 @@ ProntoNode<MsgT>::ProntoNode(ros::NodeHandle &nh,
     }
 }
 
-template <class MsgT>
-void ProntoNode<MsgT>::init(bool subscribe) {
+template <class JointStateMsgT, class ContactStateMsgT>
+void ProntoNode<JointStateMsgT, ContactStateMsgT>::init(bool subscribe) {
     // parameters:
     // is the module used for init?
     // do we need to move forward the filter once computed the update?
@@ -123,6 +135,26 @@ void ProntoNode<MsgT>::init(bool subscribe) {
         if(it->compare("legodo") == 0) {
             if(active){
                 front_end.addSensingModule(legodo_handler_, *it, roll_forward, publish_head, topic, subscribe);
+                // if secondary topic is provided, and the second message is not dummy,
+                // attempt to cast the leg odometry handler as a DualHandler instead of SingleHandler
+                if(!is_dummy_msg<ContactStateMsgT>::value &&
+                   nh_.getParam(*it + "/secondary_topic", secondary_topic))
+                {
+                  try {
+                    ROS_INFO_STREAM("Leg Odometry Handler is a DualSensingModule<"
+                                    << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">");
+                    front_end.addSecondarySensingModule(dynamic_cast<DualSensingModule<JointStateMsgT,ContactStateMsgT>&>(legodo_handler_),
+                                                        *it,
+                                                        secondary_topic,
+                                                        subscribe);
+                    ROS_INFO_STREAM("Leg Odometry Handler is a DualSensingModule<"
+                                    << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">");
+                  } catch(std::bad_cast e){
+                    ROS_WARN_STREAM("Could not use the provided Leg Odometry handler as DualSensingModule<"
+                                    << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">.");
+                    ROS_WARN_STREAM(e.what());
+                  }
+                }
             }
             if(init){
                 front_end.addInitModule(legodo_handler_, *it, topic, subscribe);
@@ -193,8 +225,8 @@ void ProntoNode<MsgT>::init(bool subscribe) {
     }
 }
 
-template <class MsgT>
-void ProntoNode<MsgT>::run() {
+template <class JointStateMsgT, class ContactStateMsgT>
+void ProntoNode<JointStateMsgT, ContactStateMsgT>::run() {
     init(true);
     // you ...
     ros::spin();

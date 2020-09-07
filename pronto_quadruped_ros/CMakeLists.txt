@@ -121,6 +121,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## Declare a C++ library
 add_library(${PROJECT_NAME} src/legodo_handler_ros.cpp
                             src/stance_estimator_ros.cpp
+                            src/force_sensor_stance_estimator_ros.cpp
+                            src/foot_sensor_stance_detector_ros.cpp
+                            src/conversions.cpp
                             src/leg_odometer_ros.cpp
                             src/dynamic_stance_estimator_ros.cpp
                             src/bias_lock_handler_ros.cpp)

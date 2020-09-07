@@ -56,8 +56,9 @@ catkin_package(LIBRARIES ${PROJECT_NAME}
 
 add_library(${PROJECT_NAME} SHARED src/LegOdometer.cpp
                                    src/DynamicStanceEstimator.cpp
+                                   src/ForceSensorStanceEstimator.cpp
+                                   src/FootSensorStanceDetector.cpp
                                    src/StanceEstimator.cpp
-                                   src/StanceDetector.cpp
                                    src/FlexEstimator.cpp
                                    src/DataLogger.cpp
                                    src/ImuBiasLock.cpp)

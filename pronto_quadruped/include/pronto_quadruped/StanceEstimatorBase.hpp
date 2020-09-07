@@ -31,6 +31,7 @@
 #include <pronto_quadruped_commons/rbd/utils.h>
 
 namespace pronto {
+namespace quadruped {
 /**
  * @brief The StanceEstimatorBase class computes the stance state of a
  * legged robot with point feet. The stance state is described by a LegBoolMap
@@ -41,105 +42,82 @@ namespace pronto {
  */
 class StanceEstimatorBase {
 public:
-    typedef typename pronto::quadruped::JointState JointState;
     typedef typename Eigen::Vector3d Vector3d;
     typedef typename Eigen::Matrix3d Matrix3d;
     typedef typename Eigen::Quaterniond Quaterniond;
 
-    template <class T>
-    using LegDataMap = pronto::quadruped::LegDataMap<T>;
-    using LegBoolMap = pronto::quadruped::LegBoolMap;
     using LegScalarMap = LegDataMap<double>;
     using LegVectorMap = LegDataMap<Vector3d>;
 
 
 public:
-    /**
-     * @brief getStance computes the stance state from several inputs
-     * @param[in] time an absolute time, measured in seconds
-     * @param[in] q joint position
-     * @param[in] qd joint velocity
-     * @param[in] tau joint torque
-     * @param[in] orient absolute base orientation
-     * @param[in] qdd joint acceleration (optional)
-     * @param[in] xd base linear velocity (optionl)
-     * @param[in] xdd base absolute linear acceleration (optional)
-     * @param[in] omega base angular velocity (optional)
-     * @param[in] omegad base angular acceleration (optional)
-     * @return a data structure which associates a boolean to each leg,
-     * indicating whether the foot is in stance (true) or in swing (false).
-     */
-    virtual LegBoolMap getStance(const double time,
-                                 const JointState &q,
-                                 const JointState &qd,
-                                 const JointState &tau,
-                                 const Quaterniond & orient,
-                                 const JointState &qdd = JointState::Constant(0),
-                                 const Vector3d& xd = Vector3d(0, 0, 0),
-                                 const Vector3d & xdd  = Vector3d(0, 0, 0),
-                                 const Vector3d & omega  = Vector3d(0, 0, 0),
-                                 const Vector3d & omegad = Vector3d(0, 0, 0)) = 0;
+  virtual bool getStance(LegBoolMap& stance) = 0;
 
-    /**
-     * @brief same as getStance(), but with return as parameter
-     * @param[in] time an absolute time, measured in seconds
-     * @param[in] q joint position
-     * @param[in] qd joint velocity
-     * @param[in] tau joint torque
-     * @param[in] orient absolute base orientation
-     * @param[out] stance a data structure which associates a boolean to each leg,
-     * indicating whether the foot is in stance (true) or in swing (false).
-     * @param[in] qdd joint acceleration (optional)
-     * @param[in] xd base linear velocity (optionl)
-     * @param[in] xdd base absolute linear acceleration (optional)
-     * @param[in] omega base angular velocity (optional)
-     * @param[in] omegad base angular acceleration (optional)
-     * @return true if the stance was computed with no errors, false otherwise
-     */
-    virtual bool getStance(const double time,
-                           const JointState &q,
-                           const JointState &qd,
-                           const JointState &tau,
-                           const Quaterniond & orient,
-                           LegBoolMap& stance,
-                           const JointState &qdd = JointState::Constant(0),
-                           const Vector3d& xd = Vector3d(0, 0, 0),
-                           const Vector3d & xdd  = Vector3d(0, 0, 0),
-                           const Vector3d & omega  = Vector3d(0, 0, 0),
-                           const Vector3d & omegad = Vector3d(0, 0, 0)) = 0;
-    /**
-     * @brief same as getStance(), but with stance status and stance probability
-     * as parameters
-     * @param[in] time an absolute time, measured in seconds
-     * @param[in] q joint position
-     * @param[in] qd joint velocity
-     * @param[in] tau joint torque
-     * @param[in] orient absolute base orientation
-     * @param[out] stance a data structure which associates a boolean to each leg,
-     * indicating whether the foot is in stance (true) or in swing (false).
-     * @param[out] stance_probability a data structure which associates a
-     * number between 0 and 1 indicating the probability for a specific foot to
-     * be in stance or not
-     * @param[in] qdd joint acceleration (optional)
-     * @param[in] xd base linear velocity (optionl)
-     * @param[in] xdd base absolute linear acceleration (optional)
-     * @param[in] omega base angular velocity (optional)
-     * @param[in] omegad base angular acceleration (optional)
-     * @return true if the stance was computed with no errors, false otherwise
-     */
-    virtual bool getStance(const double time,
-                           const JointState &q,
-                           const JointState &qd,
-                           const JointState &tau,
-                           const Quaterniond & orient,
-                           LegBoolMap& stance,
-                           LegScalarMap& stance_probability,
-                           const JointState &qdd = JointState::Constant(0),
-                           const Vector3d& xd = Vector3d(0, 0, 0),
-                           const Vector3d & xdd  = Vector3d(0, 0, 0),
-                           const Vector3d & omega  = Vector3d(0, 0, 0),
-                           const Vector3d & omegad = Vector3d(0, 0, 0)) = 0;
+  virtual LegBoolMap getStance() {
+    LegBoolMap stance;
+    getStance(stance);
+    return stance;
+  }
 
-    virtual LegVectorMap getGRF() = 0;
+  virtual bool getStance(LegBoolMap& stance, LegScalarMap& stance_probability) {
+    if(getStance(stance)){
+      stance_probability[LF] = static_cast<double>(stance[LF]);
+      stance_probability[RF] = static_cast<double>(stance[RF]);
+      stance_probability[LH] = static_cast<double>(stance[LH]);
+      stance_probability[RH] = static_cast<double>(stance[RH]);
+      return true;
+    }
+    return false;
+  }
+
+  virtual void setStance(const LegBoolMap& stance) {
+
+  }
+
+  /**
+   * @brief set joint states (including the floating base's) from which
+   * the stance can be computed using the equations of motion
+   * @param[in] time an absolute time, measured in seconds
+   * @param[in] q joint position
+   * @param[in] qd joint velocity
+   * @param[in] tau joint torque
+   * @param[in] orient absolute base orientation
+   * @param[in] qdd joint acceleration (optional)
+   * @param[in] xd base linear velocity (optionl)
+   * @param[in] xdd base absolute linear acceleration (optional)
+   * @param[in] omega base angular velocity (optional)
+   * @param[in] omegad base angular acceleration (optional)
+   * @return a data structure which associates a boolean to each leg,
+   * indicating whether the foot is in stance (true) or in swing (false).
+   */
+  virtual void setJointStates(const JointState &q,
+                              const JointState &qd,
+                              const JointState &tau,
+                              const Quaterniond & orient,
+                              const JointState &qdd = JointState::Constant(0),
+                              const Vector3d& xd = Vector3d(0, 0, 0),
+                              const Vector3d & xdd  = Vector3d(0, 0, 0),
+                              const Vector3d & omega  = Vector3d(0, 0, 0),
+                              const Vector3d & omegad = Vector3d(0, 0, 0)) {
+
+  }
+
+  virtual void setGRF(const LegVectorMap& grf) {
+
+  }
+
+
+
+  virtual bool getGRF(LegVectorMap& grf) = 0;
+
+  virtual LegVectorMap getGRF()  {
+    LegVectorMap grf;
+    getGRF(grf);
+    return grf;
+  }
+
+  virtual bool isStance(LegID leg) const = 0;
+
 };
+} // namespace quadruped
 } // namespace pronto

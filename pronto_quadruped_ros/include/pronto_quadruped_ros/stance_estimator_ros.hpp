@@ -29,7 +29,7 @@
 namespace pronto {
 namespace quadruped {
 
-class StanceEstimatorROS : public pronto::StanceEstimator {
+class StanceEstimatorROS : public StanceEstimator {
 public:
     StanceEstimatorROS(ros::NodeHandle& nh,
                        FeetContactForces& feet_forces);

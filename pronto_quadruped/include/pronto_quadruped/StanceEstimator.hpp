@@ -43,6 +43,7 @@
 #include <iostream>
 
 namespace pronto {
+namespace quadruped {
 
 using pronto::quadruped::LF;
 using pronto::quadruped::RF;
@@ -77,6 +78,8 @@ struct GRFShortStat {
     uint64_t n_stance;
 };
 
+
+
 class StanceEstimator : public StanceEstimatorBase {
     // typedef to remove ugly and verbose traited templated code
 public:
@@ -86,7 +89,7 @@ public:
 
 
 
-    enum Mode {THRESHOLD = 0, HYSTERESIS, REGRESSION};
+    enum class Mode {THRESHOLD = 0, HYSTERESIS, REGRESSION};
 
 public:
     StanceEstimator(FeetContactForces& feet_contact_forces,
@@ -101,94 +104,88 @@ public:
 
     virtual ~StanceEstimator();
 
-    inline LegBoolMap getStance(const double time,
-                                const JointState &q,
-                                const JointState &qd,
-                                const JointState &tau,
-                                const Quaterniond & orient,
-                                const JointState &qdd = JointState::Constant(0),
-                                const Vector3d& xd = Vector3d(0, 0, 0),
-                                const Vector3d & xdd  = Vector3d(0, 0, 0),
-                                const Vector3d & omega  = Vector3d(0, 0, 0),
-                                const Vector3d & omegad = Vector3d(0, 0, 0)) {
-        LegBoolMap stance;
-        getStance(time, q, qd, tau, orient, stance, qdd, xd, xdd, omega, omegad);
-        return stance;
-    }
 
-    inline bool getStance(const double time,
-                          const JointState &q,
-                          const JointState &qd,
-                          const JointState &tau,
-                          const Quaterniond & orient,
-                          LegBoolMap& stance,
-                          const JointState &qdd = JointState::Constant(0),
-                          const Vector3d& xd = Vector3d(0, 0, 0),
-                          const Vector3d & xdd  = Vector3d(0, 0, 0),
-                          const Vector3d & omega  = Vector3d(0, 0, 0),
-                          const Vector3d & omegad = Vector3d(0, 0, 0)) {
-        LegScalarMap l;
-        return getStance(time, q, qd, tau, orient, stance, l, qdd, xd, xdd, omega, omegad);
-    }
 
-    bool getStance(const double time,
-                   const JointState &q,
-                   const JointState &qd,
-                   const JointState &tau,
-                   const Quaterniond & orient,
-                   LegBoolMap& stance,
-                   LegScalarMap& stance_probability,
-                   const JointState &qdd = JointState::Constant(0),
-                   const Vector3d& xd = Vector3d(0, 0, 0),
-                   const Vector3d & xdd  = Vector3d(0, 0, 0),
-                   const Vector3d & omega  = Vector3d(0, 0, 0),
-                   const Vector3d & omegad = Vector3d(0, 0, 0));
+    void setJointStates(const JointState &q,
+                        const JointState &qd,
+                        const JointState &tau,
+                        const Quaterniond &orient,
+                        const JointState &qdd,
+                        const Vector3d &xd,
+                        const Vector3d &xdd,
+                        const Vector3d &omega,
+                        const Vector3d &omegad)  override;
 
-    virtual bool isStance(LegID leg);
-    LegVectorMap getGRF();
-    virtual void getGrf_W(LegDataMap<Eigen::Vector3d> & leg_status);
-    virtual inline void getGrfDelta(LegDataMap<double>& grfDelta){
+
+    bool getStance(LegBoolMap &stance) override;
+
+    bool getStance(LegBoolMap& stance,
+                   LegScalarMap& stance_probability) override;
+
+
+    LegVectorMap getGRF() override;
+
+    bool getGRF(LegVectorMap& grf) override;
+
+
+
+    void getGrf_W(LegVectorMap& leg_status);
+
+    void getGrfDelta(LegDataMap<double>& grfDelta){
         grfDelta = grForceDelta;
     }
 
     virtual void getNormalizedGRF(Eigen::Vector4d& normgrf);
-    virtual void updateStat(double sample,
+
+    bool isStance(LegID leg) const override;
+
+    void updateStat(double sample,
                     bool is_stance,
                     int index);
 
-    virtual void setMode(const Mode& mode);
+    void setMode(const Mode& mode);
 
-    virtual void setParams(const std::vector<double>& beta,
+    void setParams(const std::vector<double>& beta,
                    const double& force_threshold = 50,
                    const double& hysteresis_low = 50,
                    const double& hysteresis_high = 150,
                    const int& hysteresis_delay_low = 250,
                    const int& hysteresis_delay_high = 250);
-
-protected:
-    FeetContactForces& feet_contact_forces_;
-    LegDataMap<Eigen::Vector3d> grf_;
+private:
     LegDataMap<Eigen::Vector3d> grForce_W;
     LegDataMap<Eigen::Vector3d> grForce_des;
     LegDataMap<double> grForceDelta;
-
-    Eigen::Vector3d violation_;
-
-    Mode mode_ = THRESHOLD;
+    Mode mode_ = Mode::THRESHOLD;
 
     double force_threshold_;
     double hysteresis_low_;
     double hysteresis_high_;
     double hysteresis_delay_low_;
     double hysteresis_delay_high_;
-
     std::vector<double>beta_;
     Eigen::Vector4d stance_weights_ = Eigen::Vector4d::Zero();
 
-    LegBoolMap leg_status_;
+
 
     GRFStat stat;
     GRFShortStat gss[4];
+
+protected:
+    FeetContactForces& feet_contact_forces_;
+    LegVectorMap grf_;
+    LegBoolMap stance_;
+
+    // Joint States used to compute GRF and then the stance
+    JointState q_;
+    JointState qd_;
+    JointState tau_;
+    Quaterniond orient_;
+    JointState qdd_;
+    Vector3d xd_;
+    Vector3d xdd_;
+    Vector3d omega_;
+    Vector3d omegad_;
 };
 
+} // quadruped
 } // namespace pronto

@@ -29,7 +29,7 @@
 namespace pronto {
 namespace quadruped {
 
-class DynamicStanceEstimatorROS : public pronto::DynamicStanceEstimator {
+class DynamicStanceEstimatorROS : public DynamicStanceEstimator {
 public:
     typedef pronto::quadruped::InverseDynamicsBase InverseDynamicsBase;
     typedef pronto::quadruped::JSIMBase JSIMBase;
