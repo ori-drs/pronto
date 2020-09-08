@@ -141,14 +141,10 @@ void ProntoNode<JointStateMsgT, ContactStateMsgT>::init(bool subscribe) {
                    nh_.getParam(*it + "/secondary_topic", secondary_topic))
                 {
                   try {
-                    ROS_INFO_STREAM("Leg Odometry Handler is a DualSensingModule<"
-                                    << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">");
                     front_end.addSecondarySensingModule(dynamic_cast<DualSensingModule<JointStateMsgT,ContactStateMsgT>&>(legodo_handler_),
                                                         *it,
                                                         secondary_topic,
                                                         subscribe);
-                    ROS_INFO_STREAM("Leg Odometry Handler is a DualSensingModule<"
-                                    << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">");
                   } catch(std::bad_cast e){
                     ROS_WARN_STREAM("Could not use the provided Leg Odometry handler as DualSensingModule<"
                                     << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">.");

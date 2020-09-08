@@ -40,9 +40,9 @@ namespace pronto {
 class LegOdometerBase {
 public:
     // iit-commons aliases
-    typedef typename pronto::quadruped::JointState JointState;
+    typedef typename quadruped::JointState JointState;
     template <class T>
-    using LegDataMap = pronto::quadruped::LegDataMap<T>;
+    using LegDataMap = quadruped::LegDataMap<T>;
     typedef LegDataMap<double> LegScalarMap;
     typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     // Eigen aliases

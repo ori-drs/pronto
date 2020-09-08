@@ -55,8 +55,8 @@ public:
         if(!subscribe){
             return;
         }
-        std::cerr << sensor_id << " subscribing to " << topic;
-        std::cerr << " with SecondaryMsgT = " << type_name<SecondaryMsgT>() << std::endl;
+        ROS_INFO_STREAM(sensor_id << " subscribing to " << topic
+                        << " with SecondaryMsgT = " << type_name<SecondaryMsgT>());
         secondary_subscribers_[sensor_id] = nh_.subscribe<SecondaryMsgT>(topic,
                                                                          10000,
                                                                          boost::bind(&ROSFrontEnd::secondaryCallback<MsgT, SecondaryMsgT>,

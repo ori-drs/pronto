@@ -167,8 +167,6 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
 
   Eigen::Vector3d gr = Eigen::Vector3d::UnitZ()*9.80665;
   Eigen::Quaterniond q = bias_lock_module_->getGVec();
-  //bias_lock_module_
-  //gr =
   accel_ = gr;
   base_arrow_.points[1].x = 0.1*accel_(0);
   base_arrow_.points[1].y = 0.1*accel_(1);
@@ -179,7 +177,6 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
 
   base_more_arrow_ = base_arrow_;
   Eigen::Vector3d bias = bias_lock_module_->getCurrentProperAccelBias();
-  //std::cerr << "CORRRRRRRRRRRECTED BIAS: " << bias.transpose() << std::endl;
   base_more_arrow_.points.resize(2);
   base_more_arrow_.points[0].x = 0;
   base_more_arrow_.points[0].y = 0;
