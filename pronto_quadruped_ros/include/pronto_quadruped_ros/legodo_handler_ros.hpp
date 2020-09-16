@@ -44,7 +44,6 @@ class LegodoHandlerBase {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    typedef typename pronto::LegOdometerBase LegOdometerBase;
     template <class T>
     using LegDataMap = pronto::quadruped::LegDataMap<T>;
     typedef typename pronto::quadruped::LegBoolMap LegBoolMap;

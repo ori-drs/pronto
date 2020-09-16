@@ -30,6 +30,7 @@
 #include <pronto_quadruped_commons/declarations.h>
 
 namespace pronto {
+namespace quadruped {
 
 /**
  * @brief The LegOdometerBase class is the base class (interface) to implement
@@ -153,5 +154,5 @@ public:
     virtual void getVelocitiesFromLegs(LegVectorMap & vd) = 0;
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 };
-
+} // namespace quadruped
 } // namespace pronto

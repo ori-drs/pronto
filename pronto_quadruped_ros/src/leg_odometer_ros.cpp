@@ -29,7 +29,7 @@ namespace quadruped {
 LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
                                FeetJacobians &feet_jacobians,
                                ForwardKinematics &forward_kinematics) :
-    pronto::LegOdometer(feet_jacobians, forward_kinematics), nh_(nh)
+    LegOdometer(feet_jacobians, forward_kinematics), nh_(nh)
 {
     // get parameters for the leg odometry
     std::string legodo_prefix = "legodo/";
