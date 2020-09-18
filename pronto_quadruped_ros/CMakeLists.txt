@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(pronto_quadruped_ros)
 
-add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS roscpp
                                         pronto_core
@@ -121,6 +121,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## Declare a C++ library
 add_library(${PROJECT_NAME} src/legodo_handler_ros.cpp
                             src/stance_estimator_ros.cpp
+                            src/force_sensor_stance_estimator_ros.cpp
+                            src/foot_sensor_stance_detector_ros.cpp
+                            src/conversions.cpp
                             src/leg_odometer_ros.cpp
                             src/dynamic_stance_estimator_ros.cpp
                             src/bias_lock_handler_ros.cpp)

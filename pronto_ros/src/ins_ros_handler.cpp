@@ -180,7 +180,7 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
 RBISUpdateInterface* InsHandlerROS::processMessage(const sensor_msgs::Imu *imu_msg, StateEstimator *est){
     // keep one every downsample_factor messages
     if(counter++ % downsample_factor_ != 0){
-        return NULL;
+        return nullptr;
     }
     msgToImuMeasurement(*imu_msg, imu_meas_, utime_offset_);
     return ins_module_.processMessage(&imu_meas_, est);

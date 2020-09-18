@@ -26,6 +26,7 @@
 #include <cmath>
 
 namespace pronto {
+namespace quadruped {
 
 StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  double force_threshold) :
@@ -89,18 +90,18 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
     hysteresis_delay_high_ = hysteresis_delay_high;
 
     switch(mode_) {
-    case THRESHOLD:
+    case Mode::THRESHOLD:
         std::cout << "[ StanceEst ] Mode: THRESHOLD" << std::endl;
         std::cout << "[ StanceEst ] Force threshold: " << force_threshold_ << std::endl;
         break;
-    case HYSTERESIS:
+    case Mode::HYSTERESIS:
         std::cout << "[ StanceEst ] Mode: HYSTERESIS" << std::endl;
         std::cout << "[ StanceEst ] Hysteresis low: " << hysteresis_low_ << std::endl;
         std::cout << "[ StanceEst ] Hysteresis high: " << hysteresis_high_ << std::endl;
         std::cout << "[ StanceEst ] Hysteresis delay low: " << hysteresis_delay_low_ << std::endl;
         std::cout << "[ StanceEst ] Hysteresis delay high: " << hysteresis_delay_high_ << std::endl;
         break;
-    case REGRESSION:
+    case Mode::REGRESSION:
         std::cout << "[ StanceEst ] Mode: REGRESSION" << std::endl;
         std::cout << "[ StanceEst ] Beta: [";
         for(int i = 0; i < beta.size(); i++) {
@@ -144,39 +145,57 @@ void StanceEstimator::updateStat(double sample,
     }
 }
 
-bool StanceEstimator::getStance(const double time,
-                                const JointState &q,
-                                const JointState &qd,
-                                const JointState &tau,
-                                const Quaterniond &orient,
-                                LegBoolMap &stance,
-                                LegScalarMap &stance_probability,
-                                const JointState &qdd,
-                                const Vector3d &xd,
-                                const Vector3d &xdd,
-                                const Vector3d &omega,
-                                const Vector3d &omegad)
+
+void StanceEstimator::setJointStates(const JointState &q,
+                    const JointState &qd,
+                    const JointState &tau,
+                    const Quaterniond &orient,
+                    const JointState &qdd,
+                    const Vector3d &xd,
+                    const Vector3d &xdd,
+                    const Vector3d &omega,
+                    const Vector3d &omegad)  {
+
+  q_ = q;
+  qd_ = qd;
+  qdd_ = qdd;
+  tau_ = tau;
+  orient_ = orient;
+  xd_ = xd;
+  xdd_ = xdd;
+  omega_ = omega;
+  omegad_ = omegad;
+}
+
+bool StanceEstimator::getStance(LegBoolMap &stance) {
+  LegScalarMap stance_probability;
+  return getStance(stance, stance_probability);
+}
+
+
+bool StanceEstimator::getStance(LegBoolMap &stance,
+                                LegScalarMap &stance_probability)
 {
-    if(!feet_contact_forces_.getFeetGRF(q, qd, tau, orient, grf_, qdd, xd, xdd, omega, omegad)){
+    if(!getGRF(grf_)){
         return false;
     }
     // get the Ground Reaction Forces at the feet, expressed in the base frame
-    for(int leg_id  = 0; leg_id < pronto::quadruped::_LEGS_COUNT; leg_id++) {
+    for(int leg_id  = 0; leg_id < _LEGS_COUNT; leg_id++) {
         grForceDelta[leg_id] = -grf_[leg_id](Z);
 
         grForceDelta[leg_id] += grf_[leg_id](Z);
         grForce_W[leg_id] = grf_[leg_id]; // FIXME retrieve orientation
 
         switch(mode_) {
-        case THRESHOLD:
+        case Mode::THRESHOLD:
             stance[leg_id] = grf_[leg_id](Z) > force_threshold_ ? true : false;
             stance_probability[leg_id] = stance[leg_id];
             break;
-        case HYSTERESIS:
+        case Mode::HYSTERESIS:
             stance[leg_id] = grf_[leg_id](Z) > force_threshold_ ? true : false;
             stance_probability[leg_id] = stance[leg_id];
             break;
-        case REGRESSION:
+        case Mode::REGRESSION:
             stance_probability[leg_id] = 1.0 - 1.0 / (1.0 + exp(-(beta_[0 + leg_id * 2] + grf_[leg_id](Z) * beta_[1 + leg_id * 2])));
             stance[leg_id] = (stance_probability[leg_id] > 0.5 ? true : false);
             break;
@@ -202,17 +221,22 @@ void StanceEstimator::getNormalizedGRF(Eigen::Vector4d &normgrf) {
 
 }
 
-bool StanceEstimator::isStance(LegID leg) {
-    return leg_status_[leg];
+bool StanceEstimator::isStance(LegID leg) const{
+    return stance_[leg];
 }
 
 
-StanceEstimatorBase::LegVectorMap StanceEstimator::getGRF() {
+StanceEstimator::LegVectorMap StanceEstimator::getGRF() {
     return grf_;
 }
 
-void StanceEstimator::getGrf_W(LegDataMap<Eigen::Vector3d> & grf) {
+bool StanceEstimator::getGRF(StanceEstimator::LegVectorMap& grf){
+ return feet_contact_forces_.getFeetGRF(q_, qd_, tau_, orient_, grf, qdd_, xd_, xdd_, omega_, omegad_);
+}
+
+void StanceEstimator::getGrf_W(StanceEstimator::LegVectorMap & grf) {
     grf = grForce_W;
 }
 
+} // namespace quadruped
 } // namespace pronto

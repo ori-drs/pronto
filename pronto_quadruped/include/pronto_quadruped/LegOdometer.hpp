@@ -43,6 +43,7 @@
 #include <memory>
 
 namespace pronto {
+namespace quadruped {
 
 using pronto::quadruped::LF;
 using pronto::quadruped::RF;
@@ -165,4 +166,5 @@ protected:
 
     Eigen::Array4d grf_delta_;
 };
+} // namespace quadruped
 } // namespace pronto

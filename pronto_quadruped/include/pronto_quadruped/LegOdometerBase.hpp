@@ -30,6 +30,7 @@
 #include <pronto_quadruped_commons/declarations.h>
 
 namespace pronto {
+namespace quadruped {
 
 /**
  * @brief The LegOdometerBase class is the base class (interface) to implement
@@ -40,9 +41,9 @@ namespace pronto {
 class LegOdometerBase {
 public:
     // iit-commons aliases
-    typedef typename pronto::quadruped::JointState JointState;
+    typedef typename quadruped::JointState JointState;
     template <class T>
-    using LegDataMap = pronto::quadruped::LegDataMap<T>;
+    using LegDataMap = quadruped::LegDataMap<T>;
     typedef LegDataMap<double> LegScalarMap;
     typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     // Eigen aliases
@@ -153,5 +154,5 @@ public:
     virtual void getVelocitiesFromLegs(LegVectorMap & vd) = 0;
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 };
-
+} // namespace quadruped
 } // namespace pronto

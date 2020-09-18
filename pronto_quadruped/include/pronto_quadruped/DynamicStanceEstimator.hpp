@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "pronto_quadruped/StanceEstimatorBase.hpp"
+#include "pronto_quadruped/StanceEstimator.hpp"
 
 #include <pronto_quadruped_commons/feet_contact_forces.h>
 #include <pronto_quadruped_commons/feet_jacobians.h>
@@ -34,6 +34,7 @@
 #include <pronto_quadruped_commons/forward_kinematics.h>
 
 namespace pronto {
+namespace quadruped {
 
 typedef typename pronto::quadruped::FeetJacobians FeetJacobians;
 typedef typename pronto::quadruped::FeetContactForces FeetContactForces;
@@ -50,58 +51,15 @@ using Wrench = iit::rbd::ForceVector;
  * the discrepancy between the floating base and joint space portions of the
  * Newtown-Euler equations.
  */
-class DynamicStanceEstimator : public StanceEstimatorBase {
+class DynamicStanceEstimator : public StanceEstimator {
 public:
     DynamicStanceEstimator(InverseDynamics& inverse_dynamics,
                            JSIM& jsim,
                            FeetContactForces& feet_contact_forces,
                            ForwardKinematics& forward_kinematics);
 
-    inline LegBoolMap getStance(const double time,
-                                const JointState &q,
-                                const JointState &qd,
-                                const JointState &tau,
-                                const Quaterniond& orient,
-                                const JointState &qdd = JointState::Constant(0),
-                                const Vector3d& xd = Vector3d(0, 0, 0),
-                                const Vector3d & xdd  = Vector3d(0, 0, 0),
-                                const Vector3d & omega  = Vector3d(0, 0, 0),
-                                const Vector3d & omegad = Vector3d(0, 0, 0)) {
-        LegBoolMap stance;
-        getStance(time, q, qd, tau, orient, stance, qdd, xd, xdd, omega, omegad);
-        return stance;
-    }
-
-
-    inline bool getStance(const double time,
-                          const JointState &q,
-                          const JointState &qd,
-                          const JointState &tau,
-                          const Quaterniond& orient,
-                          LegBoolMap& stance,
-                          const JointState &qdd = JointState::Constant(0),
-                          const Vector3d& xd = Vector3d(0, 0, 0),
-                          const Vector3d & xdd  = Vector3d(0, 0, 0),
-                          const Vector3d & omega  = Vector3d(0, 0, 0),
-                          const Vector3d & omegad = Vector3d(0, 0, 0)) {
-        LegScalarMap l;
-        return getStance(time, q, qd, tau, orient, stance, l, qdd, xd, xdd, omega, omegad);
-    }
-
-    bool getStance(const double time,
-                   const JointState &q,
-                   const JointState &qd,
-                   const JointState &tau,
-                   const Quaterniond& orient,
-                   LegBoolMap& stance,
-                   LegScalarMap& stance_probability,
-                   const JointState &qdd = JointState::Constant(0),
-                   const Vector3d& xd = Vector3d(0, 0, 0),
-                   const Vector3d & xdd  = Vector3d(0, 0, 0),
-                   const Vector3d & omega  = Vector3d(0, 0, 0),
-                   const Vector3d & omegad = Vector3d(0, 0, 0));
-
-    LegVectorMap getGRF();
+    bool getStance(LegBoolMap& stance,
+                   LegScalarMap& stance_probability) override;
 
     /**
      * @brief getDynamicsViolation computes the difference in force as per the
@@ -114,16 +72,17 @@ public:
     Wrench getGRFnormBase();
 
 protected:
+    ForwardKinematics& forward_kinematics_;
+
     std::vector<Wrench> dynamics_violation_;
     std::vector<Wrench> wrench_legs;
     InverseDynamics& inverse_dynamics_;
     JSIM& jsim_;
-    FeetContactForces& feet_contact_forces_;
-    ForwardKinematics& forward_kinematics_;
+
     double violation_threshold_;
     Wrench wrench_base;
-    LegVectorMap grf_;
 
+protected:
     Wrench getBaseWrench(const JointState& q,
                          const JointState& qd,
                          const Quaterniond &orient,
@@ -133,4 +92,5 @@ protected:
                          const Vector3d& omega = Vector3d::Zero(),
                          const Vector3d& omegad = Vector3d::Zero());
 };
+}
 } // namespace pronto

@@ -28,7 +28,7 @@
 namespace pronto {
 namespace quadruped {
 
-class LegOdometerROS : public pronto::LegOdometer {
+class LegOdometerROS : public LegOdometer {
 public:
     LegOdometerROS(ros::NodeHandle& nh,
                    FeetJacobians &feet_jacobians,
