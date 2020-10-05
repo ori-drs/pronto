@@ -31,8 +31,8 @@
 #include <Eigen/Dense>
 
 // iit-rbd
-#include <pronto_quadruped_commons/rbd/rbd.h>
-#include <pronto_quadruped_commons/rbd/utils.h>
+#include <iit/rbd/rbd.h>
+#include <iit/rbd/utils.h>
 
 // iit-commons
 #include <pronto_quadruped_commons/declarations.h>

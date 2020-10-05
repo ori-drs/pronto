@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <pronto_quadruped_commons/rbd/rbd.h>
+#include <iit/rbd/rbd.h>
 
 namespace pronto {
 namespace quadruped {

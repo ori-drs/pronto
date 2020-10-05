@@ -23,7 +23,7 @@
  */
 
 #include "pronto_quadruped/LegOdometer.hpp"
-#include <pronto_quadruped_commons/rbd/utils.h>
+#include <iit/rbd/utils.h>
 #include <boost/math/distributions/normal.hpp>
 
 

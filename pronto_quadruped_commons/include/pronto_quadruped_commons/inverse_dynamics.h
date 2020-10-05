@@ -30,7 +30,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <pronto_quadruped_commons/rbd/rbd.h>
+#include <iit/rbd/rbd.h>
 
 #include "declarations.h"
 #include "link_data_map.h"
