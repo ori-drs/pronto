@@ -27,10 +27,10 @@
 
 #pragma once
 
-#include <pronto_quadruped_commons/rbd/rbd.h>
-#include <pronto_quadruped_commons/rbd/StateDependentMatrix.h>
+#include <iit/rbd/rbd.h>
+#include <iit/rbd/StateDependentMatrix.h>
 #include <pronto_quadruped_commons/declarations.h>
-#include <pronto_quadruped_commons/rbd/InertiaMatrix.h>
+#include <iit/rbd/InertiaMatrix.h>
 
 namespace pronto {
 namespace quadruped {
