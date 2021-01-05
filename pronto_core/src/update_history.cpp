@@ -64,7 +64,7 @@ std::string updateHistory::toString(uint64_t utime, int pos_shift) const{
 void updateHistory::clearHistoryBeforeUtime(int64_t utime)
 {
   historyMapIterator it_before;
-  bool valid = stl_utils::stlmultimap_get_lower(updateMap, utime, it_before);
+  bool valid = getLower(updateMap, utime, it_before);
   if (!valid || it_before == updateMap.begin())
     return;
 

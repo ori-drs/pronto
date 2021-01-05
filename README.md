@@ -45,9 +45,7 @@ quadruped robot. This is a fork of the `iit_commons` package (see
 - other support packages for filtering
 
 ## Dependencies
-Pronto depends on Eigen, Boost, and on the catkin packages in the following repositories (likely to be removed in future)
-- [common\_utils](https://github.com/ori-drs/common_utils)
-- [kinematics\_utils](https://github.com/ori-drs/kinematic_utils)
+Pronto depends on Eigen and Boost
 
 ## System Requirements
 The target operating system is **Ubuntu 18.04** equipped with **ROS Melodic**.  

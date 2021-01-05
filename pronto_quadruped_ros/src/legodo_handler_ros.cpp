@@ -97,7 +97,7 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;
 
 
-    std::cerr << xdd_.transpose() << std::endl;
+    //std::cerr << xdd_.transpose() << std::endl;
     omega_ = head_state_.angularVelocity();
     omegad_ = Eigen::Vector3d::Zero(); // TODO retrieve angular acceleration
 
@@ -174,11 +174,11 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
           vel_raw_.publish(twist);
       }
-      return new pronto::RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
-                                                     xd_,
-                                                     cov_legodo,
-                                                     Update::legodo,
-                                                     utime_);
+      return new pronto::RBISIndexedMeasurement(RigidBodyState::velocityInds(),
+                                                xd_,
+                                                cov_legodo,
+                                                Update::legodo,
+                                                utime_);
 
   }
   return nullptr;

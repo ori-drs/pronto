@@ -1,4 +1,5 @@
 #include "pronto_core/indexed_meas_module.hpp"
+#include <iostream>
 
 namespace pronto {
 

@@ -1,4 +1,5 @@
 #include "pronto_core/visual_odometry_module.hpp"
+#include <iostream>
 
 using Update = pronto::RBISUpdateInterface;
 using namespace std;
@@ -57,7 +58,7 @@ Update* VisualOdometryModule::processMessage(const VisualOdometryUpdate *msg,
     if (mode_ == VisualOdometryMode::MODE_POSITION) {
       z_meas.head<3>() = t1_body_vo_.translation();
 
-      return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
+      return new RBISIndexedMeasurement(RigidBodyState::positionInds(),
                                         z_meas,
                                         cov_vo_,
                                         RBISUpdateInterface::fovis,

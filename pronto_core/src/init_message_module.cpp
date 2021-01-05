@@ -1,4 +1,5 @@
 #include "pronto_core/init_message_module.hpp"
+#include <iostream>
 
 namespace pronto {
 

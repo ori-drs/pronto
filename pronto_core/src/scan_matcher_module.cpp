@@ -1,5 +1,6 @@
 #include "pronto_core/scan_matcher_module.hpp"
-#include "eigen_utils/eigen_rigidbody.hpp"
+#include "pronto_core/rigidbody.hpp"
+#include <iostream>
 
 namespace pronto {
 
@@ -12,7 +13,7 @@ namespace pronto {
 using Mode = ScanMatcherModule::ScanMatchingMode;
 
 ScanMatcherModule::ScanMatcherModule() : ScanMatcherModule(Mode::POSITION,
-                                                           eigen_utils::RigidBodyState::positionInds(),
+                                                           RigidBodyState::positionInds(),
                                                            Eigen::Matrix3d::Identity())
 {
 
@@ -35,7 +36,7 @@ RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *m
   switch(mode) {
   case Mode::POSITION :
   {
-    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
+    return new RBISIndexedMeasurement(RigidBodyState::positionInds(),
                                       msg->pos,
                                       cov_scan_match_,
                                       RBISUpdateInterface::scan_matcher,
@@ -43,7 +44,7 @@ RBISUpdateInterface * ScanMatcherModule::processMessage(const PoseMeasurement *m
   }
   case Mode::VELOCITY :
   {
-    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
+    return new RBISIndexedMeasurement(RigidBodyState::velocityInds(),
                                       msg->linear_vel,
                                       cov_scan_match_,
                                       RBISUpdateInterface::scan_matcher,

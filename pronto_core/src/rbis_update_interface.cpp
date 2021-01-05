@@ -1,4 +1,5 @@
 #include "pronto_core/rbis_update_interface.hpp"
+#include <iostream>
 
 namespace pronto {
 

@@ -1,5 +1,7 @@
 #include "pronto_core/ins_module.hpp"
-#include <eigen_utils/eigen_rigidbody.hpp>
+#include "pronto_core/rigidbody.hpp"
+#include "pronto_core/rotations.hpp"
+#include <iostream>
 
 namespace pronto {
 
@@ -147,7 +149,7 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
     Eigen::Quaterniond quat_g_vec;
     quat_g_vec.setFromTwoVectors(ins_g_vec_est, -Eigen::Vector3d::UnitZ()); //the gravity vector points in the negative z axis
 
-    Eigen::Vector3d g_vec_rpy = (eigen_utils::getEulerAngles(quat_g_vec) * 180.0 / M_PI);
+    Eigen::Vector3d g_vec_rpy = (rotation::getEulerAngles(quat_g_vec) * 180.0 / M_PI);
     fprintf(stderr, "Roll, Pitch Initialized from INS: %f, %f \n", g_vec_rpy(0), g_vec_rpy(1));
     fprintf(stderr, "Yaw from INS: %f, \n", g_vec_rpy(2));
 
@@ -174,7 +176,7 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
       init_cov(RBIS::chi_ind + 2, RBIS::chi_ind + 2) = default_cov(RBIS::chi_ind + 2,
           RBIS::chi_ind + 2);
 
-      Eigen::Vector3d mag_vec_rpy = (eigen_utils::getEulerAngles(quat_mag) * 180.0 / M_PI);
+      Eigen::Vector3d mag_vec_rpy = (rotation::getEulerAngles(quat_mag) * 180.0 / M_PI);
       fprintf(stderr, "Yaw Initialized from INS: %f\n", mag_vec_rpy(2));
     }
 

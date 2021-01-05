@@ -1,4 +1,6 @@
 #include "pronto_biped_core/legodo_common.hpp"
+#include <pronto_core/rotations.hpp>
+#include <iostream>
 
 namespace pronto {
 namespace biped {
@@ -43,8 +45,8 @@ void LegOdoCommon::getCovariance(const LegOdometryMode &mode_current,
         R_legodo(4) = std::pow(R_legodo_vang_current, 2);
         R_legodo(5) = std::pow(R_legodo_vang_current, 2);
 
-        z_indices.head<3>() = eigen_utils::RigidBodyState::velocityInds();
-        z_indices.tail<3>() = eigen_utils::RigidBodyState::angularVelocityInds();
+        z_indices.head<3>() = RigidBodyState::velocityInds();
+        z_indices.tail<3>() = RigidBodyState::angularVelocityInds();
         break;
     case LegOdometryMode::LIN_RATE :
         z_indices.resize(3);
@@ -53,7 +55,7 @@ void LegOdoCommon::getCovariance(const LegOdometryMode &mode_current,
         R_legodo(1) = std::pow(R_legodo_vxyz_current, 2);
         R_legodo(2) = std::pow(R_legodo_vxyz_current, 2);
 
-        z_indices.head<3>() = eigen_utils::RigidBodyState::velocityInds();
+        z_indices.head<3>() = RigidBodyState::velocityInds();
         break;
     case LegOdometryMode::POSITION_AND_LIN_RATE :
         z_indices.resize(6);
@@ -65,8 +67,8 @@ void LegOdoCommon::getCovariance(const LegOdometryMode &mode_current,
         R_legodo(4) = std::pow(R_legodo_vxyz_current, 2);
         R_legodo(5) = std::pow(R_legodo_vxyz_current, 2);
 
-        z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
-        z_indices.tail<3>() = eigen_utils::RigidBodyState::velocityInds();
+        z_indices.head<3>() = RigidBodyState::positionInds();
+        z_indices.tail<3>() = RigidBodyState::velocityInds();
         break;
     default:
         break;
@@ -80,14 +82,14 @@ LegOdoCommon::Transform LegOdoCommon::getTransAsVelocityTrans(const Transform &m
 {
   Transform msgT_vel(Transform::Identity());
 
-  Eigen::Vector3d rpy = eigen_utils::getEulerAngles(Eigen::Quaterniond(msgT.rotation()));
+  Eigen::Vector3d rpy = rotation::getEulerAngles(Eigen::Quaterniond(msgT.rotation()));
 
   double elapsed_time = ((double)(utime - prev_utime)) / 1e6;
   Eigen::Vector3d rpy_rate = rpy / elapsed_time;
 
   msgT_vel.translate(msgT.translation() / elapsed_time);
 
-  Eigen::Quaterniond quat_vel = eigen_utils::setQuatEulerAngles(rpy_rate);
+  Eigen::Quaterniond quat_vel = rotation::setQuatEulerAngles(rpy_rate);
 
   msgT_vel.rotate(quat_vel);
 
@@ -133,7 +135,7 @@ RBISUpdateInterface * LegOdoCommon::createMeasurement(const Transform &odo_posit
         // This was finished in Feb 2015 but not tested on the robot
         z_meas.resize(6);
 
-        Eigen::Vector3d rpy = eigen_utils::getEulerAngles(delta_odoT.rotation());
+        Eigen::Vector3d rpy = rotation::getEulerAngles(delta_odoT.rotation());
         double elapsed_time =  ((double)(utime -  prev_utime)) / 1000000.0;
         double rpy_rate[3];
         rpy_rate[0] = rpy[0] / elapsed_time;

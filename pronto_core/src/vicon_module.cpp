@@ -1,4 +1,5 @@
 #include "pronto_core/vicon_module.hpp"
+#include <iostream>
 
 namespace pronto {
 

@@ -1,4 +1,5 @@
 #include "pronto_core/gps_module.hpp"
+#include <iostream>
 
 namespace pronto {
 
@@ -13,7 +14,7 @@ RBISUpdateInterface* GPSModule::processMessage(const GPSMeasurement *msg,
     if (msg->gps_lock < 3) {
       return NULL;
     }
-    return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
+    return new RBISIndexedMeasurement(RigidBodyState::positionInds(),
                                       msg->xyz_pos,
                                       cov_xyz,
                                       RBISUpdateInterface::gps,

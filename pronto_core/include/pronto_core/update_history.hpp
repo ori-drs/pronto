@@ -1,8 +1,5 @@
-#ifndef __update_history_h__
-#define __update_history_h__
-
+#pragma once
 #include <map>
-#include <stl_utils/stlmap_utils.hpp>
 #include <stdint.h>
 
 #include "rbis_update_interface.hpp"
@@ -35,8 +32,27 @@ public:
   std::string toString() const;
   std::string toString(uint64_t utime, int pos_shift = 1) const;
 
+protected:
+  template<typename K, typename val>
+  bool getLower(std::multimap<K, val> & m,
+  K key,
+  typename std::multimap<K, val>::iterator &lb)
+  {
+    lb = m.lower_bound(key);
+    if (lb == m.end()) {
+      return false;
+    }
+
+    if (key != lb->first) {
+      if (lb == m.begin())
+        return false;
+      else
+        lb--;
+    }
+    return true;
+  }
+
 };
 
 }
 
-#endif

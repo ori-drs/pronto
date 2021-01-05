@@ -14,7 +14,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>filter_tools</depend>
-  <depend>pronto_math</depend>
   <depend>pronto_core</depend>
 
   <!-- The export tag contains other, unspecified, tags -->

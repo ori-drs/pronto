@@ -10,7 +10,6 @@
 #include <Eigen/StdVector>
 
 #include <boost/shared_ptr.hpp>
-#include <pronto_math/pronto_math.hpp> // just for the Isometry3dTime
 #include <filter_tools/Filter.hpp>
 #include <filter_tools/SignalTap.hpp> // SchmittTrigger
 

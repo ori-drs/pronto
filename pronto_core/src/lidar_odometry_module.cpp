@@ -1,4 +1,5 @@
 #include "pronto_core/lidar_odometry_module.hpp"
+#include <iostream>
 
 using Update = pronto::RBISUpdateInterface;
 using namespace std;
@@ -67,7 +68,7 @@ Update* LidarOdometryModule::processMessage(const LidarOdometryUpdate *msg,
     if (mode_ == LidarOdometryMode::POSITION) {
       z_meas.head<3>() = t1_body_vo_.translation();
       std::cerr << "SENDING LIDAR ODOMETRY POSITION UPDATE" << std::endl;
-      return new RBISIndexedMeasurement(eigen_utils::RigidBodyState::positionInds(),
+      return new RBISIndexedMeasurement(RigidBodyState::positionInds(),
                                         z_meas,
                                         cov_vo_,
                                         RBISUpdateInterface::scan_matcher,

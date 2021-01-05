@@ -7,6 +7,7 @@
 
 #include "pronto_core/state_est.hpp"
 #include <iterator>
+#include <iostream>
 using namespace Eigen;
 
 namespace pronto {
@@ -19,9 +20,9 @@ StateEstimator::StateEstimator(RBISResetUpdate * init_state,
   init_state->updateFilter(RBIS(), RBIM::Zero(), 0); //apply update from zero... should reset the state
   unprocessed_updates_start = history.updateMap.end();
 
-  eigen_dump(init_state->posterior_state);
-  eigen_dump(init_state->posterior_covariance);
-  printf("\n");
+  std::cout << init_state->posterior_state << std::endl;
+  Eigen::IOFormat clean_format(4, 0, ", ", "\n", "[", "]");
+  std::cout << init_state->posterior_covariance.format(clean_format) << std::endl;
 }
 
 StateEstimator::~StateEstimator()
