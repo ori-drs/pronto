@@ -35,7 +35,34 @@ LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
     std::string legodo_prefix = "legodo/";
     int legodo_mode;
     nh_.getParam(legodo_prefix + "legodo_mode", legodo_mode);
-    setMode(static_cast<LegOdometer::Mode>(legodo_mode));
+
+    // # STATIC_SIGMA 0x00, VAR_SIGMA 0x01, IMPACT_SIGMA 0x02, WEIGHTED_AVG 0x04, ALPHA_FILTER : 0x08, KALMAN_FILTER : 0x10
+    switch(legodo_mode){
+    case 0: // 000
+      setMode(SigmaMode::STATIC_SIGMA, AverageMode::SIMPLE_AVG);
+      break;
+    case 1: // 001
+      setMode(SigmaMode::VAR_SIGMA, AverageMode::SIMPLE_AVG);
+      break;
+    case 2: // 010
+      setMode(SigmaMode::IMPACT_SIGMA, AverageMode::SIMPLE_AVG);
+      break;
+    case 3: // 011
+      setMode(SigmaMode::VAR_AND_IMPACT_SIGMA, AverageMode::SIMPLE_AVG);
+      break;
+    case 4: // 100
+      setMode(SigmaMode::STATIC_SIGMA, AverageMode::WEIGHTED_AVG);
+      break;
+    case 5: // 101
+      setMode(SigmaMode::VAR_SIGMA, AverageMode::WEIGHTED_AVG);
+      break;
+    case 6: // 110
+      setMode(SigmaMode::IMPACT_SIGMA, AverageMode::WEIGHTED_AVG);
+      break;
+    case 7: // 111
+      setMode(SigmaMode::VAR_AND_IMPACT_SIGMA, AverageMode::WEIGHTED_AVG);
+      break;
+    }
 }
 
 }

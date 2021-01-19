@@ -33,10 +33,11 @@ using namespace pronto::quadruped;
 
 LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
                                      ForwardKinematics& forward_kinematics,
-                                     bool debug, Mode mode) :
+                                     bool debug, SigmaMode s_mode, AverageMode a_mode) :
     feet_jacobians_(feet_jacobians),
     forward_kinematics_(forward_kinematics),
-    mode_(mode),
+    s_mode_(s_mode),
+    a_mode_(a_mode),
     xd_b_(Eigen::Vector3d::Zero()),
     old_xd_b_(Eigen::Vector3d::Zero()),
     debug_(debug) {
@@ -45,21 +46,39 @@ LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
 LegOdometer::~LegOdometer() {
 }
 
-void LegOdometer::setMode(const uint8_t mode) {
-    std::cout << "[ KSE ] Mode changed to: " << (int) mode << std::endl;
-    if(((mode & VAR_SIGMA) | (mode & IMPACT_SIGMA)) == STATIC_SIGMA) {
-        std::cout << "[ KSE ] Static sigma" << std::endl;
-    }
-    if(mode & VAR_SIGMA) {
-        std::cout << "[ KSE ] Var sigma" << std::endl;
-    }
-    if((mode & IMPACT_SIGMA) == IMPACT_SIGMA) {
-        std::cout << "[ KSE ] Impact sigma" << std::endl;
-    }
-    if(mode & WEIGHTED_AVG) {
-        std::cout << "[ KSE ] Weighted avg" << std::endl;
-    }
-    mode_ = mode;
+void LegOdometer::setMode(const SigmaMode s_mode, const AverageMode a_mode) {
+  std::cout << "[ LegOdometer ] Sigma Mode changed to: ";
+
+  switch(s_mode){
+  case SigmaMode::STATIC_SIGMA:
+    std::cout << "Static Sigma" << std::endl;
+    break;
+  case SigmaMode::VAR_SIGMA:
+    std::cout << "Var Sigma" << std::endl;
+    break;
+  case SigmaMode::VAR_AND_IMPACT_SIGMA:
+    std::cout << "Var and Impact Sigma" << std::endl;
+    break;
+  case SigmaMode::IMPACT_SIGMA:
+    std::cout << "Impact Sigma" << std::endl;
+    break;
+  default:
+    break;
+  }
+
+  s_mode_ = s_mode;
+  std::cout << "[ LegOdometer ] Average Mode changed to: ";
+  switch (a_mode) {
+  case AverageMode::SIMPLE_AVG:
+    std::cout << "Simple Average" << std::endl;
+    break;
+  case AverageMode::WEIGHTED_AVG:
+    std::cout << "Weighted Average" << std::endl;
+    break;
+  default:
+    break;
+  }
+  a_mode_ = a_mode;
 }
 
 void LegOdometer::setInitVelocityCov(const Eigen::Matrix3d& vel_cov){
@@ -68,6 +87,12 @@ void LegOdometer::setInitVelocityCov(const Eigen::Matrix3d& vel_cov){
 
 void LegOdometer::setInitVelocityStd(const Eigen::Vector3d& vel_std){
     initial_vel_std_ = vel_std;
+    initial_vel_cov_ = vel_std.array().square().matrix().asDiagonal();
+    Eigen::IOFormat clean_fmt(4, 0, ", ", "\n", "[", "]");
+    std::cout << "Set Initial standard deviation: " << std::endl;
+    std::cout << initial_vel_std_.format(clean_fmt) << std::endl;
+    std::cout << "Set Initial covariance: " << std::endl;
+    std::cout << initial_vel_cov_.format(clean_fmt) << std::endl;
 }
 
 void LegOdometer::setInitPositionCov(const Eigen::Matrix3d& pos_cov){
@@ -113,7 +138,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
     Eigen::Vector3d var_velocity = Eigen::Vector3d::Zero();
 
-    if((mode_ & WEIGHTED_AVG)) {
+    if(a_mode_ == AverageMode::WEIGHTED_AVG) {
         double sum = 0;
         for(int i = 0; i < 4; i++) {
             if(stance_legs[i]) {
@@ -142,7 +167,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
             }
         }
 
-    } else {
+    } else if(a_mode_ == AverageMode::SIMPLE_AVG){
         // Computing average velocity
         for(int i = 0; i < 4; i++) {
             if(stance_legs[i]) {
@@ -155,6 +180,13 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
         }
 
         xd_b_ /= (double)leg_count;
+        if(xd_b_.norm() > 10){
+          std::cerr << "+++++++++++++++++++++ABNORMAL VELOCITY: " << std::endl;
+          Eigen::IOFormat clean(4, 0, ", ", "\n", "[", "]");
+          std::cerr << xd_b_.format(clean) << std::endl;
+          std::cerr << "Stance: " << stance_legs << std::endl;
+          std::cerr << "Leg velocities: " << base_vel_leg_ << std::endl;
+        }
 
         for(int i = 0; i < 4; i++) {
             if(stance_legs[i]) {
@@ -174,7 +206,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     double gamma = 0.8;
     double delta = 0.5;
 
-    if((mode_ & VAR_SIGMA) && !(mode_ & IMPACT_SIGMA)) {
+    if(s_mode_ == SigmaMode::VAR_SIGMA) {
         // Compute the new sigma based on the covariance over stance legs.
         // leave unchanged if only one leg is on the ground!
         if(leg_count != 1) {
@@ -188,15 +220,15 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
         }
     }
 
-    if((mode_ & IMPACT_SIGMA)) {
+    if(s_mode_ == SigmaMode::IMPACT_SIGMA || s_mode_ == SigmaMode::VAR_AND_IMPACT_SIGMA) {
         // Featuring Jean-Claude Van Damme, twice
-        double impact =  2 * 0.00109375 * abs(grf_delta_.mean());
+        double impact =  2 * 0.00109375 * grf_delta_.abs().mean();
         if(impact < 0.001 || std::isnan(impact)) {
             impact = 0.0;
             beta = 1;
             gamma = 1;
         }
-        if(mode_ & VAR_SIGMA) {
+        if(s_mode_ == SigmaMode::VAR_AND_IMPACT_SIGMA) {
             vel_std_ << vel_std_(0) * alpha + (1 - alpha) * (beta * initial_vel_std_(0) + (1 - beta) * (delta * impact + (1 - delta) * sqrt(var_velocity(0)))),
                   vel_std_(1) * alpha + (1 - alpha) * (gamma * initial_vel_std_(1) + (1 - gamma) * (delta * impact + (1 - delta) * sqrt(var_velocity(1)))),
                   vel_std_(2) * alpha + (1 - alpha) * (gamma * initial_vel_std_(2) + (1 - gamma) * (delta * impact + (1 - delta) * sqrt(var_velocity(2))));
@@ -208,14 +240,12 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
         }
 
-        if((mode_ & WEIGHTED_AVG) && ((old_xd_b - xd_b_)(0) > initial_vel_std_(0) || (old_xd_b - xd_b_)(0) < -initial_vel_std_(0))) {
+        if((a_mode_ == AverageMode::WEIGHTED_AVG) && ((old_xd_b - xd_b_)(0) > initial_vel_std_(0) || (old_xd_b - xd_b_)(0) < -initial_vel_std_(0))) {
             old_xd_b = xd_b_;
             return false;
         }
 
-        var_velocity << vel_std_(0) * vel_std_(0),
-              vel_std_(1) * vel_std_(1),
-              vel_std_(2) * vel_std_(2);
+        var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
     }
     if(debug_) {
         double impact =  2 * 0.00109375 * abs(grf_delta_.mean());
@@ -243,7 +273,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
     // Checks if the computed values are all finite before using them
     if(!xd_b_.allFinite() ){
-        return false;
+      return false;
     }
 
     // Checks if the computed values are all finite before using them
@@ -260,6 +290,12 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
 LegOdometer::LegVector3Map LegOdometer::getFootPos() {
     return foot_pos_;
+}
+
+void LegOdometer::setGrf(const LegVectorMap &grf){
+  Eigen::Array4d prev_grf_ = grf_;
+  grf_ << grf[LF](2), grf[RF](2), grf[LH](2), grf[RH](2);
+  grf_delta_ = grf_ - prev_grf_;
 }
 
 }
