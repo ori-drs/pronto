@@ -84,7 +84,7 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
   std::string ins_param_prefix = "ins/";
   std::string lock_param_prefix = "bias_lock/";
 
-  std::string imu_frame = "/imu";
+  std::string imu_frame = "imu";
 
   nh_.getParam(ins_param_prefix + "frame", imu_frame);
   std::string base_frame = "base";
