@@ -48,10 +48,12 @@ include_directories(${catkin_INCLUDE_DIRS})
 find_package(Eigen3)
 include_directories(${EIGEN3_INCLUDE_DIRS})
 
+find_package(Boost REQUIRED COMPONENTS filesystem)
+
 catkin_package(LIBRARIES ${PROJECT_NAME} 
                INCLUDE_DIRS include
                CATKIN_DEPENDS pronto_quadruped_commons 
-               DEPENDS EIGEN3)
+               DEPENDS EIGEN3 Boost)
 
 add_library(${PROJECT_NAME} SHARED src/LegOdometer.cpp
                                    src/DynamicStanceEstimator.cpp
@@ -62,7 +64,7 @@ add_library(${PROJECT_NAME} SHARED src/LegOdometer.cpp
                                    src/DataLogger.cpp
                                    src/ImuBiasLock.cpp)
 
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
