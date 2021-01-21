@@ -41,7 +41,7 @@ namespace quadruped {
 class FeetJacobians
 {
 public:
-    virtual ~FeetJacobians() {};
+    virtual ~FeetJacobians() {}
 
     /**
      * \name Foot Jacobian getters
@@ -58,18 +58,9 @@ public:
     virtual FootJac getFootJacobianLH(const JointState& q) = 0;
     virtual FootJac getFootJacobianRH(const JointState& q) = 0;
     virtual FootJac getFootJacobian(const JointState& q, const LegID& leg) = 0;
-    /**
-     * @brief overload to get the Jacobian on a point of the foot sphere
-     * @param q
-     * @param leg
-     * @param foot_x
-     * @param foot_y
-     * @return
-     */
-    virtual FootJac getFootJacobian(const pronto::quadruped::JointState& q,
-                                    const pronto::quadruped::LegID& leg,
-                                    const double& foot_x,
-                                    const double& foot_y) = 0;
+
+  virtual FootJac getFootJacobianAngular(const pronto::quadruped::JointState& q,
+                                         const pronto::quadruped::LegID& leg) = 0;
     ///@}
 };
 
