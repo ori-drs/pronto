@@ -92,6 +92,10 @@ protected:
     std::vector<ros::Publisher> vel_debug_;
     std::vector<ros::Publisher> grf_debug_;
     ros::Publisher vel_raw_;
+    ros::Publisher prior_joint_accel_debug_;
+    ros::Publisher prior_velocity_debug_;
+    ros::Publisher prior_accel_debug_;
+
     bool debug_ = true;
     geometry_msgs::WrenchStamped wrench_msg_;
     pronto_msgs::QuadrupedStance stance_msg_;

@@ -24,6 +24,7 @@
 #include "pronto_quadruped_ros/legodo_handler_ros.hpp"
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/AccelStamped.h>
 
 #include "pronto_quadruped_ros/conversions.hpp"
 
@@ -71,6 +72,9 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
 
         vel_raw_ = nh.advertise<geometry_msgs::TwistStamped>("vel_raw", 10);
         stance_pub_ = nh.advertise<pronto_msgs::QuadrupedStance>("stance", 10);
+        prior_accel_debug_ = nh.advertise<geometry_msgs::AccelStamped>("prior_accel", 10);
+        prior_joint_accel_debug_ = nh.advertise<sensor_msgs::JointState>("prior_joint_accel", 10);
+        prior_velocity_debug_ = nh.advertise<geometry_msgs::TwistStamped>("prior_vel", 10);
 
         dl_pose_ = std::make_unique<pronto::DataLogger>("prontopos.txt");
         dl_pose_->setStartFromZero(false);
@@ -97,7 +101,7 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;
 
 
-    std::cerr << xdd_.transpose() << std::endl;
+    //std::cerr << xdd_.transpose() << std::endl;
     omega_ = head_state_.angularVelocity();
     omegad_ = Eigen::Vector3d::Zero(); // TODO retrieve angular acceleration
 
@@ -119,8 +123,9 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
 
 LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   if(debug_){
+      // Publish GRF
       StanceEstimatorBase::LegVectorMap grf = stance_estimator_.getGRF();
-      wrench_msg_.header.stamp = ros::Time().fromNSec(utime_*1e3);
+      wrench_msg_.header.stamp = ros::Time().fromNSec(utime_*1000);
       stance_msg_.header.stamp = wrench_msg_.header.stamp;
       for(int i = 0; i<4; i++){
           wrench_msg_.wrench.force.x = grf[pronto::quadruped::LegID(i)](0);
@@ -133,6 +138,51 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       stance_msg_.lh = stance_[pronto::quadruped::LegID::LH] * 0.2;
       stance_msg_.rh = stance_[pronto::quadruped::LegID::RH] * 0.1;
       stance_pub_.publish(stance_msg_);
+
+      // Publish prior accel
+      geometry_msgs::AccelStamped prior_accel_msg;
+
+      prior_accel_msg.header.frame_id = "base";
+      prior_accel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_accel_msg.accel.linear.x = xdd_(0);
+      prior_accel_msg.accel.linear.y = xdd_(1);
+      prior_accel_msg.accel.linear.z = xdd_(2);
+
+      prior_accel_msg.accel.angular.x = omegad_(0);
+      prior_accel_msg.accel.angular.y = omegad_(1);
+      prior_accel_msg.accel.angular.z = omegad_(2);
+
+      prior_accel_debug_.publish(prior_accel_msg);
+
+      // Publish prior joint acceleration
+      sensor_msgs::JointState prior_joint_accel_msg;
+      prior_joint_accel_msg.name = {"LF_HAA", "LF_HFE", "LF_KFE",
+                                    "RF_HAA", "RF_HFE", "RF_KFE",
+                                    "LH_HAA", "LH_HFE", "LH_KFE",
+                                    "RH_HAA", "RH_HFE", "RH_KFE"};
+      prior_joint_accel_msg.position = std::vector<double>(12, 0.0);
+      prior_joint_accel_msg.velocity = std::vector<double>(12, 0.0);
+      // qdd_, xd_, xdd_, omega_, omegad_
+      prior_joint_accel_msg.effort = {qdd_(0), qdd_( 1), qdd_( 2),
+                                      qdd_(3), qdd_( 4), qdd_( 5),
+                                      qdd_(6), qdd_( 7), qdd_( 8),
+                                      qdd_(9), qdd_(10), qdd_(11)};
+
+      prior_joint_accel_debug_.publish(prior_joint_accel_msg);
+
+      // Publish prior velocity
+      geometry_msgs::TwistStamped prior_vel_msg;
+      prior_vel_msg.header.frame_id = "base";
+      prior_vel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_vel_msg.twist.linear.x = xd_(0);
+      prior_vel_msg.twist.linear.y = xd_(1);
+      prior_vel_msg.twist.linear.z = xd_(2);
+
+      prior_vel_msg.twist.angular.x = omega_(0);
+      prior_vel_msg.twist.angular.y = omega_(1);
+      prior_vel_msg.twist.angular.z = omega_(2);
+      prior_velocity_debug_.publish(prior_vel_msg);
+
   }
 
   omega_ = head_state_.angularVelocity();
@@ -173,6 +223,13 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           twist.twist.linear.z = xd_(2);
 
           vel_raw_.publish(twist);
+
+
+
+
+
+
+
       }
       return new pronto::RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
                                                      xd_,

@@ -65,18 +65,21 @@ public:
     typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     typedef typename pronto::quadruped::LegDataMap<Eigen::Vector3d> LegVector3Map;
 
-    enum Mode {STATIC_SIGMA = 0,/*!< use constant covariance */
-               VAR_SIGMA, /*!< compute covariance from stance legs */
-               IMPACT_SIGMA, /*!< compute covariance from impact information */
-               WEIGHTED_AVG /*!< velocity is a weighted average on stance
-                                        probability */
-              };
+    enum class SigmaMode {STATIC_SIGMA = 0,/*!< use constant covariance */
+                          VAR_SIGMA, /*!< compute covariance from stance legs */
+                          IMPACT_SIGMA, /*!< compute covariance from impact information */
+                          VAR_AND_IMPACT_SIGMA};
+
+    enum class AverageMode {SIMPLE_AVG,
+                            WEIGHTED_AVG}; /*!< velocity is a weighted average on stance
+                                                              probability */
 
 public:
     LegOdometer(FeetJacobians &feet_jacobians,
                 ForwardKinematics &forward_kinematics,
                 bool debug = true,
-                Mode mode = STATIC_SIGMA);
+                SigmaMode s_mode = SigmaMode::STATIC_SIGMA,
+                AverageMode a_mode = AverageMode::SIMPLE_AVG);
     virtual ~LegOdometer();
 
 
@@ -131,16 +134,18 @@ public:
     void setInitVelocityCov(const Matrix3d& vel_cov) override;
     void setInitVelocityStd(const Vector3d& vel_std) override;
     void setInitPositionCov(const Matrix3d& pos_cov) override;
+    void setGrf(const LegVectorMap& grf) override;
 
     // Configuration methods
-    virtual void setMode(const uint8_t mode);
+    virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
 
 protected:
     FeetJacobians& feet_jacobians_;
     ForwardKinematics& forward_kinematics_;
     bool debug_;
 
-    uint8_t mode_;
+    SigmaMode s_mode_;
+    AverageMode a_mode_;
     Eigen::Vector3d vel_std_ = Eigen::Vector3d::Zero();
     Eigen::Matrix3d vel_cov_ = Eigen::Matrix3d::Zero();
 
@@ -165,6 +170,7 @@ protected:
     Eigen::Vector3d old_xd_b_; // previous estimated velocity, base frame
 
     Eigen::Array4d grf_delta_;
+    Eigen::Array4d grf_;
 };
 } // namespace quadruped
 } // namespace pronto
