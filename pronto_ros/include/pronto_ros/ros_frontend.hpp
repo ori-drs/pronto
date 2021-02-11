@@ -88,6 +88,7 @@ public:
                                                                cov,
                                                                RBISUpdateInterface::reset,
                                                                state.utime), true);
+        return true;
     }
     template <class MsgT>
     void initCallback(boost::shared_ptr<MsgT const> msg,
