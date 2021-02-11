@@ -57,7 +57,7 @@ public:
                           const RBIM &default_cov, RBIS &init_state,
                           RBIM &init_cov) override;
 
-  void processSecondaryMessage(const JointStateT &msg) = 0;
+  virtual void processSecondaryMessage(const JointStateT &msg) = 0;
 protected:
   ros::NodeHandle& nh_;
   std::unique_ptr<quadruped::ImuBiasLock> bias_lock_module_;

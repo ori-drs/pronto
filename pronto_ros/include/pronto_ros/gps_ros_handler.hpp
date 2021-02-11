@@ -18,7 +18,7 @@ public:
                             const RBIS &default_state,
                             const RBIM &default_cov,
                             RBIS &init_state,
-                            RBIM &init_cov);
+                            RBIM &init_cov) override;
 
 protected:
     ros::NodeHandle nh_;
