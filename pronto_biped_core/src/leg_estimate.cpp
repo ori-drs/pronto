@@ -513,7 +513,7 @@ float LegEstimator::updateOdometry(const std::vector<std::string>& joint_name,
       world_to_primary_foot_transition_ = world_to_primary_foot_slide_;
       world_to_primary_foot_transition_init_ = true;
       if (publish_diagnostics_) { // this was enabled by default for a long time
-        Isometry3dTime world_to_primary_trans_T = Isometry3dTime(current_utime_ , world_to_primary_foot_transition_ ) ;
+        // Isometry3dTime world_to_primary_trans_T = Isometry3dTime(current_utime_ , world_to_primary_foot_transition_ ) ;
         //TODO no pc vis anymore
         //pc_vis_->pose_to_lcm_from_list(1014, world_to_primary_trans_T);
       }

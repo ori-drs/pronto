@@ -1,7 +1,7 @@
 #include "pronto_core/rbis.hpp"
-#include <eigen_utils/eigen_rigidbody.hpp>
+#include "pronto_core/rotations.hpp"
 
-using namespace eigen_utils;
+using namespace pronto::rotation;
 using namespace Eigen;
 using namespace std;
 

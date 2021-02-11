@@ -231,11 +231,11 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
 
       }
-      return new pronto::RBISIndexedMeasurement(eigen_utils::RigidBodyState::velocityInds(),
-                                                     xd_,
-                                                     cov_legodo,
-                                                     Update::legodo,
-                                                     utime_);
+      return new pronto::RBISIndexedMeasurement(RigidBodyState::velocityInds(),
+                                                xd_,
+                                                cov_legodo,
+                                                Update::legodo,
+                                                utime_);
 
   }
   return nullptr;

@@ -8,9 +8,10 @@ project(pronto_quadruped_commons)
 find_package(PkgConfig)
 pkg_check_modules(EIGEN3 eigen3 REQUIRED)
 
-find_package(catkin QUIET)
+find_package(catkin REQUIRED)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(BUILD_DOC false  CACHE BOOL "Build Doxygen documentation")
 

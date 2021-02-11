@@ -2,6 +2,7 @@
 
 #include <pronto_core/sensing_module.hpp>
 #include <pronto_core/state_est.hpp>
+#include <pronto_core/rotations.hpp>
 #include <ros/node_handle.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -334,7 +335,7 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
           Eigen::Vector3d p = dynamic_cast<RBISIndexedPlusOrientationMeasurement*>(update)->measurement.head<3>();
           Eigen::Quaterniond q = dynamic_cast<RBISIndexedPlusOrientationMeasurement*>(update)->orientation;
 
-          std::cerr << "MEASR    : " << p.transpose() << "   " << eigen_utils::getEulerAnglesDeg(q).transpose() << std::endl;
+          std::cerr << "MEASR    : " << p.transpose() << "   " << rotation::getEulerAnglesDeg(q).transpose() << std::endl;
 
          // Eigen::Vector3d p = dynamic_cast<RBISIndexedMeasurement*>(update)->measurement.head<3>();
 
@@ -352,8 +353,8 @@ state_est_->getHeadState(prior,prior_cov);
 state_est_->getHeadState(posterior,posterior_cov);
 
 if(sensor_id.compare("scan_matcher") == 0){
-std::cerr << "PRIOR    : " << prior.position().transpose() << " " << eigen_utils::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
-std::cerr << "POSTERIOR: " << posterior.position().transpose() << " " << eigen_utils::getEulerAnglesDeg(posterior.orientation()).transpose() << std::endl;
+std::cerr << "PRIOR    : " << prior.position().transpose() << " " << rotation::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
+std::cerr << "POSTERIOR: " << posterior.position().transpose() << " " << rotation::getEulerAnglesDeg(posterior.orientation()).transpose() << std::endl;
 std::cerr << ":::::::" << std::endl;
         }
 

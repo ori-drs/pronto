@@ -1,16 +1,15 @@
-#ifndef __RBS_estimator_h__
-#define __RBS_estimator_h__
+#pragma once
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <eigen_utils/eigen_utils.hpp>
+#include "pronto_core/rigidbody.hpp"
 
 namespace pronto {
 
 /**
  * Rigid body state
  */
-class RBIS: public eigen_utils::RigidBodyState {
+class RBIS: public RigidBodyState {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
@@ -55,10 +54,10 @@ public:
   /**
    * copy everything from rigid body state and biases are set to 0
    */
-  RBIS(const eigen_utils::RigidBodyState & rigid_body_state) :
+  RBIS(const RigidBodyState & rigid_body_state) :
       RigidBodyState(rbis_num_states)
   {
-    this->vec.head(eigen_utils::RigidBodyState::basic_num_states) = rigid_body_state.vec;
+    this->vec.head(RigidBodyState::basic_num_states) = rigid_body_state.vec;
     this->utime = rigid_body_state.utime;
     this->quat = rigid_body_state.quat;
   }
@@ -257,4 +256,3 @@ void ekfSmoothingStep(const RBIS & next_state_pred,
                       RBIM & cur_cov);
 
 }
-#endif

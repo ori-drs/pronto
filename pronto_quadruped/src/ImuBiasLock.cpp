@@ -21,6 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #include "pronto_quadruped/ImuBiasLock.hpp"
+#include <pronto_core/rotations.hpp>
 
 namespace pronto {
 namespace quadruped {
@@ -56,7 +57,7 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
 
   current_omega_ = ins_to_body_.rotation()*msg->omega;
   current_accel_ = ins_to_body_.rotation()*msg->acceleration;
-  current_accel_corrected_ = current_accel_ - (eigen_utils::skewHat((current_omega_ - previous_omega_) / dt_) + eigen_utils::skewHat(current_omega_)*eigen_utils::skewHat(current_omega_))*ins_to_body_.translation();
+  current_accel_corrected_ = current_accel_ - (rotation::skewHat((current_omega_ - previous_omega_) / dt_) + rotation::skewHat(current_omega_)*rotation::skewHat(current_omega_))*ins_to_body_.translation();
   previous_omega_ = current_omega_;
   if(do_record){
     gyro_bias_history_.push_back(current_omega_);

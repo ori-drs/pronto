@@ -42,9 +42,8 @@ endif()
 # Including the directory containing the sources
 include_directories(include)
 
-find_package(catkin REQUIRED pronto_quadruped_commons pronto_core)
+find_package(catkin REQUIRED COMPONENTS pronto_quadruped_commons pronto_core)
 include_directories(${catkin_INCLUDE_DIRS})
-link_directories(${catkin_LIBRARY_DIRS})
 
 find_package(Eigen3)
 include_directories(${EIGEN3_INCLUDE_DIRS})

@@ -1,5 +1,6 @@
 #include "pronto_biped_core/yawlock_common.hpp"
-#include <eigen_utils/eigen_utils.hpp>
+#include <iostream>
+#include <pronto_core/rotations.hpp>
 
 // if transitioned to standing, capture yaw
 // there after, issue this yaw as a correction to
@@ -113,8 +114,8 @@ bool YawLock::getCorrection(const Eigen::Isometry3d& world_to_body,
 
   std::cout << "\n";
   if (yaw_slip_detect_){
-    Eigen::Vector3d l_foot_to_r_foot_rpy = eigen_utils::getEulerAngles(Eigen::Quaterniond(l_foot_to_r_foot.rotation()));
-    Eigen::Vector3d l_foot_to_r_foot_original_rpy = eigen_utils::getEulerAngles(Eigen::Quaterniond(l_foot_to_r_foot_original_.rotation()));
+    Eigen::Vector3d l_foot_to_r_foot_rpy = rotation::getEulerAngles(Eigen::Quaterniond(l_foot_to_r_foot.rotation()));
+    Eigen::Vector3d l_foot_to_r_foot_original_rpy = rotation::getEulerAngles(Eigen::Quaterniond(l_foot_to_r_foot_original_.rotation()));
     double yaw_diff_change = fabs(l_foot_to_r_foot_rpy(2) - l_foot_to_r_foot_original_rpy(2));
     std::cout <<  "YAWLOCK: left-right yaw angle: "
                << l_foot_to_r_foot_original_rpy(2) * 180.0 / M_PI
@@ -176,7 +177,7 @@ bool YawLock::getCorrection(const Eigen::Isometry3d& world_to_body,
 
   Eigen::Vector3d rpy_update;
 
-  rpy_update = eigen_utils::getEulerAngles(world_to_body_quat_correction);
+  rpy_update = rotation::getEulerAngles(world_to_body_quat_correction);
   std::cout << "YAWLOCK: " << rpy_update.transpose() << " output rpy [rad]"
             << std::endl;
   std::cout << "YAWLOCK: " << rpy_update.transpose() * 180.0 / M_PI

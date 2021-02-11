@@ -88,7 +88,7 @@ void ROSFrontEnd::initializeState()
         ROS_WARN_STREAM("Couldn't get default ang velocity. Setting to zero.");
         default_state.orientation() = Eigen::Quaterniond::Identity();
     }
-    default_state.orientation() = eigen_utils::setQuatEulerAngles(Eigen::Map<Eigen::Vector3d>(init_orient.data()));
+    default_state.orientation() = rotation::setQuatEulerAngles(Eigen::Map<Eigen::Vector3d>(init_orient.data()));
     init_state = default_state;
     head_state = default_state;
     if(verbose_){

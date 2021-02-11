@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS roscpp
                                         pronto_core
+                                        pronto_ros
                                         pronto_quadruped                                        
                                         geometry_msgs
                                         sensor_msgs
@@ -89,8 +90,6 @@ find_package(catkin REQUIRED COMPONENTS roscpp
 #   cfg/DynReconf1.cfg
 #   cfg/DynReconf2.cfg
 # )
-find_package(pronto_ros)
-include_directories(${pronto_ros_INCLUDE_DIRS})
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -166,16 +165,15 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
-#install(TARGETS ${PROJECT_NAME} #${PROJECT_NAME}_node
-#        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS ${PROJECT_NAME} #${PROJECT_NAME}_node
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-        FILES_MATCHING PATTERN "*.hpp"
-        PATTERN ".svn" EXCLUDE)
+        FILES_MATCHING PATTERN "*.hpp")
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

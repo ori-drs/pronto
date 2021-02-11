@@ -2,6 +2,7 @@
 #include <string>
 #include <tf_conversions/tf_eigen.h>
 #include "pronto_ros/pronto_ros_conversions.hpp"
+#include <pronto_core/rotations.hpp>
 
 namespace pronto {
 
@@ -83,7 +84,7 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
     R_scan_match(0) = std::pow(r_scan_match_pxy, 2); // Cleaner way?
     R_scan_match(1) = std::pow(r_scan_match_pxy, 2);
     R_scan_match(2) = std::pow(r_scan_match_pz , 2);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::positionInds();
+    z_indices.head<3>() = RigidBodyState::positionInds();
   }
   else if (mode == Mode::YAW) {
     double r_scan_match_yaw = 0;
@@ -105,7 +106,7 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
     R_scan_match(0) = std::pow(r_scan_match_vxy, 2); // Cleaner way?
     R_scan_match(1) = std::pow(r_scan_match_vxy, 2);
     R_scan_match(2) = std::pow(r_scan_match_vz , 2);
-    z_indices.head<3>() = eigen_utils::RigidBodyState::velocityInds();
+    z_indices.head<3>() = RigidBodyState::velocityInds();
   }
 
   if (mode == Mode::POSITION_YAW || mode == Mode::VELOCITY_YAW) {
@@ -127,7 +128,7 @@ ScanMatcherHandler::ScanMatcherHandler(ros::NodeHandle& nh) : nh_(nh)
     if(!nh_.getParam(prefix + "r_ryaw", r_scan_match_ryaw)){
         ROS_WARN("Couldn't get param \"r_yaw\". Using zero as default.");
     }
-    z_indices.tail<3>() = eigen_utils::RigidBodyState::chiInds();
+    z_indices.tail<3>() = RigidBodyState::chiInds();
     R_scan_match(3) = std::pow(r_scan_match_rxy * M_PI / 180.0, 2);
     R_scan_match(4) = std::pow(r_scan_match_rxy * M_PI / 180.0, 2);
     R_scan_match(5) = std::pow(r_scan_match_ryaw * M_PI / 180.0, 2);
@@ -145,7 +146,7 @@ RBISUpdateInterface * ScanMatcherHandler::processMessage(const geometry_msgs::Po
     std::cerr << "RECEIVED POSE MEASUREMENT: " <<
                  pose_meas_.pos.transpose() <<
                  "   " <<
-              eigen_utils::getEulerAnglesDeg(pose_meas_.orientation).transpose() <<
+              rotation::getEulerAnglesDeg(pose_meas_.orientation).transpose() <<
                  std::endl;
     return scan_matcher_module_.processMessage(&pose_meas_, state_estimator);
 }

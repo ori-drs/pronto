@@ -158,10 +158,10 @@ add_dependencies(lidar_odometry_visualizer ${catkin_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
- install(TARGETS ${PROJECT_NAME} #${PROJECT_NAME}_node
-         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS ${PROJECT_NAME} lidar_odometry_visualizer ${PROJECT_NAME}_node
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
