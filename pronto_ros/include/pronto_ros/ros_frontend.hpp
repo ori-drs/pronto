@@ -7,9 +7,10 @@
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <tf_conversions/tf_eigen.h>
 #include <chrono>
-#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
 #include <string>
 #include <cstdlib>
 #include <cxxabi.h>
@@ -131,8 +132,8 @@ private:
 
     ros::Publisher pose_pub_;
     ros::Publisher twist_pub_;
-    tf::TransformBroadcaster tf_broadcaster_;
-    tf::StampedTransform tf_pose_;
+    tf2_ros::TransformBroadcaster tf2_broadcaster_;
+    geometry_msgs::TransformStamped transform_msg_;
     bool publish_tf_ = false;
 
     geometry_msgs::PoseWithCovarianceStamped pose_msg_;
@@ -411,10 +412,20 @@ std::cerr << ":::::::" << std::endl;
             // fill in time
             pose_msg_.header.stamp = ros::Time().fromNSec(head_state.utime * 1000);
             if(publish_tf_){
-                tf_pose_.setOrigin(temp_v3);
-                tf_pose_.setRotation(temp_q);
-                tf_pose_.stamp_ = ros::Time::now();
-                tf_broadcaster_.sendTransform(tf_pose_);
+                // Only publish the pose if the timestamp is different:
+                // This prevents issues in Noetic where repeated warnings of type:
+                // "TF_REPEATED_DATA ignoring data with redundant timestamp for frame base at time"
+                // are otherwise printed to the terminal.
+                // Cf. https://github.com/ros/geometry2/issues/467#issuecomment-751572836
+                ros::Time new_stamp = ros::Time::now();
+                if (new_stamp > transform_msg_.header.stamp) {
+                    transform_msg_.transform.translation.x = pose_msg_.pose.pose.position.x;
+                    transform_msg_.transform.translation.y = pose_msg_.pose.pose.position.y;
+                    transform_msg_.transform.translation.z = pose_msg_.pose.pose.position.z;
+                    transform_msg_.transform.rotation = pose_msg_.pose.pose.orientation;
+                    transform_msg_.header.stamp = new_stamp;
+                    tf2_broadcaster_.sendTransform(transform_msg_);
+                }
             }
 
             // TODO insert appropriate covariance into the message

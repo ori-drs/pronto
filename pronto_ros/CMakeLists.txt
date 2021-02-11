@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS pronto_core
                                         sensor_msgs
                                         eigen_conversions
                                         tf_conversions
+                                        tf2_ros
                                         pronto_msgs
                                         geometry_msgs)
 
@@ -17,6 +18,7 @@ catkin_package(INCLUDE_DIRS include
                               roscpp
                               sensor_msgs
                               tf_conversions
+                              tf2_ros
                               eigen_conversions
                               pronto_msgs
                               geometry_msgs
