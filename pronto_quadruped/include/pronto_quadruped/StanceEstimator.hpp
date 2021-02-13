@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2019
+/* Copyright (c) 2015-2021
  * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
@@ -83,12 +83,6 @@ struct GRFShortStat {
 class StanceEstimator : public StanceEstimatorBase {
     // typedef to remove ugly and verbose traited templated code
 public:
-    typedef typename pronto::quadruped::JointState JointState;
-    typedef typename pronto::quadruped::FeetContactForces FeetContactForces;
-    typedef typename pronto::quadruped::LegID LegID;
-
-
-
     enum class Mode {THRESHOLD = 0, HYSTERESIS, REGRESSION};
 
 public:
@@ -152,8 +146,8 @@ public:
                    const int& hysteresis_delay_low = 250,
                    const int& hysteresis_delay_high = 250);
 private:
-    LegDataMap<Eigen::Vector3d> grForce_W;
-    LegDataMap<Eigen::Vector3d> grForce_des;
+    LegVectorMap grForce_W;
+    LegVectorMap grForce_des;
     LegDataMap<double> grForceDelta;
     Mode mode_ = Mode::THRESHOLD;
 
@@ -162,10 +156,8 @@ private:
     double hysteresis_high_;
     double hysteresis_delay_low_;
     double hysteresis_delay_high_;
-    std::vector<double>beta_;
+    std::vector<double> beta_;
     Eigen::Vector4d stance_weights_ = Eigen::Vector4d::Zero();
-
-
 
     GRFStat stat;
     GRFShortStat gss[4];

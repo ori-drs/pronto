@@ -44,9 +44,6 @@ class LegodoHandlerBase {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    template <class T>
-    using LegDataMap = pronto::quadruped::LegDataMap<T>;
-    typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     using  LegScalarMap = LegDataMap<double>;
     using Update = RBISUpdateInterface;
 
@@ -82,7 +79,7 @@ protected:
     LegBoolMap stance_;
     LegScalarMap stance_prob_;
 
-    Eigen::Affine3d imu_to_body_;
+    Eigen::Isometry3d imu_to_body_;
 
     uint64_t utime_;
 

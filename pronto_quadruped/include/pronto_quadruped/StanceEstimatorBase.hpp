@@ -28,6 +28,7 @@
 #include <pronto_quadruped_commons/declarations.h>
 #include <pronto_quadruped_commons/leg_data_map.h>
 #include <pronto_quadruped_commons/leg_bool_map.h>
+#include <pronto_quadruped_commons/leg_vector_map.h>
 #include <iit/rbd/utils.h>
 
 namespace pronto {
@@ -47,8 +48,6 @@ public:
     typedef typename Eigen::Quaterniond Quaterniond;
 
     using LegScalarMap = LegDataMap<double>;
-    using LegVectorMap = LegDataMap<Vector3d>;
-
 
 public:
   virtual bool getStance(LegBoolMap& stance) = 0;

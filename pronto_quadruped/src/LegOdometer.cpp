@@ -99,11 +99,11 @@ void LegOdometer::setInitPositionCov(const Eigen::Matrix3d& pos_cov){
     pos_cov_ = pos_cov;
 }
 
-void LegOdometer::getVelocitiesFromLegs(LegVector3Map &vd) {
+void LegOdometer::getVelocitiesFromLegs(LegVectorMap &vd) {
     vd = base_vel_leg_;
 }
 
-void LegOdometer::getFeetPositions(LegVector3Map &jd) {
+void LegOdometer::getFeetPositions(LegVectorMap &jd) {
     jd = foot_pos_;
 }
 
@@ -120,7 +120,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
                                    Vector3d &velocity,
                                    Matrix3d &covariance)
 {
-    vel_cov_ = initial_vel_cov_;
+    vel_cov_ = initial_vel_cov_;    
 
     // Recording foot position and base velocity from legs
     for(int leg = LF; leg <= RH; leg++){
@@ -214,9 +214,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
                   vel_std_(1) * alpha + (1 - alpha) * (gamma * initial_vel_std_(1) + (1 - gamma) * sqrt(var_velocity(1))),
                   vel_std_(2) * alpha + (1 - alpha) * (gamma * initial_vel_std_(2) + (1 - gamma) * sqrt(var_velocity(2)));
 
-            var_velocity << vel_std_(0) * vel_std_(0),
-                  vel_std_(1) * vel_std_(1),
-                  vel_std_(2) * vel_std_(2);
+
         }
     }
 
@@ -244,9 +242,10 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
             old_xd_b = xd_b_;
             return false;
         }
-
-        var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
     }
+
+    var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
+
     if(debug_) {
         double impact =  2 * 0.00109375 * abs(grf_delta_.mean());
         if(impact < 0.001 || std::isnan(impact)) {
@@ -288,7 +287,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     return true;
 }
 
-LegOdometer::LegVector3Map LegOdometer::getFootPos() {
+LegVectorMap LegOdometer::getFootPos() {
     return foot_pos_;
 }
 

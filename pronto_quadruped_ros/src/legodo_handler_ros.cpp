@@ -124,19 +124,19 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
 LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   if(debug_){
       // Publish GRF
-      StanceEstimatorBase::LegVectorMap grf = stance_estimator_.getGRF();
+      LegVectorMap grf = stance_estimator_.getGRF();
       wrench_msg_.header.stamp = ros::Time().fromNSec(utime_*1000);
       stance_msg_.header.stamp = wrench_msg_.header.stamp;
       for(int i = 0; i<4; i++){
-          wrench_msg_.wrench.force.x = grf[pronto::quadruped::LegID(i)](0);
-          wrench_msg_.wrench.force.y = grf[pronto::quadruped::LegID(i)](1);
-          wrench_msg_.wrench.force.z = grf[pronto::quadruped::LegID(i)](2);
+          wrench_msg_.wrench.force.x = grf[LegID(i)](0);
+          wrench_msg_.wrench.force.y = grf[LegID(i)](1);
+          wrench_msg_.wrench.force.z = grf[LegID(i)](2);
           grf_debug_[i].publish(wrench_msg_);
       }
-      stance_msg_.lf = stance_[pronto::quadruped::LegID::LF] * 0.4;
-      stance_msg_.rf = stance_[pronto::quadruped::LegID::RF] * 0.3;
-      stance_msg_.lh = stance_[pronto::quadruped::LegID::LH] * 0.2;
-      stance_msg_.rh = stance_[pronto::quadruped::LegID::RH] * 0.1;
+      stance_msg_.lf = stance_[LegID::LF] * 0.4;
+      stance_msg_.rf = stance_[LegID::RF] * 0.3;
+      stance_msg_.lh = stance_[LegID::LH] * 0.2;
+      stance_msg_.rh = stance_[LegID::RH] * 0.1;
       stance_pub_.publish(stance_msg_);
 
       // Publish prior accel
@@ -201,7 +201,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       R_legodo = cov_legodo.diagonal();
 
       if(debug_){
-          LegOdometerBase::LegVectorMap veldebug;
+          LegVectorMap veldebug;
           leg_odometer_.getVelocitiesFromLegs(veldebug);
           geometry_msgs::TwistStamped twist;
           twist.header.stamp = ros::Time().fromNSec(utime_*1000);
@@ -340,7 +340,7 @@ bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointSta
 }
 
 void ForceSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::QuadrupedForceTorqueSensors &msg){
-  LegDataMap<Vector3d> grf;
+  LegVectorMap grf;
   grf[LF] << msg.lf.force.x, msg.lf.force.y, msg.lf.force.z;
   grf[RF] << msg.rf.force.x, msg.rf.force.y, msg.rf.force.z;
   grf[LH] << msg.lh.force.x, msg.lh.force.y, msg.lh.force.z;

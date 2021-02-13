@@ -36,6 +36,7 @@
 
 // iit-commons
 #include <pronto_quadruped_commons/leg_data_map.h>
+#include <pronto_quadruped_commons/leg_vector_map.h>
 #include <pronto_quadruped_commons/forward_kinematics.h>
 #include <pronto_quadruped_commons/feet_jacobians.h>
 
@@ -58,12 +59,6 @@ class LegOdometer  : public LegOdometerBase {
 public:
     template <class T>
     using LegDataMap = pronto::quadruped::LegDataMap<T>;
-
-    typedef typename pronto::quadruped::FeetJacobians FeetJacobians;
-    typedef typename pronto::quadruped::ForwardKinematics ForwardKinematics;
-    typedef typename pronto::quadruped::JointState JointState;
-    typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
-    typedef typename pronto::quadruped::LegDataMap<Eigen::Vector3d> LegVector3Map;
 
     enum class SigmaMode {STATIC_SIGMA = 0,/*!< use constant covariance */
                           VAR_SIGMA, /*!< compute covariance from stance legs */
@@ -126,9 +121,9 @@ public:
     virtual void setGrfDelta(const LegScalarMap& grf_delta);
 
     // Debugging methods
-    void getVelocitiesFromLegs(LegVector3Map & vd) override;
-    void getFeetPositions(LegVector3Map & jd) override;
-    virtual LegVector3Map getFootPos();
+    void getVelocitiesFromLegs(LegVectorMap & vd) override;
+    void getFeetPositions(LegVectorMap & jd) override;
+    virtual LegVectorMap getFootPos();
 
 
     void setInitVelocityCov(const Matrix3d& vel_cov) override;
@@ -163,8 +158,8 @@ protected:
      * kinematics.
      * <b>NOTE</b>: these are NOT the velocity of the legs.
      */
-    LegVector3Map base_vel_leg_;
-    LegVector3Map foot_pos_;
+    LegVectorMap base_vel_leg_;
+    LegVectorMap foot_pos_;
 
     Eigen::Vector3d xd_b_; // estimated velocity, base frame
     Eigen::Vector3d old_xd_b_; // previous estimated velocity, base frame
