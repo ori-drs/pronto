@@ -1,5 +1,5 @@
 # Project configuration
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.2)
 project(pronto_quadruped_commons)
 
 #set(HEADER_INSTALL_ROOT /usr/local/include/ CACHE PATH "Where to install the iit-commons headers")
