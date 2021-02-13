@@ -87,6 +87,7 @@ void LegOdometer::setInitVelocityCov(const Eigen::Matrix3d& vel_cov){
 
 void LegOdometer::setInitVelocityStd(const Eigen::Vector3d& vel_std){
     initial_vel_std_ = vel_std;
+    vel_std_ = initial_vel_std_;
     initial_vel_cov_ = vel_std.array().square().matrix().asDiagonal();
     Eigen::IOFormat clean_fmt(4, 0, ", ", "\n", "[", "]");
     std::cout << "Set Initial standard deviation: " << std::endl;
