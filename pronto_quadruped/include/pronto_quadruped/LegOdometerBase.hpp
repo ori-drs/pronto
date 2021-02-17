@@ -153,6 +153,8 @@ public:
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 
   virtual void setGrf(const LegVectorMap& grf) = 0;
+
+  virtual void setSpeedLimit(const double& limit) {};
 };
 } // namespace quadruped
 } // namespace pronto

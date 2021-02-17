@@ -39,7 +39,9 @@ LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
     s_mode_(s_mode),
     a_mode_(a_mode),
     xd_b_(Eigen::Vector3d::Zero()),
-    debug_(debug) {
+    debug_(debug),
+    speed_limit_(12.42) // set speed limit to Usain Bolt's sprint record, Berlin August 16th, 2009
+{
 }
 
 LegOdometer::~LegOdometer() {
@@ -273,7 +275,13 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     vel_cov_ = var_velocity.asDiagonal();
 
     // Checks if the computed values are all finite before using them
-    if(!xd_b_.allFinite() ){
+    if(!xd_b_.allFinite()){
+      return false;
+    }
+
+    // if we hit the speed limit, we reject the measurement
+    if(xd_b_.norm() > speed_limit_){
+      std::cerr << "Speed limit hit: " << xd_b_.norm() << " > " << speed_limit_ << std::endl;
       return false;
     }
 
@@ -289,6 +297,10 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
 LegVectorMap LegOdometer::getFootPos() {
     return foot_pos_;
+}
+
+void LegOdometer::setSpeedLimit(const double &limit){
+  speed_limit_ = limit;
 }
 
 void LegOdometer::setGrf(const LegVectorMap &grf){

@@ -130,6 +130,7 @@ public:
 
     // Configuration methods
     virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
+    void setSpeedLimit(const double& limit) override;
 
 protected:
     FeetJacobians& feet_jacobians_;
@@ -162,6 +163,8 @@ protected:
 
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;
+
+    double speed_limit_; // upper limit of the absolute norm of the linear velocity
 };
 } // namespace quadruped
 } // namespace pronto
