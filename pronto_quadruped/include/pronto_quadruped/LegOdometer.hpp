@@ -159,7 +159,6 @@ protected:
     LegVectorMap foot_pos_;
 
     Eigen::Vector3d xd_b_; // estimated velocity, base frame
-    Eigen::Vector3d old_xd_b_; // previous estimated velocity, base frame
 
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;

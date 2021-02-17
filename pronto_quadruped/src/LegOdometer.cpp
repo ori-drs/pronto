@@ -39,7 +39,6 @@ LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
     s_mode_(s_mode),
     a_mode_(a_mode),
     xd_b_(Eigen::Vector3d::Zero()),
-    old_xd_b_(Eigen::Vector3d::Zero()),
     debug_(debug) {
 }
 
@@ -282,8 +281,6 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     if(!vel_cov_.allFinite()){
         vel_cov_ = initial_vel_cov_;
     }
-    // the old value will stay the same if the just computed one is not finite
-    old_xd_b_ = xd_b_;
 
     velocity = xd_b_;
     covariance = vel_cov_;
