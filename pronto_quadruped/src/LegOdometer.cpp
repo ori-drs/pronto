@@ -239,6 +239,8 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
         }
 
+        // if the difference with the previous velocity is beyond the initial
+        // value for the standard deviation, reject the measurement
         if((a_mode_ == AverageMode::WEIGHTED_AVG) && ((old_xd_b - xd_b_)(0) > initial_vel_std_(0) || (old_xd_b - xd_b_)(0) < -initial_vel_std_(0))) {
             old_xd_b = xd_b_;
             return false;

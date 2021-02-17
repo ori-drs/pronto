@@ -46,11 +46,6 @@
 namespace pronto {
 namespace quadruped {
 
-using pronto::quadruped::LF;
-using pronto::quadruped::RF;
-using pronto::quadruped::LH;
-using pronto::quadruped::RH;
-
 /**
  * @brief The LegOdometer class computes the velocity of a floating base
  * legged robot given its joint state, the stance feet, and other data.
@@ -79,7 +74,7 @@ public:
 
 
 public:
-    inline bool estimatePose(const uint64_t utime,
+    bool estimatePose(const uint64_t utime,
                       const JointState& q,
                       const LegBoolMap& stance_legs,
                       const LegScalarMap& stance_prob,
@@ -87,8 +82,8 @@ public:
                       Matrix3d& pos_covariance,
                       Quaterniond& orientation,
                       Matrix3d& orient_covariance) override {
-        std::cerr << "Function not implemented yet!" << std::endl;
-	return false;
+      std::cerr << "Function not implemented yet!" << std::endl;
+      return false;
     }
 
     bool estimateVelocity(const uint64_t utime,
@@ -100,16 +95,16 @@ public:
                           Vector3d& velocity,
                           Matrix3d& covariance) override;
 
-    inline void getVelocity(Vector3d& velocity, Matrix3d& covariance) override
+    void getVelocity(Vector3d& velocity, Matrix3d& covariance) override
     {
         velocity = xd_b_;
         covariance = vel_cov_;
     }
-    inline void getPosition(Vector3d& position, Matrix3d& covariance) override
+    void getPosition(Vector3d& position, Matrix3d& covariance) override
     {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
-    inline void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
+    void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
     {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
