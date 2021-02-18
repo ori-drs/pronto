@@ -34,7 +34,9 @@ LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
     // get parameters for the leg odometry
     std::string legodo_prefix = "legodo/";
     int legodo_mode;
-    nh_.getParam(legodo_prefix + "legodo_mode", legodo_mode);
+    if(!nh_.getParam(legodo_prefix + "legodo_mode", legodo_mode)){
+        ROS_WARN_STREAM("Could not get param \"" << legodo_prefix + "legodo_mode\"" << ". Using default.");
+    }
 
     // # STATIC_SIGMA 0x00, VAR_SIGMA 0x01, IMPACT_SIGMA 0x02, WEIGHTED_AVG 0x04, ALPHA_FILTER : 0x08, KALMAN_FILTER : 0x10
     switch(legodo_mode){
@@ -62,6 +64,8 @@ LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
     case 7: // 111
       setMode(SigmaMode::VAR_AND_IMPACT_SIGMA, AverageMode::WEIGHTED_AVG);
       break;
+    default:
+      setMode(SigmaMode::STATIC_SIGMA, AverageMode::SIMPLE_AVG);
     }
 }
 

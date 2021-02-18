@@ -25,7 +25,7 @@
 #include "pronto_quadruped/LegOdometer.hpp"
 #include <iit/rbd/utils.h>
 #include <boost/math/distributions/normal.hpp>
-
+#include <sstream>
 
 namespace pronto {
 
@@ -80,6 +80,45 @@ void LegOdometer::setMode(const SigmaMode s_mode, const AverageMode a_mode) {
     break;
   }
   a_mode_ = a_mode;
+}
+
+void LegOdometer::getMode(SigmaMode& s_mode, AverageMode& a_mode) {
+    s_mode = s_mode_;
+    a_mode = a_mode_;
+}
+std::string LegOdometer::printMode() {
+    std::stringstream ss;
+
+    ss << "[ LegOdometer ] Sigma Mode: ";
+    switch(s_mode_){
+    case SigmaMode::STATIC_SIGMA:
+      ss << "Static Sigma" << std::endl;
+      break;
+    case SigmaMode::VAR_SIGMA:
+      ss << "Var Sigma" << std::endl;
+      break;
+    case SigmaMode::VAR_AND_IMPACT_SIGMA:
+      ss << "Var and Impact Sigma" << std::endl;
+      break;
+    case SigmaMode::IMPACT_SIGMA:
+      ss << "Impact Sigma" << std::endl;
+      break;
+    default:
+      break;
+    }
+
+    ss << "[ LegOdometer ] Average Mode: ";
+    switch (a_mode_) {
+    case AverageMode::SIMPLE_AVG:
+      ss << "Simple Average" << std::endl;
+      break;
+    case AverageMode::WEIGHTED_AVG:
+      ss << "Weighted Average" << std::endl;
+      break;
+    default:
+      break;
+    }
+    return ss.str();
 }
 
 void LegOdometer::setInitVelocityCov(const Eigen::Matrix3d& vel_cov){

@@ -130,6 +130,8 @@ public:
 
     // Configuration methods
     virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
+    virtual void getMode(SigmaMode& s_mode, AverageMode& a_mode);
+    virtual std::string printMode();
     void setSpeedLimit(const double& limit) override;
 
 protected:
