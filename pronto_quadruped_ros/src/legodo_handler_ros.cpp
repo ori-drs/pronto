@@ -125,7 +125,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   if(debug_){
       // Publish GRF
       LegVectorMap grf = stance_estimator_.getGRF();
-      wrench_msg_.header.stamp = ros::Time().fromNSec(utime_*1000);
+      wrench_msg_.header.stamp = ros::Time().fromNSec(nsec_);
       stance_msg_.header.stamp = wrench_msg_.header.stamp;
       for(int i = 0; i<4; i++){
           wrench_msg_.wrench.force.x = grf[LegID(i)](0);
@@ -143,7 +143,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       geometry_msgs::AccelStamped prior_accel_msg;
 
       prior_accel_msg.header.frame_id = "base";
-      prior_accel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_accel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_accel_msg.accel.linear.x = xdd_(0);
       prior_accel_msg.accel.linear.y = xdd_(1);
       prior_accel_msg.accel.linear.z = xdd_(2);
@@ -173,7 +173,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       // Publish prior velocity
       geometry_msgs::TwistStamped prior_vel_msg;
       prior_vel_msg.header.frame_id = "base";
-      prior_vel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_vel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_vel_msg.twist.linear.x = xd_(0);
       prior_vel_msg.twist.linear.y = xd_(1);
       prior_vel_msg.twist.linear.z = xd_(2);
@@ -204,7 +204,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           LegVectorMap veldebug;
           leg_odometer_.getVelocitiesFromLegs(veldebug);
           geometry_msgs::TwistStamped twist;
-          twist.header.stamp = ros::Time().fromNSec(utime_*1000);
+          twist.header.stamp = ros::Time().fromNSec(nsec_);
           twist.twist.angular.x = 0;
           twist.twist.angular.y = 0;
           twist.twist.angular.z = 0;
@@ -249,6 +249,8 @@ LegodoHandlerROS::LegodoHandlerROS(ros::NodeHandle &nh,
 LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg,
                                                            StateEstimator *est)
 {
+    nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+    //TODO transition from microseconds to nanoseconds everywhere
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
       return nullptr;
     }

@@ -82,6 +82,7 @@ protected:
     Eigen::Isometry3d imu_to_body_;
 
     uint64_t utime_;
+    uint64_t nsec_; // time in nanoseconds
 
     uint16_t downsample_factor_;
     uint64_t utime_offset_;
