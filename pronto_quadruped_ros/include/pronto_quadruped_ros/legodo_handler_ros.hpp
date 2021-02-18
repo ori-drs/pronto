@@ -78,6 +78,7 @@ protected:
 
     LegBoolMap stance_;
     LegScalarMap stance_prob_;
+    LegVectorMap grf_;
 
     Eigen::Isometry3d imu_to_body_;
 

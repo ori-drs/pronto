@@ -188,6 +188,12 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   omega_ = head_state_.angularVelocity();
   // TODO add support for the dynamic stance estimator
 
+  // get the ground reaction forces from the stance estimator
+  stance_estimator_.getGRF(grf_);
+
+  // and pass them over to the leg odometer
+  leg_odometer_.setGrf(grf_);
+
   if(leg_odometer_.estimateVelocity(utime_,
                                     q_,
                                     qd_,
