@@ -25,8 +25,9 @@
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/AccelStamped.h>
-
+#include <eigen_conversions/eigen_msg.h>
 #include "pronto_quadruped_ros/conversions.hpp"
+#include "pronto_quadruped/LegOdometer.hpp"
 
 namespace pronto {
 namespace quadruped {
@@ -82,6 +83,7 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
         prior_accel_debug_ = nh.advertise<geometry_msgs::AccelStamped>("prior_accel", 10);
         prior_joint_accel_debug_ = nh.advertise<sensor_msgs::JointState>("prior_joint_accel", 10);
         prior_velocity_debug_ = nh.advertise<geometry_msgs::TwistStamped>("prior_vel", 10);
+        vel_sigma_bounds_pub_ = nh.advertise<pronto_msgs::VelocityWithSigmaBounds>("vel_sigma_bounds", 10);
 
         dl_pose_ = std::make_unique<pronto::DataLogger>("prontopos.txt");
         dl_pose_->setStartFromZero(false);
@@ -215,6 +217,14 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
 
       if(debug_){
+          // get the 1 sigma bound from the diagonal
+          r_legodo = cov_legodo.diagonal().array().sqrt().matrix();
+
+          vel_sigma_bound_msg_.header.stamp = ros::Time().fromNSec(nsec_);
+          tf::vectorEigenToMsg(r_legodo, vel_sigma_bound_msg_.plus_one_sigma);
+          tf::vectorEigenToMsg(xd_ + r_legodo, vel_sigma_bound_msg_.velocity_plus_one_sigma);
+          tf::vectorEigenToMsg(xd_ - r_legodo, vel_sigma_bound_msg_.velocity_minus_one_sigma);
+          vel_sigma_bounds_pub_.publish(vel_sigma_bound_msg_);
           LegVectorMap veldebug;
           leg_odometer_.getVelocitiesFromLegs(veldebug);
           geometry_msgs::TwistStamped twist;

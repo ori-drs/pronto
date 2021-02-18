@@ -32,6 +32,7 @@
 
 #include <pronto_msgs/QuadrupedStance.h>
 #include <pronto_msgs/QuadrupedForceTorqueSensors.h>
+#include <pronto_msgs/VelocityWithSigmaBounds.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/WrenchStamped.h>
 
@@ -93,6 +94,7 @@ protected:
     ros::Publisher prior_joint_accel_debug_;
     ros::Publisher prior_velocity_debug_;
     ros::Publisher prior_accel_debug_;
+    ros::Publisher vel_sigma_bounds_pub_;
 
     bool debug_ = true;
     geometry_msgs::WrenchStamped wrench_msg_;
@@ -102,6 +104,9 @@ protected:
     std::unique_ptr<pronto::DataLogger> dl_pose_;
     std::unique_ptr<pronto::DataLogger> dl_vel_;
     std::unique_ptr<pronto::DataLogger> dl_vel_sigma_;
+
+    pronto_msgs::VelocityWithSigmaBounds vel_sigma_bound_msg_;
+
 protected:
     virtual Update* computeVelocity();
     virtual void getPreviousState (const StateEstimator *est);

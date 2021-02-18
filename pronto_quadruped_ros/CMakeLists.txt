@@ -10,7 +10,8 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         geometry_msgs
                                         sensor_msgs
                                         pronto_msgs
-                                        visualization_msgs)
+                                        visualization_msgs
+                                        eigen_conversions)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -107,7 +108,8 @@ catkin_package(INCLUDE_DIRS include
                               geometry_msgs
                               sensor_msgs
                               pronto_msgs
-                              visualization_msgs)
+                              visualization_msgs
+                              eigen_conversions)
 
 ###########
 ## Build ##
