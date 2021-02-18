@@ -344,6 +344,7 @@ LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const se
   getPreviousState(est);
   // the data to compute the stance are processed in processSecondaryMessage()
   stance_estimator_.getStance(stance_, stance_prob_);
+  return computeVelocity();
 }
 
 bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState *msg, const std::map<std::string, bool> &sensor_initialized, const RBIS &default_state, const RBIM &default_cov, RBIS &init_state, RBIM &init_cov){
