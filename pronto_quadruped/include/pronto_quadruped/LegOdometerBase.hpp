@@ -154,7 +154,7 @@ public:
 
   virtual void setGrf(const LegVectorMap& grf) = 0;
 
-  virtual void setSpeedLimit(const double& limit) {};
+  virtual void setSpeedLimit(const double& limit) {}
 };
 } // namespace quadruped
 } // namespace pronto

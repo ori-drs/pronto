@@ -211,9 +211,9 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
           // publish the estimated velocity for each individual leg
           for(int i=0; i<4; i++){
-              twist.twist.linear.x = veldebug[pronto::quadruped::LegID(i)](0);
-              twist.twist.linear.y = veldebug[pronto::quadruped::LegID(i)](1);
-              twist.twist.linear.z = veldebug[pronto::quadruped::LegID(i)](2);
+              twist.twist.linear.x = veldebug[LegID(i)](0);
+              twist.twist.linear.y = veldebug[LegID(i)](1);
+              twist.twist.linear.z = veldebug[LegID(i)](2);
               vel_debug_[i].publish(twist);
           }
           // publish the estimated velocity from the leg odometer
@@ -223,11 +223,6 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           twist.twist.linear.z = xd_(2);
 
           vel_raw_.publish(twist);
-
-
-
-
-
 
 
       }

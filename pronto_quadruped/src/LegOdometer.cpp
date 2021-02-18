@@ -32,8 +32,8 @@ namespace pronto {
 using namespace pronto::quadruped;
 
 LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
-                                     ForwardKinematics& forward_kinematics,
-                                     bool debug, SigmaMode s_mode, AverageMode a_mode) :
+                         ForwardKinematics& forward_kinematics,
+                         bool debug, SigmaMode s_mode, AverageMode a_mode) :
     feet_jacobians_(feet_jacobians),
     forward_kinematics_(forward_kinematics),
     s_mode_(s_mode),
