@@ -433,6 +433,9 @@ if(sensor_id.compare("scan_matcher") == 0){
             pose_pub_.publish(pose_msg_);
         }
 #if DEBUG_MODE
+        else {
+                   ROS_WARN("NOT Publish head sensor ID");
+               }
         end = std::chrono::high_resolution_clock::now();
 
         ROS_INFO_STREAM("Time elapsed till the end: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
