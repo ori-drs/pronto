@@ -417,7 +417,7 @@ if(sensor_id.compare("scan_matcher") == 0){
                 // "TF_REPEATED_DATA ignoring data with redundant timestamp for frame base at time"
                 // are otherwise printed to the terminal.
                 // Cf. https://github.com/ros/geometry2/issues/467#issuecomment-751572836
-                ros::Time new_stamp = ros::Time::now();
+                ros::Time new_stamp = pose_msg_.header.stamp;
                 if (new_stamp > transform_msg_.header.stamp) {
                     transform_msg_.transform.translation.x = pose_msg_.pose.pose.position.x;
                     transform_msg_.transform.translation.y = pose_msg_.pose.pose.position.y;
