@@ -42,19 +42,26 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     nh.getParam(prefix + "downsample_factor", (int&)downsample_factor_);
     nh.getParam(prefix + "utime_offset", (int&)utime_offset_);
 
-    double r_kse_vx;
-    double r_kse_vy;
-    double r_kse_vz;
-    nh.getParam(prefix + "r_vx", r_kse_vx);
-    nh.getParam(prefix + "r_vy", r_kse_vy);
-    nh.getParam(prefix + "r_vz", r_kse_vz);
+    double r_vx;
+    double r_vy;
+    double r_vz;
+    if(!nh.getParam(prefix + "r_vx", r_vx)){
+        ROS_WARN_STREAM("Could not retrieve r_vx from parameter server."
+                        <<  " Setting to default.");
+        r_vx = 0.1;
+    }
+    if(!nh.getParam(prefix + "r_vy", r_vy)){
+        ROS_WARN_STREAM("Could not retrieve r_vy from parameter server."
+                        <<  " Setting to default.");
+        r_vy = 0.1;
+    }
+    if(!nh.getParam(prefix + "r_vz", r_vz)){
+        ROS_WARN_STREAM("Could not retrieve r_vz from parameter server."
+                        <<  " Setting to default.");
+        r_vz = 0.1;
+    }
 
-    r_legodo_init << r_kse_vx, r_kse_vy,r_kse_vz;
-    R_legodo = r_legodo_init.array().square().matrix();
-    R_legodo_init = R_legodo;
-    cov_legodo = R_legodo.asDiagonal();
-
-    leg_odometer_.setInitVelocityCov(cov_legodo);
+    r_legodo_init << r_vx, r_vy, r_vz;
     leg_odometer_.setInitVelocityStd(r_legodo_init);
 
     // not subscribing to IMU messages to get omega and stuff for now
@@ -203,8 +210,9 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                     xd_,
                                     cov_legodo))
   {
-      // save the diagonal
-      R_legodo = cov_legodo.diagonal();
+
+
+
 
       if(debug_){
           LegVectorMap veldebug;

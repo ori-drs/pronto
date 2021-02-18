@@ -56,7 +56,6 @@ protected:
     StanceEstimatorBase& stance_estimator_;
     LegOdometerBase& leg_odometer_;
 
-    Eigen::Vector3d R_legodo;
     Eigen::Vector3d r_legodo;
     Eigen::Vector3d R_legodo_init;
     Eigen::Vector3d r_legodo_init;
