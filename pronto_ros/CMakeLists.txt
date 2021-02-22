@@ -48,25 +48,6 @@ add_executable(lidar_odometry_visualizer src/lidar_odom_viz.cpp)
 target_link_libraries(lidar_odometry_visualizer ${catkin_LIBRARIES})
 add_dependencies(lidar_odometry_visualizer ${catkin_EXPORTED_TARGETS})
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
-
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
 install(TARGETS ${PROJECT_NAME} lidar_odometry_visualizer ${PROJECT_NAME}_node
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
