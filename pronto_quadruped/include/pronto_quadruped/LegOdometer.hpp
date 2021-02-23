@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2019
+/* Copyright (c) 2015-2021
  * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
@@ -36,6 +36,7 @@
 
 // iit-commons
 #include <pronto_quadruped_commons/leg_data_map.h>
+#include <pronto_quadruped_commons/leg_vector_map.h>
 #include <pronto_quadruped_commons/forward_kinematics.h>
 #include <pronto_quadruped_commons/feet_jacobians.h>
 
@@ -45,11 +46,6 @@
 namespace pronto {
 namespace quadruped {
 
-using pronto::quadruped::LF;
-using pronto::quadruped::RF;
-using pronto::quadruped::LH;
-using pronto::quadruped::RH;
-
 /**
  * @brief The LegOdometer class computes the velocity of a floating base
  * legged robot given its joint state, the stance feet, and other data.
@@ -58,12 +54,6 @@ class LegOdometer  : public LegOdometerBase {
 public:
     template <class T>
     using LegDataMap = pronto::quadruped::LegDataMap<T>;
-
-    typedef typename pronto::quadruped::FeetJacobians FeetJacobians;
-    typedef typename pronto::quadruped::ForwardKinematics ForwardKinematics;
-    typedef typename pronto::quadruped::JointState JointState;
-    typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
-    typedef typename pronto::quadruped::LegDataMap<Eigen::Vector3d> LegVector3Map;
 
     enum class SigmaMode {STATIC_SIGMA = 0,/*!< use constant covariance */
                           VAR_SIGMA, /*!< compute covariance from stance legs */
@@ -84,7 +74,7 @@ public:
 
 
 public:
-    inline bool estimatePose(const uint64_t utime,
+    bool estimatePose(const uint64_t utime,
                       const JointState& q,
                       const LegBoolMap& stance_legs,
                       const LegScalarMap& stance_prob,
@@ -92,8 +82,8 @@ public:
                       Matrix3d& pos_covariance,
                       Quaterniond& orientation,
                       Matrix3d& orient_covariance) override {
-        std::cerr << "Function not implemented yet!" << std::endl;
-	return false;
+      std::cerr << "Function not implemented yet!" << std::endl;
+      return false;
     }
 
     bool estimateVelocity(const uint64_t utime,
@@ -105,16 +95,16 @@ public:
                           Vector3d& velocity,
                           Matrix3d& covariance) override;
 
-    inline void getVelocity(Vector3d& velocity, Matrix3d& covariance) override
+    void getVelocity(Vector3d& velocity, Matrix3d& covariance) override
     {
         velocity = xd_b_;
         covariance = vel_cov_;
     }
-    inline void getPosition(Vector3d& position, Matrix3d& covariance) override
+    void getPosition(Vector3d& position, Matrix3d& covariance) override
     {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
-    inline void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
+    void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
     {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
@@ -128,9 +118,9 @@ public:
     virtual void setGrfDelta(const LegScalarMap& grf_delta);
 
     // Debugging methods
-    void getVelocitiesFromLegs(LegVector3Map & vd) override;
-    void getFeetPositions(LegVector3Map & jd) override;
-    virtual LegVector3Map getFootPos();
+    void getVelocitiesFromLegs(LegVectorMap & vd) override;
+    void getFeetPositions(LegVectorMap & jd) override;
+    virtual LegVectorMap getFootPos();
 
 
     void setInitVelocityCov(const Matrix3d& vel_cov) override;
@@ -140,6 +130,9 @@ public:
 
     // Configuration methods
     virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
+    virtual void getMode(SigmaMode& s_mode, AverageMode& a_mode);
+    virtual std::string printMode();
+    void setSpeedLimit(const double& limit) override;
 
 protected:
     FeetJacobians& feet_jacobians_;
@@ -165,14 +158,15 @@ protected:
      * kinematics.
      * <b>NOTE</b>: these are NOT the velocity of the legs.
      */
-    LegVector3Map base_vel_leg_;
-    LegVector3Map foot_pos_;
+    LegVectorMap base_vel_leg_;
+    LegVectorMap foot_pos_;
 
     Eigen::Vector3d xd_b_; // estimated velocity, base frame
-    Eigen::Vector3d old_xd_b_; // previous estimated velocity, base frame
 
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;
+
+    double speed_limit_; // upper limit of the absolute norm of the linear velocity
 };
 } // namespace quadruped
 } // namespace pronto

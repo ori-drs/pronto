@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2019
+/* Copyright (c) 2015-2021
  * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
@@ -25,22 +25,23 @@
 #include "pronto_quadruped/LegOdometer.hpp"
 #include <iit/rbd/utils.h>
 #include <boost/math/distributions/normal.hpp>
-
+#include <sstream>
 
 namespace pronto {
 
 using namespace pronto::quadruped;
 
 LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
-                                     ForwardKinematics& forward_kinematics,
-                                     bool debug, SigmaMode s_mode, AverageMode a_mode) :
+                         ForwardKinematics& forward_kinematics,
+                         bool debug, SigmaMode s_mode, AverageMode a_mode) :
     feet_jacobians_(feet_jacobians),
     forward_kinematics_(forward_kinematics),
     s_mode_(s_mode),
     a_mode_(a_mode),
     xd_b_(Eigen::Vector3d::Zero()),
-    old_xd_b_(Eigen::Vector3d::Zero()),
-    debug_(debug) {
+    debug_(debug),
+    speed_limit_(12.42) // set speed limit to Usain Bolt's sprint record, Berlin August 16th, 2009
+{
 }
 
 LegOdometer::~LegOdometer() {
@@ -81,12 +82,52 @@ void LegOdometer::setMode(const SigmaMode s_mode, const AverageMode a_mode) {
   a_mode_ = a_mode;
 }
 
+void LegOdometer::getMode(SigmaMode& s_mode, AverageMode& a_mode) {
+    s_mode = s_mode_;
+    a_mode = a_mode_;
+}
+std::string LegOdometer::printMode() {
+    std::stringstream ss;
+
+    ss << "[ LegOdometer ] Sigma Mode: ";
+    switch(s_mode_){
+    case SigmaMode::STATIC_SIGMA:
+      ss << "Static Sigma" << std::endl;
+      break;
+    case SigmaMode::VAR_SIGMA:
+      ss << "Var Sigma" << std::endl;
+      break;
+    case SigmaMode::VAR_AND_IMPACT_SIGMA:
+      ss << "Var and Impact Sigma" << std::endl;
+      break;
+    case SigmaMode::IMPACT_SIGMA:
+      ss << "Impact Sigma" << std::endl;
+      break;
+    default:
+      break;
+    }
+
+    ss << "[ LegOdometer ] Average Mode: ";
+    switch (a_mode_) {
+    case AverageMode::SIMPLE_AVG:
+      ss << "Simple Average" << std::endl;
+      break;
+    case AverageMode::WEIGHTED_AVG:
+      ss << "Weighted Average" << std::endl;
+      break;
+    default:
+      break;
+    }
+    return ss.str();
+}
+
 void LegOdometer::setInitVelocityCov(const Eigen::Matrix3d& vel_cov){
     initial_vel_cov_ = vel_cov;
 }
 
 void LegOdometer::setInitVelocityStd(const Eigen::Vector3d& vel_std){
     initial_vel_std_ = vel_std;
+    vel_std_ = initial_vel_std_;
     initial_vel_cov_ = vel_std.array().square().matrix().asDiagonal();
     Eigen::IOFormat clean_fmt(4, 0, ", ", "\n", "[", "]");
     std::cout << "Set Initial standard deviation: " << std::endl;
@@ -99,11 +140,11 @@ void LegOdometer::setInitPositionCov(const Eigen::Matrix3d& pos_cov){
     pos_cov_ = pos_cov;
 }
 
-void LegOdometer::getVelocitiesFromLegs(LegVector3Map &vd) {
+void LegOdometer::getVelocitiesFromLegs(LegVectorMap &vd) {
     vd = base_vel_leg_;
 }
 
-void LegOdometer::getFeetPositions(LegVector3Map &jd) {
+void LegOdometer::getFeetPositions(LegVectorMap &jd) {
     jd = foot_pos_;
 }
 
@@ -120,7 +161,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
                                    Vector3d &velocity,
                                    Matrix3d &covariance)
 {
-    vel_cov_ = initial_vel_cov_;
+    vel_cov_ = initial_vel_cov_;    
 
     // Recording foot position and base velocity from legs
     for(int leg = LF; leg <= RH; leg++){
@@ -214,9 +255,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
                   vel_std_(1) * alpha + (1 - alpha) * (gamma * initial_vel_std_(1) + (1 - gamma) * sqrt(var_velocity(1))),
                   vel_std_(2) * alpha + (1 - alpha) * (gamma * initial_vel_std_(2) + (1 - gamma) * sqrt(var_velocity(2)));
 
-            var_velocity << vel_std_(0) * vel_std_(0),
-                  vel_std_(1) * vel_std_(1),
-                  vel_std_(2) * vel_std_(2);
+
         }
     }
 
@@ -240,13 +279,16 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
 
         }
 
+        // if the difference with the previous velocity is beyond the initial
+        // value for the standard deviation, reject the measurement
         if((a_mode_ == AverageMode::WEIGHTED_AVG) && ((old_xd_b - xd_b_)(0) > initial_vel_std_(0) || (old_xd_b - xd_b_)(0) < -initial_vel_std_(0))) {
             old_xd_b = xd_b_;
             return false;
         }
-
-        var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
     }
+
+    var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
+
     if(debug_) {
         double impact =  2 * 0.00109375 * abs(grf_delta_.mean());
         if(impact < 0.001 || std::isnan(impact)) {
@@ -272,7 +314,13 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     vel_cov_ = var_velocity.asDiagonal();
 
     // Checks if the computed values are all finite before using them
-    if(!xd_b_.allFinite() ){
+    if(!xd_b_.allFinite()){
+      return false;
+    }
+
+    // if we hit the speed limit, we reject the measurement
+    if(xd_b_.norm() > speed_limit_){
+      std::cerr << "Speed limit hit: " << xd_b_.norm() << " > " << speed_limit_ << std::endl;
       return false;
     }
 
@@ -280,16 +328,18 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     if(!vel_cov_.allFinite()){
         vel_cov_ = initial_vel_cov_;
     }
-    // the old value will stay the same if the just computed one is not finite
-    old_xd_b_ = xd_b_;
 
     velocity = xd_b_;
     covariance = vel_cov_;
     return true;
 }
 
-LegOdometer::LegVector3Map LegOdometer::getFootPos() {
+LegVectorMap LegOdometer::getFootPos() {
     return foot_pos_;
+}
+
+void LegOdometer::setSpeedLimit(const double &limit){
+  speed_limit_ = limit;
 }
 
 void LegOdometer::setGrf(const LegVectorMap &grf){

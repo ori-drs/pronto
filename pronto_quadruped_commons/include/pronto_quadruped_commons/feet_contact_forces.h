@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015-2018 Istituto Italiano di Tecnologia (IIT)
+/* Copyright (c) 2015-2021
+ * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
  * Authors: Marco Frigerio, Michele Focchi, Marco Camurri
@@ -30,6 +30,7 @@
 
 #include "declarations.h"
 #include "leg_data_map.h"
+#include "leg_vector_map.h"
 
 #include <Eigen/Dense>
 
@@ -146,7 +147,7 @@ public:
                             const JointState& qd,
                             const JointState& tau,
                             const Quaterniond& orient,
-                            LegDataMap<Vector3d>& feet_grf,
+                            LegVectorMap& feet_grf,
                             const JointState& qdd = JointState::Zero(),
                             const Vector3d& xd = Vector3d::Zero(),
                             const Vector3d& xdd = Vector3d::Zero(),
@@ -170,22 +171,22 @@ public:
      * @return a data structure which associates the force at the
      * end effector for each leg
      */
-    virtual LegDataMap<Vector3d> getFeetGRF(const JointState& q,
-                                            const JointState& qd,
-                                            const JointState& tau,
-                                            const Quaterniond& orient,
-                                            const JointState& qdd = JointState::Zero(),
-                                            const Vector3d& xd = Vector3d::Zero(),
-                                            const Vector3d& xdd = Vector3d::Zero(),
-                                            const Vector3d& omega = Vector3d::Zero(),
-                                            const Vector3d& omegad = Vector3d::Zero()) = 0;
+    virtual LegVectorMap getFeetGRF(const JointState& q,
+                                    const JointState& qd,
+                                    const JointState& tau,
+                                    const Quaterniond& orient,
+                                    const JointState& qdd = JointState::Zero(),
+                                    const Vector3d& xd = Vector3d::Zero(),
+                                    const Vector3d& xdd = Vector3d::Zero(),
+                                    const Vector3d& omega = Vector3d::Zero(),
+                                    const Vector3d& omegad = Vector3d::Zero()) = 0;
 
     /**
      * @brief setContactPoint sets the contact point w.r.t. the center of the ball foot (in foot frame)
      * @param foot_x
      * @param foot_y
      */
-    virtual void setContactPoint(quadruped::LegID leg, double foot_x, double foot_y) = 0;
+    virtual void setContactPoint(LegID leg, double foot_x, double foot_y) = 0;
 };
 
 

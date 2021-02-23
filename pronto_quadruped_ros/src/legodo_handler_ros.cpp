@@ -25,8 +25,9 @@
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/AccelStamped.h>
-
+#include <eigen_conversions/eigen_msg.h>
 #include "pronto_quadruped_ros/conversions.hpp"
+#include "pronto_quadruped/LegOdometer.hpp"
 
 namespace pronto {
 namespace quadruped {
@@ -42,19 +43,26 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     nh.getParam(prefix + "downsample_factor", (int&)downsample_factor_);
     nh.getParam(prefix + "utime_offset", (int&)utime_offset_);
 
-    double r_kse_vx;
-    double r_kse_vy;
-    double r_kse_vz;
-    nh.getParam(prefix + "r_vx", r_kse_vx);
-    nh.getParam(prefix + "r_vy", r_kse_vy);
-    nh.getParam(prefix + "r_vz", r_kse_vz);
+    double r_vx;
+    double r_vy;
+    double r_vz;
+    if(!nh.getParam(prefix + "r_vx", r_vx)){
+        ROS_WARN_STREAM("Could not retrieve r_vx from parameter server."
+                        <<  " Setting to default.");
+        r_vx = 0.1;
+    }
+    if(!nh.getParam(prefix + "r_vy", r_vy)){
+        ROS_WARN_STREAM("Could not retrieve r_vy from parameter server."
+                        <<  " Setting to default.");
+        r_vy = 0.1;
+    }
+    if(!nh.getParam(prefix + "r_vz", r_vz)){
+        ROS_WARN_STREAM("Could not retrieve r_vz from parameter server."
+                        <<  " Setting to default.");
+        r_vz = 0.1;
+    }
 
-    r_legodo_init << r_kse_vx, r_kse_vy,r_kse_vz;
-    R_legodo = r_legodo_init.array().square().matrix();
-    R_legodo_init = R_legodo;
-    cov_legodo = R_legodo.asDiagonal();
-
-    leg_odometer_.setInitVelocityCov(cov_legodo);
+    r_legodo_init << r_vx, r_vy, r_vz;
     leg_odometer_.setInitVelocityStd(r_legodo_init);
 
     // not subscribing to IMU messages to get omega and stuff for now
@@ -75,6 +83,7 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
         prior_accel_debug_ = nh.advertise<geometry_msgs::AccelStamped>("prior_accel", 10);
         prior_joint_accel_debug_ = nh.advertise<sensor_msgs::JointState>("prior_joint_accel", 10);
         prior_velocity_debug_ = nh.advertise<geometry_msgs::TwistStamped>("prior_vel", 10);
+        vel_sigma_bounds_pub_ = nh.advertise<pronto_msgs::VelocityWithSigmaBounds>("vel_sigma_bounds", 10);
 
         dl_pose_ = std::make_unique<pronto::DataLogger>("prontopos.txt");
         dl_pose_->setStartFromZero(false);
@@ -124,26 +133,26 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
 LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   if(debug_){
       // Publish GRF
-      StanceEstimatorBase::LegVectorMap grf = stance_estimator_.getGRF();
-      wrench_msg_.header.stamp = ros::Time().fromNSec(utime_*1000);
+      LegVectorMap grf = stance_estimator_.getGRF();
+      wrench_msg_.header.stamp = ros::Time().fromNSec(nsec_);
       stance_msg_.header.stamp = wrench_msg_.header.stamp;
       for(int i = 0; i<4; i++){
-          wrench_msg_.wrench.force.x = grf[pronto::quadruped::LegID(i)](0);
-          wrench_msg_.wrench.force.y = grf[pronto::quadruped::LegID(i)](1);
-          wrench_msg_.wrench.force.z = grf[pronto::quadruped::LegID(i)](2);
+          wrench_msg_.wrench.force.x = grf[LegID(i)](0);
+          wrench_msg_.wrench.force.y = grf[LegID(i)](1);
+          wrench_msg_.wrench.force.z = grf[LegID(i)](2);
           grf_debug_[i].publish(wrench_msg_);
       }
-      stance_msg_.lf = stance_[pronto::quadruped::LegID::LF] * 0.4;
-      stance_msg_.rf = stance_[pronto::quadruped::LegID::RF] * 0.3;
-      stance_msg_.lh = stance_[pronto::quadruped::LegID::LH] * 0.2;
-      stance_msg_.rh = stance_[pronto::quadruped::LegID::RH] * 0.1;
+      stance_msg_.lf = stance_[LegID::LF] * 0.4;
+      stance_msg_.rf = stance_[LegID::RF] * 0.3;
+      stance_msg_.lh = stance_[LegID::LH] * 0.2;
+      stance_msg_.rh = stance_[LegID::RH] * 0.1;
       stance_pub_.publish(stance_msg_);
 
       // Publish prior accel
       geometry_msgs::AccelStamped prior_accel_msg;
 
       prior_accel_msg.header.frame_id = "base";
-      prior_accel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_accel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_accel_msg.accel.linear.x = xdd_(0);
       prior_accel_msg.accel.linear.y = xdd_(1);
       prior_accel_msg.accel.linear.z = xdd_(2);
@@ -173,7 +182,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       // Publish prior velocity
       geometry_msgs::TwistStamped prior_vel_msg;
       prior_vel_msg.header.frame_id = "base";
-      prior_vel_msg.header.stamp = ros::Time().fromNSec(utime_*1000);
+      prior_vel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_vel_msg.twist.linear.x = xd_(0);
       prior_vel_msg.twist.linear.y = xd_(1);
       prior_vel_msg.twist.linear.z = xd_(2);
@@ -188,6 +197,12 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
   omega_ = head_state_.angularVelocity();
   // TODO add support for the dynamic stance estimator
 
+  // get the ground reaction forces from the stance estimator
+  stance_estimator_.getGRF(grf_);
+
+  // and pass them over to the leg odometer
+  leg_odometer_.setGrf(grf_);
+
   if(leg_odometer_.estimateVelocity(utime_,
                                     q_,
                                     qd_,
@@ -197,23 +212,32 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                     xd_,
                                     cov_legodo))
   {
-      // save the diagonal
-      R_legodo = cov_legodo.diagonal();
+
+
+
 
       if(debug_){
-          LegOdometerBase::LegVectorMap veldebug;
+          // get the 1 sigma bound from the diagonal
+          r_legodo = cov_legodo.diagonal().array().sqrt().matrix();
+
+          vel_sigma_bound_msg_.header.stamp = ros::Time().fromNSec(nsec_);
+          tf::vectorEigenToMsg(r_legodo, vel_sigma_bound_msg_.plus_one_sigma);
+          tf::vectorEigenToMsg(xd_ + r_legodo, vel_sigma_bound_msg_.velocity_plus_one_sigma);
+          tf::vectorEigenToMsg(xd_ - r_legodo, vel_sigma_bound_msg_.velocity_minus_one_sigma);
+          vel_sigma_bounds_pub_.publish(vel_sigma_bound_msg_);
+          LegVectorMap veldebug;
           leg_odometer_.getVelocitiesFromLegs(veldebug);
           geometry_msgs::TwistStamped twist;
-          twist.header.stamp = ros::Time().fromNSec(utime_*1000);
+          twist.header.stamp = ros::Time().fromNSec(nsec_);
           twist.twist.angular.x = 0;
           twist.twist.angular.y = 0;
           twist.twist.angular.z = 0;
 
           // publish the estimated velocity for each individual leg
           for(int i=0; i<4; i++){
-              twist.twist.linear.x = veldebug[pronto::quadruped::LegID(i)](0);
-              twist.twist.linear.y = veldebug[pronto::quadruped::LegID(i)](1);
-              twist.twist.linear.z = veldebug[pronto::quadruped::LegID(i)](2);
+              twist.twist.linear.x = veldebug[LegID(i)](0);
+              twist.twist.linear.y = veldebug[LegID(i)](1);
+              twist.twist.linear.z = veldebug[LegID(i)](2);
               vel_debug_[i].publish(twist);
           }
           // publish the estimated velocity from the leg odometer
@@ -223,11 +247,6 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           twist.twist.linear.z = xd_(2);
 
           vel_raw_.publish(twist);
-
-
-
-
-
 
 
       }
@@ -254,6 +273,8 @@ LegodoHandlerROS::LegodoHandlerROS(ros::NodeHandle &nh,
 LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg,
                                                            StateEstimator *est)
 {
+    nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+    //TODO transition from microseconds to nanoseconds everywhere
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
       return nullptr;
     }
@@ -333,6 +354,7 @@ LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const se
   getPreviousState(est);
   // the data to compute the stance are processed in processSecondaryMessage()
   stance_estimator_.getStance(stance_, stance_prob_);
+  return computeVelocity();
 }
 
 bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState *msg, const std::map<std::string, bool> &sensor_initialized, const RBIS &default_state, const RBIM &default_cov, RBIS &init_state, RBIM &init_cov){
@@ -340,7 +362,7 @@ bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointSta
 }
 
 void ForceSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::QuadrupedForceTorqueSensors &msg){
-  LegDataMap<Vector3d> grf;
+  LegVectorMap grf;
   grf[LF] << msg.lf.force.x, msg.lf.force.y, msg.lf.force.z;
   grf[RF] << msg.rf.force.x, msg.rf.force.y, msg.rf.force.z;
   grf[LH] << msg.lh.force.x, msg.lh.force.y, msg.lh.force.z;

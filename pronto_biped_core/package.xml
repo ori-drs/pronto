@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>pronto_biped_core</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
 
   <description>Description</description>
   <maintainer email="mfallon@robots.ox.ac.uk">Maurice Fallon</maintainer>

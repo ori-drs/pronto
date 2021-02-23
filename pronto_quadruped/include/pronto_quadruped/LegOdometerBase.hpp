@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2019
+/* Copyright (c) 2015-2021
  * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
@@ -27,6 +27,7 @@
 #include <Eigen/Dense>
 #include <pronto_quadruped_commons/leg_data_map.h>
 #include <pronto_quadruped_commons/leg_bool_map.h>
+#include <pronto_quadruped_commons/leg_vector_map.h>
 #include <pronto_quadruped_commons/declarations.h>
 
 namespace pronto {
@@ -42,15 +43,12 @@ class LegOdometerBase {
 public:
     // iit-commons aliases
     typedef typename quadruped::JointState JointState;
-    template <class T>
-    using LegDataMap = quadruped::LegDataMap<T>;
     typedef LegDataMap<double> LegScalarMap;
     typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     // Eigen aliases
     typedef Eigen::Vector3d Vector3d;
     typedef Eigen::Matrix3d Matrix3d;
     typedef Eigen::Quaterniond Quaterniond;
-    typedef LegDataMap<Vector3d> LegVectorMap;
 
 public:
 
@@ -155,6 +153,8 @@ public:
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 
   virtual void setGrf(const LegVectorMap& grf) = 0;
+
+  virtual void setSpeedLimit(const double& limit) {}
 };
 } // namespace quadruped
 } // namespace pronto

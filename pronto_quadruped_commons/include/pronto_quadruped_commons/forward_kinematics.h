@@ -31,6 +31,7 @@
 
 #include "declarations.h"
 #include "leg_data_map.h"
+#include "leg_vector_map.h"
 
 namespace pronto {
 namespace quadruped {
@@ -48,9 +49,9 @@ public:
     virtual Vector3d getFootPosLH(const JointState& q) = 0;
     virtual Vector3d getFootPosRH(const JointState& q) = 0;
     virtual Vector3d getFootPos  (const JointState& q, const LegID& leg) = 0;
-    inline virtual quadruped::LegDataMap<Vector3d> getFeetPos  (const JointState& q)
+    inline virtual LegVectorMap getFeetPos(const JointState& q)
     {
-        quadruped::LegDataMap<quadruped::Vector3d> feetPos(Vector3d::Zero());
+        LegVectorMap feetPos(Vector3d::Zero());
         feetPos[quadruped::LF] = getFootPosLF(q);
         feetPos[quadruped::RF] = getFootPosRF(q);
         feetPos[quadruped::LH] = getFootPosLH(q);

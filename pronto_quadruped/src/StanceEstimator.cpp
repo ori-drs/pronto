@@ -225,16 +225,15 @@ bool StanceEstimator::isStance(LegID leg) const{
     return stance_[leg];
 }
 
-
-StanceEstimator::LegVectorMap StanceEstimator::getGRF() {
+LegVectorMap StanceEstimator::getGRF() {
     return grf_;
 }
 
-bool StanceEstimator::getGRF(StanceEstimator::LegVectorMap& grf){
+bool StanceEstimator::getGRF(LegVectorMap& grf){
  return feet_contact_forces_.getFeetGRF(q_, qd_, tau_, orient_, grf, qdd_, xd_, xdd_, omega_, omegad_);
 }
 
-void StanceEstimator::getGrf_W(StanceEstimator::LegVectorMap & grf) {
+void StanceEstimator::getGrf_W(LegVectorMap & grf) {
     grf = grForce_W;
 }
 

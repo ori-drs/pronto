@@ -275,7 +275,7 @@ void ROSFrontEnd::initCallback(boost::shared_ptr<MsgT const> msg, const SensorId
 }
 
 //TODO come up with a better way to activate / deactivate debug mode
-#define DEBUG_MODE 0 
+#define DEBUG_MODE 0
 
 template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
@@ -355,10 +355,10 @@ state_est_->getHeadState(prior,prior_cov);
 state_est_->getHeadState(posterior,posterior_cov);
 
 if(sensor_id.compare("scan_matcher") == 0){
-std::cerr << "PRIOR    : " << prior.position().transpose() << " " << rotation::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
-std::cerr << "POSTERIOR: " << posterior.position().transpose() << " " << rotation::getEulerAnglesDeg(posterior.orientation()).transpose() << std::endl;
-std::cerr << ":::::::" << std::endl;
-        }
+    std::cerr << "PRIOR    : " << prior.position().transpose() << " " << rotation::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
+    std::cerr << "POSTERIOR: " << posterior.position().transpose() << " " << rotation::getEulerAnglesDeg(posterior.orientation()).transpose() << std::endl;
+    std::cerr << ":::::::" << std::endl;
+}
 
 #if DEBUG_MODE
         end = std::chrono::high_resolution_clock::now();
@@ -417,7 +417,7 @@ std::cerr << ":::::::" << std::endl;
                 // "TF_REPEATED_DATA ignoring data with redundant timestamp for frame base at time"
                 // are otherwise printed to the terminal.
                 // Cf. https://github.com/ros/geometry2/issues/467#issuecomment-751572836
-                ros::Time new_stamp = ros::Time::now();
+                ros::Time new_stamp = pose_msg_.header.stamp;
                 if (new_stamp > transform_msg_.header.stamp) {
                     transform_msg_.transform.translation.x = pose_msg_.pose.pose.position.x;
                     transform_msg_.transform.translation.y = pose_msg_.pose.pose.position.y;
@@ -433,6 +433,9 @@ std::cerr << ":::::::" << std::endl;
             pose_pub_.publish(pose_msg_);
         }
 #if DEBUG_MODE
+        else {
+                   ROS_WARN("NOT Publish head sensor ID");
+               }
         end = std::chrono::high_resolution_clock::now();
 
         ROS_INFO_STREAM("Time elapsed till the end: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());

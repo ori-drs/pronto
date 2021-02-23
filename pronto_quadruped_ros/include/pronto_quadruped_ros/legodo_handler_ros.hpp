@@ -32,6 +32,7 @@
 
 #include <pronto_msgs/QuadrupedStance.h>
 #include <pronto_msgs/QuadrupedForceTorqueSensors.h>
+#include <pronto_msgs/VelocityWithSigmaBounds.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/WrenchStamped.h>
 
@@ -44,9 +45,6 @@ class LegodoHandlerBase {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    template <class T>
-    using LegDataMap = pronto::quadruped::LegDataMap<T>;
-    typedef typename pronto::quadruped::LegBoolMap LegBoolMap;
     using  LegScalarMap = LegDataMap<double>;
     using Update = RBISUpdateInterface;
 
@@ -59,7 +57,6 @@ protected:
     StanceEstimatorBase& stance_estimator_;
     LegOdometerBase& leg_odometer_;
 
-    Eigen::Vector3d R_legodo;
     Eigen::Vector3d r_legodo;
     Eigen::Vector3d R_legodo_init;
     Eigen::Vector3d r_legodo_init;
@@ -81,10 +78,12 @@ protected:
 
     LegBoolMap stance_;
     LegScalarMap stance_prob_;
+    LegVectorMap grf_;
 
-    Eigen::Affine3d imu_to_body_;
+    Eigen::Isometry3d imu_to_body_;
 
     uint64_t utime_;
+    uint64_t nsec_; // time in nanoseconds
 
     uint16_t downsample_factor_;
     uint64_t utime_offset_;
@@ -95,6 +94,7 @@ protected:
     ros::Publisher prior_joint_accel_debug_;
     ros::Publisher prior_velocity_debug_;
     ros::Publisher prior_accel_debug_;
+    ros::Publisher vel_sigma_bounds_pub_;
 
     bool debug_ = true;
     geometry_msgs::WrenchStamped wrench_msg_;
@@ -104,6 +104,9 @@ protected:
     std::unique_ptr<pronto::DataLogger> dl_pose_;
     std::unique_ptr<pronto::DataLogger> dl_vel_;
     std::unique_ptr<pronto::DataLogger> dl_vel_sigma_;
+
+    pronto_msgs::VelocityWithSigmaBounds vel_sigma_bound_msg_;
+
 protected:
     virtual Update* computeVelocity();
     virtual void getPreviousState (const StateEstimator *est);

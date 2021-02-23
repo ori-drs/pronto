@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2019
+/* Copyright (c) 2015-2021
  * Istituto Italiano di Tecnologia (IIT), University of Oxford
  * All rights reserved.
  *
@@ -36,14 +36,9 @@
 namespace pronto {
 namespace quadruped {
 
-typedef typename pronto::quadruped::FeetJacobians FeetJacobians;
-typedef typename pronto::quadruped::FeetContactForces FeetContactForces;
-typedef typename pronto::quadruped::InverseDynamicsBase InverseDynamics;
-typedef typename pronto::quadruped::JSIMBase JSIM;
-typedef typename pronto::quadruped::LegDataMap<Eigen::Vector3d> LegVector3Map;
-typedef typename pronto::quadruped::LegDataMap<double> LegScalarMap;
-typedef typename pronto::quadruped::ForwardKinematics ForwardKinematics;
-
+using InverseDynamics = InverseDynamicsBase;
+using JSIM = JSIMBase ;
+using LegScalarMap = LegDataMap<double>;
 using Wrench = iit::rbd::ForceVector;
 
 /**
