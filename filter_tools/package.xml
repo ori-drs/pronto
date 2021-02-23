@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>filter_tools</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>Description</description>
   <maintainer email="mfallon@robots.ox.ac.uk">Maurice Fallon</maintainer>
   <author email="mfallon@robots.ox.ac.uk">Maurice Fallon</author>
