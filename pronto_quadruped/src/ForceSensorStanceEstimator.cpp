@@ -38,5 +38,3 @@ void ForceSensorStanceEstimator::setGRF(const LegVectorMap& grf) {
 bool ForceSensorStanceEstimator::isStance(LegID leg) const {
   return stance_[leg];
 }
-
-

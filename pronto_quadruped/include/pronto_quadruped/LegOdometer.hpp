@@ -91,7 +91,7 @@ public:
                       Vector3d& position,
                       Matrix3d& pos_covariance,
                       Quaterniond& orientation,
-                      Matrix3d& orient_covariance) {
+                      Matrix3d& orient_covariance) override {
         std::cerr << "Function not implemented yet!" << std::endl;
 	return false;
     }
@@ -103,17 +103,19 @@ public:
                           const LegBoolMap& stance_legs,
                           const LegScalarMap& stance_prob,
                           Vector3d& velocity,
-                          Matrix3d& covariance);
+                          Matrix3d& covariance) override;
 
     inline void getVelocity(Vector3d& velocity, Matrix3d& covariance) override
     {
         velocity = xd_b_;
         covariance = vel_cov_;
     }
-    inline void getPosition(Vector3d& position, Matrix3d& covariance){
+    inline void getPosition(Vector3d& position, Matrix3d& covariance) override
+    {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
-    inline void getOrientation(Quaterniond& orientation, Matrix3d& covariance){
+    inline void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
+    {
         std::cerr << "Function not implemented yet!" << std::endl;
     }
 

@@ -38,10 +38,10 @@ ROSFrontEnd::ROSFrontEnd(ros::NodeHandle& nh, bool verbose) :
                 if(!nh_.getParam("tf_child_frame_id", tf_child_frame_id)){
                     ROS_WARN("Couldn't get param \"tf_frame_id\". Setting default to \"base\".");
                 }
-                tf_pose_.frame_id_ = pose_frame_id;
+                transform_msg_.header.frame_id = pose_frame_id;
                 // NOTE implicitly assuming the twist frame id is the base frame
-                tf_pose_.child_frame_id_ = tf_child_frame_id;
-                ROS_INFO_STREAM("Publishing TF with frame_id: \"" << tf_pose_.frame_id_ << "\" and child_frame_id: \"" << tf_pose_.child_frame_id_ << "\"");
+                transform_msg_.child_frame_id = tf_child_frame_id;
+                ROS_INFO_STREAM("Publishing TF with frame_id: \"" << transform_msg_.header.frame_id << "\" and child_frame_id: \"" << transform_msg_.child_frame_id << "\"");
             }
         }
 

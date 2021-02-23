@@ -19,7 +19,7 @@ public:
 
   void setGRF(const LegVectorMap& grf) override;
 
-  bool isStance(LegID leg) const;
+  bool isStance(LegID leg) const override;
 
 protected:
   LegBoolMap stance_;
