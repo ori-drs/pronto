@@ -23,6 +23,8 @@ private:
   std::shared_ptr<LidarOdometryModule> lidarodom_module_;
   LidarOdometryUpdate lidarodom_update_;
   ros::Duration msg_time_offset_;
+  bool use_measurement_cov_;
+  LidarOdometryConfig cfg_;
 };
 
 }
