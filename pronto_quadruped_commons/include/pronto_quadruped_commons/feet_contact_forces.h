@@ -59,6 +59,7 @@ class FeetContactForces {
 public:
     typedef typename Eigen::Quaterniond Quaterniond;
 public:
+    FeetContactForces() {}
     virtual ~FeetContactForces() {}
 
 /**/
@@ -188,8 +189,5 @@ public:
      */
     virtual void setContactPoint(LegID leg, double foot_x, double foot_y) = 0;
 };
-
-
-
-}
-}
+}  // namespace quadruped
+}  // namespace pronto
