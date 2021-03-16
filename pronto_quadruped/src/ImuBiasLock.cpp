@@ -38,7 +38,6 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
   z_indices.tail<2>(0) << RBIS::chi_ind, RBIS::chi_ind+1;
   gravity_vector_ = Eigen::Vector3d::UnitZ() * 9.80665;
   //9.81207
-      //9.80655;
 
   z_covariance = CovMatrix::Zero();
 

@@ -4,7 +4,7 @@
 namespace pronto {
 
 PoseMeasModule::PoseMeasModule(const PoseMeasConfig &cfg) :
-    mode(cfg.mode), no_corrections(cfg.number_of_corrections)
+    no_corrections(cfg.number_of_corrections), mode(cfg.mode)
 {
     if (mode == PoseMeasMode::MODE_POSITION) {
         z_indices = RBIS::positionInds();

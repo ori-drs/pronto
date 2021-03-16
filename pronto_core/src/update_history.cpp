@@ -15,8 +15,8 @@ updateHistory::~updateHistory()
 
 updateHistory::historyMapIterator updateHistory::addToHistory(RBISUpdateInterface * rbisu)
 {
-  int64_t prev_head_utime = updateMap.rbegin()->first;
-  int64_t diff_utime = rbisu->utime - prev_head_utime;
+  // int64_t prev_head_utime = updateMap.rbegin()->first;
+  // int64_t diff_utime = rbisu->utime - prev_head_utime;
 
 //  fprintf(stderr, "update %s had timestamp %jd, which was %.3f from previous head %s\n",
 //      RBISUpdateInterface::sensor_enum_strings[rbisu->sensor_id], rbisu->utime,

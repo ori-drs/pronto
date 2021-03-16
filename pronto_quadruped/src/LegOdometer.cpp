@@ -36,10 +36,10 @@ LegOdometer::LegOdometer(FeetJacobians &feet_jacobians,
                          bool debug, SigmaMode s_mode, AverageMode a_mode) :
     feet_jacobians_(feet_jacobians),
     forward_kinematics_(forward_kinematics),
+    debug_(debug),
     s_mode_(s_mode),
     a_mode_(a_mode),
     xd_b_(Eigen::Vector3d::Zero()),
-    debug_(debug),
     speed_limit_(12.42) // set speed limit to Usain Bolt's sprint record, Berlin August 16th, 2009
 {
 }
@@ -172,7 +172,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     }
 
     Eigen::Vector3d old_xd_b = xd_b_;
-    xd_b_ = Eigen::Vector3d::Zero();
+    xd_b_.setZero();
     // If we want to perform weighted average over legs depending on the
     // probabilities of contact
     int leg_count = 0;
@@ -240,8 +240,6 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
         var_velocity /= (double)leg_count;
     }
 
-
-
     double alpha = 0.4;
     double beta = 0.3;
     double gamma = 0.8;
@@ -254,8 +252,6 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
             vel_std_ << vel_std_(0) * alpha + (1 - alpha) * (beta * initial_vel_std_(0) +  (1 - beta) * sqrt(var_velocity(0))),
                   vel_std_(1) * alpha + (1 - alpha) * (gamma * initial_vel_std_(1) + (1 - gamma) * sqrt(var_velocity(1))),
                   vel_std_(2) * alpha + (1 - alpha) * (gamma * initial_vel_std_(2) + (1 - gamma) * sqrt(var_velocity(2)));
-
-
         }
     }
 
@@ -276,7 +272,6 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
             vel_std_ << vel_std_(0) * alpha + (1 - alpha) * (beta * initial_vel_std_(0) + (1 - beta)* impact),
                   vel_std_(1) * alpha + (1 - alpha) * (gamma * initial_vel_std_(1) + (1 - gamma)* impact),
                   vel_std_(2) * alpha + (1 - alpha) * (gamma * initial_vel_std_(2) + (1 - gamma)* impact);
-
         }
 
         // if the difference with the previous velocity is beyond the initial
