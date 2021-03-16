@@ -80,8 +80,6 @@ protected:
     LegScalarMap stance_prob_;
     LegVectorMap grf_;
 
-    Eigen::Isometry3d imu_to_body_;
-
     uint64_t utime_;  // time in milliseconds
     uint64_t nsec_; // time in nanoseconds
 

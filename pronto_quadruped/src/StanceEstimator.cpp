@@ -30,11 +30,11 @@ namespace quadruped {
 
 StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  double force_threshold) :
-    feet_contact_forces_(feet_contact_forces),
-    force_threshold_(force_threshold)
+    mode_(Mode::THRESHOLD),
+    force_threshold_(force_threshold),
+    feet_contact_forces_(feet_contact_forces)
 {
-
-    // Inititalizing the statistics member
+    // Initializing the statistics member
     stat.cluster_size = 16;
     for(int i = 0; i < 4; i++) {
         gss[i].mu_stance = 400;
@@ -48,22 +48,19 @@ StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
     }
 }
 
-
-
 StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  const Mode &mode,
                                  const std::vector<double> &beta,
                                  const double &force_threshold,
                                  const double &hysteresis_low,
                                  const double &hysteresis_high) :
-    feet_contact_forces_(feet_contact_forces),
     mode_(mode),
     force_threshold_(force_threshold),
     hysteresis_low_(hysteresis_low),
     hysteresis_high_(hysteresis_high),
-    beta_(beta)
+    beta_(beta),
+    feet_contact_forces_(feet_contact_forces)
 {
-
 }
 
 void StanceEstimator::setParams(const std::vector<double> &beta,
@@ -116,8 +113,7 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
     }
 }
 
-StanceEstimator::~StanceEstimator() {
-}
+StanceEstimator::~StanceEstimator() {}
 
 void StanceEstimator::updateStat(double sample,
                                  bool is_stance,
@@ -145,7 +141,6 @@ void StanceEstimator::updateStat(double sample,
     }
 }
 
-
 void StanceEstimator::setJointStates(const JointState &q,
                     const JointState &qd,
                     const JointState &tau,
@@ -155,7 +150,6 @@ void StanceEstimator::setJointStates(const JointState &q,
                     const Vector3d &xdd,
                     const Vector3d &omega,
                     const Vector3d &omegad)  {
-
   q_ = q;
   qd_ = qd;
   qdd_ = qdd;
@@ -171,7 +165,6 @@ bool StanceEstimator::getStance(LegBoolMap &stance) {
   LegScalarMap stance_probability;
   return getStance(stance, stance_probability);
 }
-
 
 bool StanceEstimator::getStance(LegBoolMap &stance,
                                 LegScalarMap &stance_probability)
@@ -208,9 +201,7 @@ void StanceEstimator::setMode(const Mode &mode) {
     mode_ = mode;
 }
 
-
 void StanceEstimator::getNormalizedGRF(Eigen::Vector4d &normgrf) {
-
     normgrf << grf_[0](Z), grf_[1](Z), grf_[2](Z), grf_[3](Z);
     double max = normgrf.maxCoeff();
     if(max > 200) {
@@ -237,5 +228,5 @@ void StanceEstimator::getGrf_W(LegVectorMap & grf) {
     grf = grForce_W;
 }
 
-} // namespace quadruped
-} // namespace pronto
+}  // namespace quadruped
+}  // namespace pronto

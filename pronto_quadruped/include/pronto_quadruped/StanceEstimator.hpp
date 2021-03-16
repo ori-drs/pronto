@@ -79,7 +79,6 @@ struct GRFShortStat {
 };
 
 
-
 class StanceEstimator : public StanceEstimatorBase {
     // typedef to remove ugly and verbose traited templated code
 public:
@@ -97,8 +96,6 @@ public:
                     const double& hysteresis_high = 150);
 
     virtual ~StanceEstimator();
-
-
 
     void setJointStates(const JointState &q,
                         const JointState &qd,

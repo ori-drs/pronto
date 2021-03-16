@@ -99,13 +99,11 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
             tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
             break;
           }
-          catch (tf2::TransformException ex){
+          catch (const tf2::TransformException& ex){
             ROS_ERROR("%s",ex.what());
             ros::Duration(1.0).sleep();
           }
   }
-
-
 
   quadruped::ImuBiasLockConfig cfg;
   nh_.getParam(lock_param_prefix + "torque_threshold", cfg.torque_threshold_);
