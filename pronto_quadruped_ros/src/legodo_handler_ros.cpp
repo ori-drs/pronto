@@ -312,6 +312,7 @@ bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointStat
 
 LegodoHandlerBase::Update * FootSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
   if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+    ROS_WARN_STREAM("Could not process joint state from ROS!");
     return nullptr;
   }
   getPreviousState(est);
