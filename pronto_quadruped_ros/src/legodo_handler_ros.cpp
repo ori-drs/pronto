@@ -323,10 +323,12 @@ LegodoHandlerBase::Update * FootSensorLegodoHandlerROS::processMessage(const sen
 
 void FootSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::QuadrupedStance &msg){
   LegBoolMap stance;
-  stance[LF] = msg.lf != 0.0;
-  stance[RF] = msg.rf != 0.0;
-  stance[LH] = msg.lh != 0.0;
-  stance[RH] = msg.rh != 0.0;
+  // Boolean: true = in contact.
+  // We assume that "0.0" means not-in-contact and >=1.0 is in contact (different legs = different floats)
+  stance[LF] = std::abs(msg.lf) > 0.1;
+  stance[RF] = std::abs(msg.rf) > 0.1;
+  stance[LH] = std::abs(msg.lh) > 0.1;
+  stance[RH] = std::abs(msg.rh) > 0.1;
 
   stance_estimator_.setStance(stance);
 }
