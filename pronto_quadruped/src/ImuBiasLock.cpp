@@ -189,9 +189,5 @@ Eigen::Vector3d ImuBiasLock::getBias(const std::vector<Eigen::Vector3d> &history
        return bias / ((double)history.size());
 }
 
-
-
-}
-}
-
-
+}  // namespace quadruped
+}  // namespace pronto

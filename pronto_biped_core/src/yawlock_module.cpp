@@ -8,9 +8,6 @@ YawLockModule::YawLockModule(BipedForwardKinematics& fk,
                              const Transform &ins_to_body) :
     yaw_lock_(fk), mode(cfg.mode), ins_to_body_(ins_to_body)
 {
-
-
-
   yaw_lock_.setParameters(cfg.correction_period,
                           cfg.yaw_slip_detect,
                           cfg.yaw_slip_threshold_degrees,

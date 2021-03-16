@@ -128,7 +128,7 @@ void ProntoNode<JointStateMsgT, ContactStateMsgT>::init(bool subscribe) {
             }
         }
         // is the leg odometry module in the list?
-        // TODO the leg odometry handler object is costructed anyway, because
+        // TODO the leg odometry handler object is constructed anyway, because
         // it is passed to the constructor as a reference. It should be
         // constructed only if we want to use it, but it is hard do handle this
         // from here.

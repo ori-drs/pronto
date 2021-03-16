@@ -176,6 +176,5 @@ public:
 
 };
 
-
-}
-}
+}  // namespace quadruped
+}  // namespace pronto
