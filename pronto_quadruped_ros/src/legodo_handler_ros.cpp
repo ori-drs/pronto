@@ -264,6 +264,7 @@ LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::Jo
                                                            StateEstimator *est)
 {
     nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+    utime_ = nsec_ / 1000;  // TODO: investigate this bug
     //TODO transition from microseconds to nanoseconds everywhere
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
       return nullptr;
