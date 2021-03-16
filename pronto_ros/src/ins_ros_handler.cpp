@@ -9,14 +9,14 @@ namespace pronto {
 
 InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
 {
-  tf2_ros::Buffer tf_imu_to_body_buffer_;
-  tf2_ros::TransformListener tf_imu_to_body_listener_(tf_imu_to_body_buffer_);
+    tf2_ros::Buffer tf_imu_to_body_buffer_;
+    tf2_ros::TransformListener tf_imu_to_body_listener_(tf_imu_to_body_buffer_);
 
-    std::string ins_param_prefix = "ins/";
+    const std::string ins_param_prefix = "ins/";
     std::string imu_frame = "imu";
 
     nh_.getParam(ins_param_prefix + "frame", imu_frame);
-    std::string base_frame = "base";
+    const std::string base_frame = "base";
     Eigen::Affine3d ins_to_body;
     while(nh_.ok()){
         try{

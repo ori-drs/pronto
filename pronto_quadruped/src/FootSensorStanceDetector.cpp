@@ -39,5 +39,3 @@ bool FootSensorStanceDetector::isStance(LegID leg) const{
 
 }
 }
-
-

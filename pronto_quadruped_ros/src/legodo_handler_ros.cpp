@@ -212,10 +212,6 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                     xd_,
                                     cov_legodo))
   {
-
-
-
-
       if(debug_){
           // get the 1 sigma bound from the diagonal
           r_legodo = cov_legodo.diagonal().array().sqrt().matrix();
@@ -247,15 +243,12 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           twist.twist.linear.z = xd_(2);
 
           vel_raw_.publish(twist);
-
-
       }
       return new pronto::RBISIndexedMeasurement(RigidBodyState::velocityInds(),
                                                 xd_,
                                                 cov_legodo,
                                                 Update::legodo,
                                                 utime_);
-
   }
   return nullptr;
 }
@@ -265,10 +258,7 @@ LegodoHandlerROS::LegodoHandlerROS(ros::NodeHandle &nh,
                                    LegOdometerBase& legodo) :
     LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
-
-
 
 LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg,
                                                            StateEstimator *est)
@@ -344,7 +334,6 @@ ForceSensorLegodoHandlerROS::ForceSensorLegodoHandlerROS(ros::NodeHandle& nh,
                                                          LegOdometerBase& legodo)
   : LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
 
 LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
@@ -369,7 +358,6 @@ void ForceSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::Qua
   grf[RH] << msg.rh.force.x, msg.rh.force.y, msg.rh.force.z;
 
   stance_estimator_.setGRF(grf);
-
 }
 
 } // namespace quadruped

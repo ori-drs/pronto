@@ -118,9 +118,7 @@ bool ImuBiasLock::processMessageInit(const ImuMeasurement *msg,
 }
 
 void ImuBiasLock::processSecondaryMessage(const pronto::JointState &msg){
-
   is_static = isStatic(msg);
-
 
   if(do_record && !is_static){
 //    std::cerr << " history is " << gyro_bias_history_.size() << " long" << std::endl;
