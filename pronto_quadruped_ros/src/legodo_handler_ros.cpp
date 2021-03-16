@@ -264,9 +264,10 @@ LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::Jo
                                                            StateEstimator *est)
 {
     nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
-    utime_ = nsec_ / 1000;  // TODO: investigate this bug
-    //TODO transition from microseconds to nanoseconds everywhere
+    utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+    // TODO: transition from microseconds to nanoseconds everywhere
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+      ROS_WARN_STREAM("[LegodoHandlerROS::processMessage] Could not process joint state from ROS!");
       return nullptr;
     }
     getPreviousState(est);
@@ -297,7 +298,6 @@ FootSensorLegodoHandlerROS::FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
                                                        LegOdometerBase& legodo)
   : LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
 
 bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState *msg,
@@ -311,8 +311,11 @@ bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointStat
 }
 
 LegodoHandlerBase::Update * FootSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
+  nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+  utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+  // TODO: transition from microseconds to nanoseconds everywhere
   if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
-    ROS_WARN_STREAM("Could not process joint state from ROS!");
+    ROS_WARN_STREAM("[FootSensorLegodoHandlerROS::processMessage] Could not process joint state from ROS!");
     return nullptr;
   }
   getPreviousState(est);
@@ -342,7 +345,11 @@ ForceSensorLegodoHandlerROS::ForceSensorLegodoHandlerROS(ros::NodeHandle& nh,
 }
 
 LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
+  nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+  utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+  // TODO: transition from microseconds to nanoseconds everywhere
   if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+    ROS_WARN_STREAM("[ForceSensorLegodoHandlerROS::processMessage] Could not extract joint states from ROS message!");
     return nullptr;
   }
   getPreviousState(est);
