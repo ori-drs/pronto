@@ -80,8 +80,8 @@ protected:
     LegScalarMap stance_prob_;
     LegVectorMap grf_;
 
-    uint64_t utime_;  // time in milliseconds
-    uint64_t nsec_; // time in nanoseconds
+    uint64_t utime_;  // time in microseconds
+    uint64_t nsec_;   // time in nanoseconds
 
     uint16_t downsample_factor_;
     uint64_t utime_offset_;

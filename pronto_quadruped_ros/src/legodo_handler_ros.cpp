@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "pronto_quadruped_ros/legodo_handler_ros.hpp"
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/AccelStamped.h>
 #include <eigen_conversions/eigen_msg.h>
+
+#include "pronto_quadruped_ros/legodo_handler_ros.hpp"
 #include "pronto_quadruped_ros/conversions.hpp"
 #include "pronto_quadruped/LegOdometer.hpp"
 
@@ -107,8 +108,7 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     // take the acceleration, rotational rate and orientation from the current
     // state of the filter
     xd_ = head_state_.velocity();
-    xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;
-
+    xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;  // TODO: Standardise gravitational acceleration
 
     //std::cerr << xdd_.transpose() << std::endl;
     omega_ = head_state_.angularVelocity();
@@ -244,12 +244,14 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
           vel_raw_.publish(twist);
       }
+
       return new pronto::RBISIndexedMeasurement(RigidBodyState::velocityInds(),
                                                 xd_,
                                                 cov_legodo,
                                                 Update::legodo,
                                                 utime_);
   }
+  std::cerr << "[LegodoHandlerBase::computeVelocity] Something went wrong!" << std::endl;
   return nullptr;
 }
 

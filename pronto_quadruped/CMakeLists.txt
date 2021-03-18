@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(pronto_quadruped)
 
 set(CMAKE_CXX_STANDARD 14)
+add_compile_options(-Wall)
 
 set(DEFAULT_BUILD "Release")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

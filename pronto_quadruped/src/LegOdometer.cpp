@@ -64,6 +64,7 @@ void LegOdometer::setMode(const SigmaMode s_mode, const AverageMode a_mode) {
     std::cout << "Impact Sigma" << std::endl;
     break;
   default:
+    throw std::runtime_error("Unknown SigmaMode");
     break;
   }
 
@@ -77,6 +78,7 @@ void LegOdometer::setMode(const SigmaMode s_mode, const AverageMode a_mode) {
     std::cout << "Weighted Average" << std::endl;
     break;
   default:
+    throw std::runtime_error("Unknown AverageMode");
     break;
   }
   a_mode_ = a_mode;
@@ -161,7 +163,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
                                    Vector3d &velocity,
                                    Matrix3d &covariance)
 {
-    vel_cov_ = initial_vel_cov_;    
+    vel_cov_ = initial_vel_cov_;
 
     // Recording foot position and base velocity from legs
     for(int leg = LF; leg <= RH; leg++){
@@ -343,5 +345,4 @@ void LegOdometer::setGrf(const LegVectorMap &grf){
   grf_delta_ = grf_ - prev_grf_;
 }
 
-}
-
+}  // namespace pronto
