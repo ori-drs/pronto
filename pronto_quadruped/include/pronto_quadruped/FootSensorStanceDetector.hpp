@@ -19,5 +19,5 @@ private:
   LegBoolMap stance_;
 };
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

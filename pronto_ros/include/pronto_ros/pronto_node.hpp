@@ -128,7 +128,7 @@ void ProntoNode<JointStateMsgT, ContactStateMsgT>::init(bool subscribe) {
             }
         }
         // is the leg odometry module in the list?
-        // TODO the leg odometry handler object is costructed anyway, because
+        // TODO the leg odometry handler object is constructed anyway, because
         // it is passed to the constructor as a reference. It should be
         // constructed only if we want to use it, but it is hard do handle this
         // from here.
@@ -141,15 +141,18 @@ void ProntoNode<JointStateMsgT, ContactStateMsgT>::init(bool subscribe) {
                    nh_.getParam(*it + "/secondary_topic", secondary_topic))
                 {
                   try {
+                    ROS_INFO_STREAM("Subscribing to secondary topic for legodo: " << secondary_topic);
                     front_end.addSecondarySensingModule(dynamic_cast<DualSensingModule<JointStateMsgT,ContactStateMsgT>&>(legodo_handler_),
                                                         *it,
                                                         secondary_topic,
                                                         subscribe);
-                  } catch(std::bad_cast e){
+                  } catch(const std::bad_cast& e){
                     ROS_WARN_STREAM("Could not use the provided Leg Odometry handler as DualSensingModule<"
                                     << type_name<JointStateMsgT>() << ", " << type_name<ContactStateMsgT>() << ">.");
                     ROS_WARN_STREAM(e.what());
                   }
+                } else {
+                    ROS_WARN_STREAM("Legodo not subscribing to secondary topic: Dummy message check: " << is_dummy_msg<ContactStateMsgT>::value);
                 }
             }
             if(init){

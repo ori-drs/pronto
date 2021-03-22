@@ -200,7 +200,6 @@ void ROSFrontEnd::addSensingModule(SensingModule<MsgT>& module,
                                    const std::string& topic,
                                    bool subscribe)
 {
-
     // int this implementation we allow only one different type of module
     if(active_modules_.count(sensor_id) > 0){
         ROS_WARN_STREAM("Sensing Module \"" << sensor_id << "\" already added. Skipping.");
@@ -349,10 +348,10 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         RBIS posterior;
         RBIM prior_cov;
         RBIM posterior_cov;
-state_est_->getHeadState(prior,prior_cov);
+        state_est_->getHeadState(prior,prior_cov);
         // tell also the filter if we need to roll forward
         state_est_->addUpdate(update, roll_forward_[sensor_id]);
-state_est_->getHeadState(posterior,posterior_cov);
+        state_est_->getHeadState(posterior,posterior_cov);
 
 if(sensor_id.compare("scan_matcher") == 0){
     std::cerr << "PRIOR    : " << prior.position().transpose() << " " << rotation::getEulerAnglesDeg(prior.orientation()).transpose() << std::endl;
@@ -362,7 +361,7 @@ if(sensor_id.compare("scan_matcher") == 0){
 
 #if DEBUG_MODE
         end = std::chrono::high_resolution_clock::now();
-        ROS_INFO_STREAM("Time elapsed process addupdate: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
+        ROS_INFO_STREAM("Time elapsed process addUpdate: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());
         start = end;
 #endif
         if(publish_head_[sensor_id]){

@@ -14,7 +14,6 @@ int main(int argc, char** argv) {
 
     // get the list of active and init sensors from the param server
     typedef std::vector<std::string> SensorList;
-    typedef std::set<std::string> SensorSet;
     SensorList init_sensors;
     SensorList active_sensors;
     SensorList all_sensors;

@@ -38,7 +38,6 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
   z_indices.tail<2>(0) << RBIS::chi_ind, RBIS::chi_ind+1;
   gravity_vector_ = Eigen::Vector3d::UnitZ() * 9.80665;
   //9.81207
-      //9.80655;
 
   z_covariance = CovMatrix::Zero();
 
@@ -118,9 +117,7 @@ bool ImuBiasLock::processMessageInit(const ImuMeasurement *msg,
 }
 
 void ImuBiasLock::processSecondaryMessage(const pronto::JointState &msg){
-
   is_static = isStatic(msg);
-
 
   if(do_record && !is_static){
 //    std::cerr << " history is " << gyro_bias_history_.size() << " long" << std::endl;
@@ -189,9 +186,5 @@ Eigen::Vector3d ImuBiasLock::getBias(const std::vector<Eigen::Vector3d> &history
        return bias / ((double)history.size());
 }
 
-
-
-}
-}
-
-
+}  // namespace quadruped
+}  // namespace pronto

@@ -163,11 +163,9 @@ Eigen::Matrix3d inline rpyToEarInv(const Eigen::Vector3d & rpy){
  * @return
  */
 Eigen::Matrix3d inline  rpyToEar(const Eigen::Vector3d & rpy){
-
     Eigen::Matrix3d Ear;
     double roll = rpy(0);
     double pitch = rpy(1);
-    double yaw = rpy(2);
 
     Ear<< 1,         0,         -sin(pitch),
             0,  cos(roll), cos(pitch)*sin(roll),
@@ -178,7 +176,7 @@ Eigen::Matrix3d inline  rpyToEar(const Eigen::Vector3d & rpy){
 }
 
 /**
- * @brief dervative of rpyToEarInv
+ * @brief derivative of rpyToEarInv
  * @param rpy
  * @param rpyd
  * @return
@@ -187,10 +185,8 @@ Eigen::Matrix3d inline  rpyToEar(const Eigen::Vector3d & rpy){
 Eigen::Matrix3d inline rpyToEarInv_dot(const Eigen::Vector3d & rpy, const Eigen::Vector3d & rpyd){
 
     Eigen::Matrix3d EarInv_dot;
-    double roll = rpy(0);
     double pitch = rpy(1);
     double yaw = rpy(2);
-    double rolld = rpyd(0);
     double pitchd = rpyd(1);
     double yawd = rpyd(2);
 

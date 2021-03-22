@@ -78,7 +78,7 @@ YawLockHandlerROS::YawLockHandlerROS(ros::NodeHandle &nh, std::string urdf_strin
       tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
       break;
     }
-    catch (tf2::TransformException ex){
+    catch (const tf2::TransformException& ex){
       ROS_ERROR("%s",ex.what());
       ros::Duration(1.0).sleep();
     }
@@ -87,7 +87,6 @@ YawLockHandlerROS::YawLockHandlerROS(ros::NodeHandle &nh, std::string urdf_strin
   fk_.reset(new BipedForwardKinematicsROS(urdf_string, cfg.left_standing_link, cfg.right_standing_link));
 
   yawlock_module_.reset(new YawLockModule(*fk_, cfg, ins_to_body));
-
 }
 
 

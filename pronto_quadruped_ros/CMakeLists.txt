@@ -3,6 +3,8 @@ project(pronto_quadruped_ros)
 
 set(CMAKE_CXX_STANDARD 14)
 
+add_compile_options(-Wall)
+
 find_package(catkin REQUIRED COMPONENTS roscpp
                                         pronto_core
                                         pronto_ros

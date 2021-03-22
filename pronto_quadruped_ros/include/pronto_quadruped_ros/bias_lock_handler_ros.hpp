@@ -99,13 +99,11 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
             tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
             break;
           }
-          catch (tf2::TransformException ex){
+          catch (const tf2::TransformException& ex){
             ROS_ERROR("%s",ex.what());
             ros::Duration(1.0).sleep();
           }
   }
-
-
 
   quadruped::ImuBiasLockConfig cfg;
   nh_.getParam(lock_param_prefix + "torque_threshold", cfg.torque_threshold_);
@@ -158,14 +156,14 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
   marker_pub_.publish(imu_arrow_);
 
   Eigen::Vector3d accel_ = bias_lock_module_->getCurrentAccel();
-  Eigen::Vector3d accel_corrected_ = bias_lock_module_->getCurrentCorrectedAccel();
+  // Eigen::Vector3d accel_corrected_ = bias_lock_module_->getCurrentCorrectedAccel();
   base_arrow_.points.resize(2);
   base_arrow_.points[0].x = 0;
   base_arrow_.points[0].y = 0;
   base_arrow_.points[0].z = 0;
 
   Eigen::Vector3d gr = Eigen::Vector3d::UnitZ()*9.80665;
-  Eigen::Quaterniond q = bias_lock_module_->getGVec();
+  // Eigen::Quaterniond q = bias_lock_module_->getGVec();
   accel_ = gr;
   base_arrow_.points[1].x = 0.1*accel_(0);
   base_arrow_.points[1].y = 0.1*accel_(1);
@@ -251,5 +249,5 @@ public:
     void processSecondaryMessage(const sensor_msgs::JointState& msg) override;
 };
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

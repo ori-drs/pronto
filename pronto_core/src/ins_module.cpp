@@ -163,7 +163,7 @@ bool InsModule::processMessageInitCommon(const std::map<std::string, bool> & sen
     fprintf(stderr, "gyro bias using INS: %f,%f,%f\n", init_state.gyroBias()(0),
         init_state.gyroBias()(1), init_state.gyroBias()(2));
 
-    // if the sensor is inizialized with the gps we align the yaw from it
+    // if the sensor is initialized with the gps we align the yaw from it
     if (sensors_initialized.count("gps") > 0 ) {
       Eigen::Vector3d ins_mag_vec_est = mag_vec_sum / (double) init_counter;
       ins_mag_vec_est(2) = 0; //make sure we're only trying to align in the xy plane

@@ -1,12 +1,9 @@
-# Project configuration
 cmake_minimum_required(VERSION 3.0.2)
 project(pronto_quadruped_commons)
 
-#set(HEADER_INSTALL_ROOT /usr/local/include/ CACHE PATH "Where to install the iit-commons headers")
-#set(LIB_INSTALL_ROOT /usr/local/lib/ CACHE PATH "Where to install the iit-commons library")
+add_compile_options(-Wall)
 
-find_package(PkgConfig)
-pkg_check_modules(EIGEN3 eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 find_package(catkin REQUIRED)
 
@@ -54,4 +51,3 @@ install(DIRECTORY include/iit/
 # Install pronto_quadruped_commons locally
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-

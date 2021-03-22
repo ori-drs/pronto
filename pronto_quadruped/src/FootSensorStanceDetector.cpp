@@ -7,9 +7,7 @@ void FootSensorStanceDetector::setStance(const LegBoolMap& stance){
   stance_ = stance;
 }
 
-
 bool FootSensorStanceDetector::getStance(LegBoolMap& stance) {
-
   // ignore all the inputs, we get the stance from an external source
   stance = stance_;
   return true;
@@ -23,7 +21,7 @@ bool FootSensorStanceDetector::getGRF(LegVectorMap& grf){
     }
   }
 
-  double weight = (50.0 * iit::rbd::g) / count;
+  double weight = (50.0 * iit::rbd::g) / count;  // TODO: This is a hard-coded value(!)
 
   // add a fictitious vertical force equal to a robot weight (of 50 kg mass)
   // divided by the number of legs in contact
@@ -37,7 +35,5 @@ bool FootSensorStanceDetector::isStance(LegID leg) const{
   return stance_[leg];
 }
 
-}
-}
-
-
+}  // namespace quadruped
+}  // namespace pronto

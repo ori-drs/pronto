@@ -36,5 +36,5 @@ public:
 private:
     ros::NodeHandle& nh_;
 };
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

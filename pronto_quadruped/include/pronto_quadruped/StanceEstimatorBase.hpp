@@ -49,7 +49,9 @@ public:
 
     using LegScalarMap = LegDataMap<double>;
 
-public:
+  StanceEstimatorBase() {}
+  virtual ~StanceEstimatorBase() {}
+
   virtual bool getStance(LegBoolMap& stance) = 0;
 
   virtual LegBoolMap getStance() {
@@ -70,7 +72,6 @@ public:
   }
 
   virtual void setStance(const LegBoolMap& stance) {
-
   }
 
   /**
@@ -98,14 +99,10 @@ public:
                               const Vector3d & xdd  = Vector3d(0, 0, 0),
                               const Vector3d & omega  = Vector3d(0, 0, 0),
                               const Vector3d & omegad = Vector3d(0, 0, 0)) {
-
   }
 
   virtual void setGRF(const LegVectorMap& grf) {
-
   }
-
-
 
   virtual bool getGRF(LegVectorMap& grf) = 0;
 
@@ -116,7 +113,7 @@ public:
   }
 
   virtual bool isStance(LegID leg) const = 0;
-
 };
+
 } // namespace quadruped
 } // namespace pronto
