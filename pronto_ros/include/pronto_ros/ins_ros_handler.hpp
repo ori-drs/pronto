@@ -25,9 +25,9 @@ private:
     InsModule ins_module_;
     uint64_t counter = 0;
     uint16_t downsample_factor_ = 1;
-    bool initialized_ = false;
     std::string imu_topic_ = "/sensors/imu";
     bool roll_forward_on_receive_ = true;
     int64_t utime_offset_ = 0;
 };
-}
+
+}  // namespace pronto

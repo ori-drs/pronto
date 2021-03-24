@@ -80,10 +80,8 @@ protected:
     LegScalarMap stance_prob_;
     LegVectorMap grf_;
 
-    Eigen::Isometry3d imu_to_body_;
-
-    uint64_t utime_;
-    uint64_t nsec_; // time in nanoseconds
+    uint64_t utime_;  // time in microseconds
+    uint64_t nsec_;   // time in nanoseconds
 
     uint16_t downsample_factor_;
     uint64_t utime_offset_;
@@ -176,6 +174,5 @@ public:
 
 };
 
-
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

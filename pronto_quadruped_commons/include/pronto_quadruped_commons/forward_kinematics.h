@@ -62,11 +62,7 @@ public:
     virtual Vector3d getShinPos(const JointState& q,
                                 const double& contact_pos,
                                 const LegID& leg) = 0;
-
-
 };
 
-
-}
-}
-
+}  // namespace quadruped
+}  // namespace pronto

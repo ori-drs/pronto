@@ -21,11 +21,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "pronto_quadruped_ros/legodo_handler_ros.hpp"
 #include <geometry_msgs/TwistWithCovarianceStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/AccelStamped.h>
 #include <eigen_conversions/eigen_msg.h>
+
+#include "pronto_quadruped_ros/legodo_handler_ros.hpp"
 #include "pronto_quadruped_ros/conversions.hpp"
 #include "pronto_quadruped/LegOdometer.hpp"
 
@@ -107,8 +108,7 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     // take the acceleration, rotational rate and orientation from the current
     // state of the filter
     xd_ = head_state_.velocity();
-    xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;
-
+    xdd_ = head_state_.acceleration() - head_state_.orientation().inverse()*Eigen::Vector3d::UnitZ()*9.80655;  // TODO: Standardise gravitational acceleration
 
     //std::cerr << xdd_.transpose() << std::endl;
     omega_ = head_state_.angularVelocity();
@@ -212,10 +212,6 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                     xd_,
                                     cov_legodo))
   {
-
-
-
-
       if(debug_){
           // get the 1 sigma bound from the diagonal
           r_legodo = cov_legodo.diagonal().array().sqrt().matrix();
@@ -247,16 +243,15 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           twist.twist.linear.z = xd_(2);
 
           vel_raw_.publish(twist);
-
-
       }
+
       return new pronto::RBISIndexedMeasurement(RigidBodyState::velocityInds(),
                                                 xd_,
                                                 cov_legodo,
                                                 Update::legodo,
                                                 utime_);
-
   }
+  std::cerr << "[LegodoHandlerBase::computeVelocity] Something went wrong!" << std::endl;
   return nullptr;
 }
 
@@ -265,17 +260,16 @@ LegodoHandlerROS::LegodoHandlerROS(ros::NodeHandle &nh,
                                    LegOdometerBase& legodo) :
     LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
-
-
 
 LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg,
                                                            StateEstimator *est)
 {
     nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
-    //TODO transition from microseconds to nanoseconds everywhere
+    utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+    // TODO: transition from microseconds to nanoseconds everywhere
     if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+      ROS_WARN_STREAM("[LegodoHandlerROS::processMessage] Could not process joint state from ROS!");
       return nullptr;
     }
     getPreviousState(est);
@@ -306,7 +300,6 @@ FootSensorLegodoHandlerROS::FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
                                                        LegOdometerBase& legodo)
   : LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
 
 bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState *msg,
@@ -320,7 +313,11 @@ bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointStat
 }
 
 LegodoHandlerBase::Update * FootSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
+  nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+  utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+  // TODO: transition from microseconds to nanoseconds everywhere
   if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+    ROS_WARN_STREAM("[FootSensorLegodoHandlerROS::processMessage] Could not process joint state from ROS!");
     return nullptr;
   }
   getPreviousState(est);
@@ -331,10 +328,13 @@ LegodoHandlerBase::Update * FootSensorLegodoHandlerROS::processMessage(const sen
 
 void FootSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::QuadrupedStance &msg){
   LegBoolMap stance;
-  stance[LF] = msg.lf != 0.0;
-  stance[RF] = msg.rf != 0.0;
-  stance[LH] = msg.lh != 0.0;
-  stance[RH] = msg.rh != 0.0;
+  // Boolean: true = in contact.
+  // We assume that "0.0" means not-in-contact and >=1.0 is in contact (different legs = different floats)
+  // In some places 0.1 is used for "stance" so we want to be fairly small around 0.0 for "not in contact"
+  stance[LF] = std::abs(msg.lf) > 0.01;
+  stance[RF] = std::abs(msg.rf) > 0.01;
+  stance[LH] = std::abs(msg.lh) > 0.01;
+  stance[RH] = std::abs(msg.rh) > 0.01;
 
   stance_estimator_.setStance(stance);
 }
@@ -344,11 +344,14 @@ ForceSensorLegodoHandlerROS::ForceSensorLegodoHandlerROS(ros::NodeHandle& nh,
                                                          LegOdometerBase& legodo)
   : LegodoHandlerBase(nh, stance_est, legodo)
 {
-
 }
 
 LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const sensor_msgs::JointState *msg, StateEstimator *est){
+  nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+  utime_ = nsec_ / 1000;  // A lot of internals still assume microseconds
+  // TODO: transition from microseconds to nanoseconds everywhere
   if(!jointStateFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+    ROS_WARN_STREAM("[ForceSensorLegodoHandlerROS::processMessage] Could not extract joint states from ROS message!");
     return nullptr;
   }
   getPreviousState(est);
@@ -369,7 +372,6 @@ void ForceSensorLegodoHandlerROS::processSecondaryMessage(const pronto_msgs::Qua
   grf[RH] << msg.rh.force.x, msg.rh.force.y, msg.rh.force.z;
 
   stance_estimator_.setGRF(grf);
-
 }
 
 } // namespace quadruped

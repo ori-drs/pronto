@@ -9,8 +9,7 @@ namespace quadruped {
 class FootSensorStanceDetectorROS : public FootSensorStanceDetector {
 public:
   FootSensorStanceDetectorROS() = default;
-
 };
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

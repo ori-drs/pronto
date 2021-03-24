@@ -94,16 +94,11 @@ public:
 
   inline Eigen::Isometry3d getPoseAsIsometry3d()
   {
-      Eigen::Isometry3d pose_iso;
-      pose_iso.setIdentity();
-      pose_iso.translate(this->position());
-      pose_iso.rotate(this->orientation());
-      return pose_iso;
-    }
-private:
-  bool debug_ = false;
-  uint64_t debug_utime_ = 0;
-
+    Eigen::Isometry3d pose_iso = Eigen::Isometry3d::Identity();
+    pose_iso.translate(this->position());
+    pose_iso.rotate(this->orientation());
+    return pose_iso;
+  }
 };
 
 inline void setAlmostZeroToZero(Eigen::MatrixXd& m, double eps = 1e-5){
