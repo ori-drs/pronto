@@ -40,8 +40,8 @@ namespace pronto {
 
 DataLogger::DataLogger(std::string path) :
     is_first_time(true),
-    start_from_zero(false),
-    first_time(0.0) {
+    first_time(0.0),
+    start_from_zero(false) {
 
     stringstream ss;
     char* homepath = getenv("HOME");
