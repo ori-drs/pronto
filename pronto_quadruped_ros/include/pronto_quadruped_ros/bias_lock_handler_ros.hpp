@@ -199,13 +199,12 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
 
   broadcaster_.sendTransform(msg_temp);
 
-
   msg_temp = tf2::eigenToTransform(bias_transform);
   msg_temp.child_frame_id = "bias";
   msg_temp.header.frame_id = "base";
+  msg_temp.header.stamp = msg->header.stamp;
 
   broadcaster_.sendTransform(msg_temp);
-
 
   return bias_lock_module_->processMessage(&bias_lock_imu_msg_, est);
 }
