@@ -15,19 +15,9 @@ LidarOdometryModule::LidarOdometryModule(const LidarOdometryConfig &cfg) :
 }
 
 void LidarOdometryModule::setCovariance(const Eigen::Matrix3d& covariance){
-  if(covariance.rows() != cov_vo_.rows() || covariance.cols() != cov_vo_.cols()){
-    std::cerr << 
-    "[ LidarOdometryModule ] Trying to set covariance but dimensions don't match; " 
-    << std::endl;
-    return;
-  }
   cov_vo_ = covariance;
-
-    std::cerr << 
+  std::cerr << 
     "[ LidarOdometryModule ] Updated Covariance " << std::endl <<  cov_vo_ << std::endl;
-  // cov_vo_(0,0) = 1e-2;
-  // cov_vo_(1,1) = 1e-2;
-  // cov_vo_(2,2) = 1e-2;
 }
 
 Update* LidarOdometryModule::processMessage(const LidarOdometryUpdate *msg,
