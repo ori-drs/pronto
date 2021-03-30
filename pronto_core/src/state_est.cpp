@@ -48,8 +48,7 @@ bool StateEstimator::getInterpolatedPose(const uint64_t &utime,
                                             Vector3d &position,
                                             Quaterniond &orientation) const
 {
-
-    if(history.updateMap.empty() || utime < history.updateMap.begin()->first || utime > history.updateMap.rbegin()->first)
+    if(history.updateMap.empty() || static_cast<int64_t>(utime) < history.updateMap.begin()->first || static_cast<int64_t>(utime) > history.updateMap.rbegin()->first)
     {
         return false;
     }
@@ -62,7 +61,7 @@ bool StateEstimator::getInterpolatedPose(const uint64_t &utime,
     // now it_low contains the last element smaller than utime
     --it_low;
     // if by chance we have the pose at that exact time, we return it
-    if(it_low->first == utime){
+    if(it_low->first == static_cast<int64_t>(utime)){
         RBISUpdateInterface * head_update = it_low->second;
         position = head_update->posterior_state.getPoseAsIsometry3d().translation();
         orientation = Quaterniond(head_update->posterior_state.getPoseAsIsometry3d().rotation());
