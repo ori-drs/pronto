@@ -1,0 +1,23 @@
+Robot anymal
+
+Frames { fr_base, imu_link, LF_FOOT, RF_FOOT, LH_FOOT, RH_FOOT }
+
+Transforms { fr_base <- LF_FOOT
+             fr_base <- RF_FOOT
+             fr_base <- LH_FOOT
+             fr_base <- RH_FOOT
+             imu_link <- LF_FOOT
+             imu_link <- RF_FOOT
+             imu_link <- LH_FOOT
+             imu_link <- RH_FOOT
+}
+
+Jacobians { base = fr_base target = LF_FOOT
+            base = fr_base target = RF_FOOT
+            base = fr_base target = LH_FOOT
+            base = fr_base target = RH_FOOT
+            base = imu_link target = LF_FOOT
+            base = imu_link target = RF_FOOT
+            base = imu_link target = LH_FOOT
+            base = imu_link target = RH_FOOT           
+}

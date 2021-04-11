@@ -50,7 +50,7 @@ quadruped robot. This is a fork of the `iit_commons` package (see
 Pronto depends on Eigen and Boost
 
 ## System Requirements
-The target operating system is **Ubuntu 18.04** equipped with **ROS Melodic**.  
+The target operating system is **Ubuntu 20.04** equipped with **ROS Noetic**.  
  Other versions of Ubuntu/ROS might work but they are **not** actively supported or tested.
 
 ## Building the Code
@@ -59,7 +59,7 @@ just run `catkin build` followed by the name of the packages you are
 interested to build.
 
 ## Robot Implementation Example
-To learn how to use Pronto on your robot, you can have a look at [this repository](https://github.com/ori-drs/pronto_anymal_example), which contains a full implementation on the ANYmal quadruped robot. 
+To learn how to use Pronto on your robot, you can have a look at the [examples folder](https://github.com/ori-drs/pronto/examples), which contains a full implementation for the ANYmal B quadruped robot. 
 ## Publications
 If you use part of this work in academic context, please cite the following publication:
 
@@ -164,9 +164,9 @@ the [MIT DARPA Robotics Challenge Team](http://www.drc.mit.edu).
 Support for quadruped robots, full ROS conversion and logo design by 
 Marco Camurri  ([IIT Dynamic Legged System Lab](http://dls.iit.it) and [ORI Dynamic Robot Systems Group](https://ori.ox.ac.uk/labs/drs/))
 
-Additional contributions from: Andy Barry, Pat Marion, Dehann Fourie, Marco Frigerio, Michele Focchi, Benoit Casseau.
+Additional contributions (in random order) from: Andy Barry, Pat Marion, Dehann Fourie, Marco Frigerio, Michele Focchi, Benoit Casseau, Wolfgang Merkt, Russell Buchanan.
 
 ## License
 Pronto is released under the LGPL v2.1 license. Please see the LICENSE file attached to
-this document for more information.
+this document for more information. Some of the dependencies might have a different license, please see the corresponding file or declaration for each individual dependency.
 

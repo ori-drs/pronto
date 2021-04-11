@@ -1,0 +1,194 @@
+---
+state_estimator_pronto :
+  pose_topic : "pose"
+  pose_frame_id : "odom"
+  twist_topic : "twist"
+  twist_frame_id : "base"
+  filter_state_topic : "filter_state"
+  publish_filter_state : false
+  publish_pose : true
+  publish_tf : true
+  tf_child_frame_id : "base_pronto"
+  republish_sensors : false
+  init_sensors : [ins, pose_meas] 
+  active_sensors : [ins, legodo, bias_lock, fovis]
+  utime_history_span : 60000000.0
+
+  sigma0 :
+    vb : 0.15 # m/s
+    chi_xy : 3.0 # degrees?
+    chi_z : 3.0 # degrees?
+    Delta_xy : 0.05 #0.5 # m
+    Delta_z : 0.05 # 1   # m
+    gyro_bias : 0 # deg/s
+    accel_bias : 0 # m/s^2 # 0.1 worked during tuning
+
+  x0 :
+    velocity : [ 0, 0, 0 ]
+    angular_velocity : [ 0, 0, 0 ]
+    position : [ 0, 0, 0 ]
+    rpy : [ 0, 0, 0 ]
+
+  init_message :
+    channel : "filter_initializer"
+
+  ins :
+    topic : "/sensors/imu"
+    utime_offset : 0 # units 1e-6 seconds
+    downsample_factor : 1 # process 1 out of every this many. for 333Hz use 1. for 1kHz use 3
+    roll_forward_on_receive : true
+    publish_head_on_message : true
+    
+    # don't integrate acceleration, rely on some other source for velocity/position
+    ignore_accel : false
+
+    # Xsens MTi 100
+    # values taken from any_common/any_description/urdf/sensors/imu/xsens_mti/xsens_mti.urdf.xacro
+    # not clear what value to set for the omega, if it is rad/s it seems too much
+    q_gyro : 0.5 # deg / s
+    q_accel : 0.35 # m / s^2, taken from any_common/any_description/urdf/sensors/imu/xsens_mti/xsens_mti.urdf.xacro
+    q_gyro_bias : 0.001 # deg / sec^2 | 0.001 suggested by charlie, but not deemed to be necessary
+    q_accel_bias : 0.001 # m / sec^2 / sec | 0.001 suggested by charlie and worked well on logs
+
+    # number of samples for the bias estimation
+    num_to_init : 500 
+    
+    accel_bias_initial : [0.0, 0.0, 0.0] 
+    accel_bias_recalc_at_start : true
+    accel_bias_update_online : false
+
+    gyro_bias_initial : [0.0, 0.0, 0.0] # rad/s
+    gyro_bias_recalc_at_start : true
+    gyro_bias_update_online : false
+  
+    frame : "imu_link"
+
+    # REMEMBER TO CHANGE THIS IF YOU CHANGE THE IMU FREQUENCY or downsample factor
+    timestep_dt : 0.0025 # 
+
+    # attempt to detect drastically incorrect initial gyro biases estimates:
+    max_initial_gyro_bias : 0.015 # deg/sec, biases above this will be set to zero
+
+  legodo :
+    topic : "/joint_states"
+    # ground_truth_channel : "POSE_GROUND_TRUTH"
+
+    time_offset : 0.0 # time offset between vicon and other messages (useful for logs)
+    verbose : false # Prints warnings and messages 
+    debug : false # Sends signals and saves text files with signals
+
+    legodo_mode : 2 # STATIC_SIGMA 0x00, VAR_SIGMA 0x01, IMPACT_SIGMA 0x02, WEIGHTED_AVG 0x04, ALPHA_FILTER : 0x08, KALMAN_FILTER : 0x10
+    
+    stance_mode : 0 # 0 : THRESHOLD, 1 : HYSTERESIS, 2 : REGRESSION
+    stance_threshold : 82 # threshold of GRF[z] to trigger the stance phase
+    
+    stance_hysteresis_low : 10 # hysteresis low threshold
+    stance_hysteresis_high : 60 # hysteresis high threshold
+    stance_hysteresis_delay_low : 250 # delay low for schmitt trigger in milliseconds
+    stance_hysteresis_delay_high : 250 # delay in for schmitt trigger in milliseconds
+
+    stance_alpha : 0.02 # alpha for the alpha filter
+    
+    stance_regression_beta_size : 8 # 2 (same value for all legs), 8 
+    # logistic regression parameters: beta0 beta1
+    stance_regression_beta : [3.7252,-0.018077,2.8191,-0.015947,3.2241,-0.018661,3.8836,-0.019669]    
+    r_vx : 0.05 # sigma velocity x
+    r_vy : 0.05 # sigma velocity y
+    r_vz : 0.15 # sigma velocity z
+    
+    # true only if you have stance ground truth from simulation
+    # im_stance_gt : false 
+    
+    downsample_factor : 1
+    utime_offset : 0 # don't confuse with time_offset
+
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+
+  fovis :
+    topic : "/fovis/delta_vo"
+    # pos, pos_orient 
+    mode : "pos_orient" 
+
+    # position variances:
+    r_px : 0.001  # m
+    r_py : 0.001  # m
+    r_pz : 0.002  # m
+
+    # don't trust roll and pitch, put big uncertainty
+    r_rxy  : 20  # roll, pitch degrees
+    r_ryaw  : 1  # yaw degrees
+
+    # velocity variances:
+    # 0.50 looks good for very difficult logs
+    r_vxyz : 0.003  # m/s
+    # scan matchered used 1.0
+    r_vang  : 0.50  # degrees?
+
+    # detected on anymal_2019-05-10-10-38-35.bag by comparing onboard IMU and camera IMU
+    utime_offset : -343111 
+    downsample_factor : 1
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+
+  scan_matcher :
+          #topic : "/aicp/transform_msg"
+    topic : "/aicp/pose_corrected"
+    utime_offset : 0
+    downsample_factor : 1 # process 1 out of every this many
+    relative_pose : true
+
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+    
+    mode : "position_orient" # yaw for drc, position 
+
+    r_pxy : 0.004 # sigma position x y [m]
+    r_pz :  0.004 # sigma position z [m]
+
+    r_vxy : 0.06 # sigma velocity x y [m/s]
+    r_vz :  0.04 # sigma velocity z [m/s]
+
+    r_rxy : 50.0 
+    r_ryaw : 52.0 # sigma yaw [deg]
+
+  vicon :
+    topic : "/vicon/anymal/inverted"
+
+    mode : "position_orient" # position, position_orient, orientation, yaw 
+
+    apply_frame : false # ???
+
+    r_xyz : 0.01 # sigma position x y z [m]
+    r_chi : 3.0 # sigma orientation [deg]
+
+    downsample_factor : 10
+
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+
+    utime_offset : 0
+  
+  # correct the pose to this value (to init using Pose BDI)
+  pose_meas:
+    no_corrections : 100 # apply this number of corrections before going silent
+    topic : "/state_estimator/pose_in_odom"
+    utime_offset : 0 #units 1e-6 seconds
+    downsample_factor : 1 # process 1 out of every this many
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+
+    r_xyz : 0.01 #m
+    r_chi : 3.0 #degrees
+
+    mode: "position_orient" # "position" "position_orient"
+
+  bias_lock:
+    topic : "/sensors/imu"
+    secondary_topic : "/joint_states"
+    torque_threshold : 12.5 # Nm on knee joints
+    velocity_threshold : 0.006 # rad/s
+    roll_forward_on_receive : true
+    publish_head_on_message : false
+    utime_offset : 0
+...

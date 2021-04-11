@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="anymal">
+  <xacro:arg name="simulation" default="false" />
+
+  <xacro:include filename="anymal.urdf" />
+  <xacro:include filename="xsens_mti.urdf.xacro" />
+  <xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro" />
+  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />  
+
+  <link name="imu_link"/>
+
+  <joint name="imu_link_joint" type="fixed">
+    <parent link="base" />
+    <child link="imu_link"/> 
+    <origin xyz="0.038 0.062 0.184" rpy = "${pi} 0 ${pi}" />
+  </joint>
+
+
+  <!-- add the sensors -->
+  <xacro:imu name="xsens_mti_100" parent="imu_link">
+    <origin xyz="0.0 0.0 0.0" rpy = "0.0 0.0 0.0" />
+  </xacro:imu>
+
+
+  <xacro:sensor_d435i parent="base" name="realsense_d435i" use_nominal_extrinsics="$(arg simulation)">
+    <origin xyz="0.371 0.018 0.162" rpy="0 ${pi*12.0/180.0} 0" />
+  </xacro:sensor_d435i>
+
+  <xacro:VLP-16 parent="base">
+    <origin xyz = "-0.102 0.000 0.290" rpy="0 0 ${-140.0*pi/180.0}" />
+  </xacro:VLP-16>
+</robot>

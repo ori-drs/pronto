@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>pronto_anymal_b</name>
+  <version>0.1.0</version>
+  <description>
+      The pronto_anymal_b package contains Pronto libraries and executables
+      specific for the ANYmal B robot. Mostly, this package is used to execute
+      the Pronto filter on the ANYmal B, assuming that the relevant input signals
+      are available as ROS messages.
+  </description>
+
+  <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
+
+  <license>LGPLv2.1</license>
+
+  <!-- Url tags are optional, but multiple are allowed, one per tag -->
+  <!-- Optional attribute type can be: website, bugtracker, or repository -->
+  <!--url type="repository">http://wiki.ros.org/pronto_anymal</url-->
+
+  <author email="mcamurri@robots.ox.ac.uk">Marco Camurri</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>pronto_ros</depend>
+  <depend>pronto_quadruped_ros</depend>
+  <depend>pronto_anymal_b_commons</depend>
+  <exec_depend>hector_trajectory_server</exec_depend>
+  <exec_depend>anymal_b_simple_description</exec_depend>
+  <exec_depend>fovis_ros</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>

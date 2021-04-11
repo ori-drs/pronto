@@ -1,0 +1,7 @@
+# Define the publishing rate, must be positive.
+publish_rate: 400
+
+frames:
+  base:
+    pose_topic: /state_estimator/pose_in_odom
+    parent_frame: odom

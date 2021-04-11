@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="estimator_name" default="pronto" />
+  <arg name="child_frame" default="base_$(arg estimator_name)" />
+  <node name="$(arg estimator_name)_trajectory_server" pkg="hector_trajectory_server" type="hector_trajectory_server" output="screen">
+    <remap from="/trajectory" to="/state_estimator_$(arg estimator_name)/trajectory"/>
+    <param name="target_frame_name" type="string" value="/odom" />
+    <param name="source_frame_name" type="string" value="$(arg child_frame)" />
+    <param name="trajectory_update_rate" type="double" value="10" />
+    <param name="trajectory_publish_rate" type="double" value="10" />
+  </node>
+</launch>
+

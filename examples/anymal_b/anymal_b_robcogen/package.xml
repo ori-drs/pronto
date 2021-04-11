@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>anymal_b_robcogen</name>
+  <version>0.1.0</version>
+  <description>
+    Kinematics and Dynamics libraries for the anymal robot, automatically generated via RobCoGen from the 
+    URDF contained in the anymal_b_simple_description package
+  </description>
+
+  <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
+
+  <license>BSD-3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>anymal_b_simple_description</build_depend>
+  <build_depend>pronto_quadruped_commons</build_depend>
+  <build_depend>quadruped_robcogen</build_depend>
+  <build_export_depend>anymal_b_simple_description</build_export_depend>
+  <build_export_depend>pronto_quadruped_commons</build_export_depend>
+  <build_export_depend>quadruped_robcogen</build_export_depend>
+  <exec_depend>anymal_b_simple_description</exec_depend>
+  <exec_depend>pronto_quadruped_commons</exec_depend>
+  <exec_depend>quadruped_robcogen</exec_depend>
+
+  <export/>
+</package>

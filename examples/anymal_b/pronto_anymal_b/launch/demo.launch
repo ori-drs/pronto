@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<launch>
+  <!-- args to enable/disable the launch of RViz, FOVIS and AICP modules -->
+  <arg name="rviz" default="true" />
+  <arg name="fovis" default="true" />
+
+  <!-- publish the trajectories in RViz with the trajectory server -->
+  <arg name="publish_trajectory" default="true" />
+
+  <!-- load Pronto config settings -->
+  <rosparam command="load" file="$(find pronto_anymal_b)/config/state_estimator.yaml" />
+  
+  <!-- I have no idea why, but without this RViz complains about TF extrapolation in the past -->
+  <param name="use_sim_time" value="true" />
+  
+  <!-- load the anymal description on parameter server -->
+  <include file="$(find anymal_b_simple_description)/launch/load.launch">
+    <arg name="simulation" value="false" />
+    <arg name="description_name" value="robot_description" />
+  </include>
+
+  <!-- publish TF data from the robot description -->
+  <node name="anymal_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <!-- launch RViz -->
+  <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find pronto_anymal_b)/config/pronto.rviz" output="log"/>
+
+  <!-- publish the Pronto trajectory -->
+  <include file="$(find pronto_anymal_b)/launch/publish_trajectory.launch" if="$(arg publish_trajectory)"/>
+
+  <!-- publish the TSIF trajectory -->
+  <include file="$(find pronto_anymal_b)/launch/publish_trajectory.launch" if="$(arg publish_trajectory)">
+    <arg name="child_frame" value="base" />
+    <arg name="estimator_name" value="tsif" />
+  </include>
+
+  <!-- make map and odom coincident for this demo -->
+  <node name="odom_to_map"  pkg="tf" type="static_transform_publisher" output="screen"  args="0 0 0 0 0 0  /odom /map 200" />
+  
+  <!-- publish the ground truth poses from CSV -->
+  <node name="gt_path_loader" pkg="pronto_anymal_b" type="publish_csv_as_path.py"
+        args="$(find pronto_anymal_b)/data/gt.csv /gt_path"
+        launch-prefix="bash -c 'sleep 2; $0 $@' "/>
+
+  <!-- launch the Pronto anymal node -->
+  <node name="pronto_anymal_b_node" pkg="pronto_anymal_b" type="pronto_anymal_b_node" output="screen" />
+  
+  <!-- converts TSIF Pose messages into TF -->
+  <node name="tsif_tf_publisher" pkg="pronto_anymal_b" type="pose_to_tf.py" args="\-\-config_file $(find pronto_anymal_b)/config/pose_to_tf.yaml" output="log" />
+
+  <!-- launch the FOVIS node -->
+  <include if="$(arg fovis)" file="$(find fovis_ros)/launch/realsense_anymal.launch" >
+    <arg name="output" value="screen"/>
+  </include>
+
+</launch>
+
