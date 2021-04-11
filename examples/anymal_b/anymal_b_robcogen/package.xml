@@ -14,13 +14,10 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>anymal_b_simple_description</build_depend>
   <build_depend>pronto_quadruped_commons</build_depend>
-  <build_depend>quadruped_robcogen</build_depend>
   <build_export_depend>anymal_b_simple_description</build_export_depend>
   <build_export_depend>pronto_quadruped_commons</build_export_depend>
-  <build_export_depend>quadruped_robcogen</build_export_depend>
   <exec_depend>anymal_b_simple_description</exec_depend>
   <exec_depend>pronto_quadruped_commons</exec_depend>
-  <exec_depend>quadruped_robcogen</exec_depend>
 
   <export/>
 </package>
