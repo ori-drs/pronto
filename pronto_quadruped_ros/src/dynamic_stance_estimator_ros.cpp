@@ -35,6 +35,7 @@ DynamicStanceEstimatorROS::DynamicStanceEstimatorROS(ros::NodeHandle &nh,
     nh_(nh)
 {
     // fetch some useful parameters from nodehandle here
+    (void)nh_;  // To avoid "unused private member" warning
 }
 
 } // namespace quadruped

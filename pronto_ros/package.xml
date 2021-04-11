@@ -31,6 +31,7 @@
   <depend>tf_conversions</depend>
   <depend>tf2_ros</depend>
   <depend>eigen_conversions</depend>
+  <depend>nav_msgs</depend>
   <depend>pronto_msgs</depend>
   <depend>geometry_msgs</depend>
 </package>

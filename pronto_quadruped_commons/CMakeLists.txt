@@ -45,7 +45,7 @@ catkin_package(
 include_directories(include ${EIGEN3_INCLUDE_DIRS})
 
 # Install iit-rbd globally
-install(DIRECTORY include/iit/
+install(DIRECTORY include/iit
         DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION})
 
 # Install pronto_quadruped_commons locally
