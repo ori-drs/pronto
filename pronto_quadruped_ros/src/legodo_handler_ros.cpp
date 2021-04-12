@@ -251,7 +251,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                                 Update::legodo,
                                                 utime_);
   }
-  std::cerr << "[LegodoHandlerBase::computeVelocity] Something went wrong!" << std::endl;
+  //std::cerr << "[LegodoHandlerBase::computeVelocity] Something went wrong!" << std::endl;
   return nullptr;
 }
 
