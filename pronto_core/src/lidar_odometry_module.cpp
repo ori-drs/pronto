@@ -14,6 +14,12 @@ LidarOdometryModule::LidarOdometryModule(const LidarOdometryConfig &cfg) :
             << cov_vo_ << std::endl;
 }
 
+void LidarOdometryModule::setCovariance(const Eigen::Matrix3d& covariance){
+  cov_vo_ = covariance;
+  std::cerr << 
+    "[ LidarOdometryModule ] Updated Covariance " << std::endl <<  cov_vo_ << std::endl;
+}
+
 Update* LidarOdometryModule::processMessage(const LidarOdometryUpdate *msg,
                                              StateEstimator *est)
 {

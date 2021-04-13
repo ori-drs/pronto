@@ -36,6 +36,7 @@ public:
                             const RBIM &default_cov,
                             RBIS &init_state,
                             RBIM &init_cov) override;
+    void setCovariance(const Eigen::Matrix3d& covariance);
 protected:
     LidarOdometryMode mode_;
     Eigen::VectorXi z_indices;
