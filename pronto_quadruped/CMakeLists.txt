@@ -43,7 +43,9 @@ endif()
 # Including the directory containing the sources
 include_directories(include)
 
-find_package(catkin REQUIRED COMPONENTS pronto_quadruped_commons pronto_core)
+find_package(catkin REQUIRED COMPONENTS pronto_quadruped_commons
+                                        pronto_core
+                                        pronto_utils)
 include_directories(${catkin_INCLUDE_DIRS})
 
 find_package(Eigen3)
@@ -53,7 +55,8 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 
 catkin_package(LIBRARIES ${PROJECT_NAME} 
                INCLUDE_DIRS include
-               CATKIN_DEPENDS pronto_quadruped_commons 
+               CATKIN_DEPENDS pronto_quadruped_commons
+                              pronto_utils
                DEPENDS EIGEN3 Boost)
 
 add_library(${PROJECT_NAME} SHARED src/LegOdometer.cpp

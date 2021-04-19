@@ -26,6 +26,7 @@
 
 #include "pronto_quadruped/DataLogger.hpp"
 #include "pronto_quadruped/StanceEstimatorBase.hpp"
+#include <pronto_utils/SchmittTrigger.hpp>
 
 // Eigen
 #include <Eigen/Dense>
@@ -97,7 +98,31 @@ public:
 
     virtual ~StanceEstimator();
 
+    /**
+     * @brief setJointStates
+     * @param q
+     * @param qd
+     * @param tau
+     * @param orient
+     * @param qdd
+     * @param xd
+     * @param xdd
+     * @param omega
+     * @param omegad
+     * @deprecated
+     */
     void setJointStates(const JointState &q,
+                        const JointState &qd,
+                        const JointState &tau,
+                        const Quaterniond &orient,
+                        const JointState &qdd,
+                        const Vector3d &xd,
+                        const Vector3d &xdd,
+                        const Vector3d &omega,
+                        const Vector3d &omegad) override;
+
+    void setJointStates(const uint64_t &nsec,
+                        const JointState &q,
                         const JointState &qd,
                         const JointState &tau,
                         const Quaterniond &orient,
@@ -140,19 +165,22 @@ public:
                    const double& force_threshold = 50,
                    const double& hysteresis_low = 50,
                    const double& hysteresis_high = 150,
-                   const int& hysteresis_delay_low = 250,
-                   const int& hysteresis_delay_high = 250);
+                   const uint64_t &hysteresis_delay_low = 250,
+                   const uint64_t &hysteresis_delay_high = 250);
 private:
     LegVectorMap grForce_W;
     LegVectorMap grForce_des;
     LegDataMap<double> grForceDelta;
-    Mode mode_ = Mode::THRESHOLD;
+
 
     double force_threshold_;
-    double hysteresis_low_;
-    double hysteresis_high_;
-    double hysteresis_delay_low_;
-    double hysteresis_delay_high_;
+    double falling_edge_threshold_;
+    double rising_edge_threshold_;
+    double falling_edge_delay_;
+    double rising_edge_delay_;
+
+    LegDataMap<SchmittTrigger> force_triggers_;
+
     std::vector<double> beta_;
     Eigen::Vector4d stance_weights_ = Eigen::Vector4d::Zero();
 
@@ -160,9 +188,11 @@ private:
     GRFShortStat gss[4];
 
 protected:
+    Mode mode_ = Mode::THRESHOLD;
     FeetContactForces& feet_contact_forces_;
     LegVectorMap grf_;
     LegBoolMap stance_;
+    uint64_t nsec_; // time in nanoseconds
 
     // Joint States used to compute GRF and then the stance
     JointState q_;

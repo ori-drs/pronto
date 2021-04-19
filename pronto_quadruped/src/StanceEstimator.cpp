@@ -30,8 +30,8 @@ namespace quadruped {
 
 StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  double force_threshold) :
-    mode_(Mode::THRESHOLD),
     force_threshold_(force_threshold),
+    mode_(Mode::THRESHOLD),
     feet_contact_forces_(feet_contact_forces)
 {
     // Initializing the statistics member
@@ -56,8 +56,8 @@ StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  const double &hysteresis_high) :
     mode_(mode),
     force_threshold_(force_threshold),
-    hysteresis_low_(hysteresis_low),
-    hysteresis_high_(hysteresis_high),
+    falling_edge_threshold_(hysteresis_low),
+    rising_edge_threshold_(hysteresis_high),
     beta_(beta),
     feet_contact_forces_(feet_contact_forces)
 {
@@ -67,8 +67,8 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
                                 const double &force_threshold,
                                 const double &hysteresis_low,
                                 const double &hysteresis_high,
-                                const int &hysteresis_delay_low,
-                                const int &hysteresis_delay_high)
+                                const uint64_t &hysteresis_delay_low,
+                                const uint64_t &hysteresis_delay_high)
 {
     if(beta.size() == 2) {
         beta_.resize(8);
@@ -81,10 +81,10 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
     }
 
     force_threshold_ = force_threshold;
-    hysteresis_low_ = hysteresis_low;
-    hysteresis_high_ = hysteresis_high;
-    hysteresis_delay_low_ = hysteresis_delay_low;
-    hysteresis_delay_high_ = hysteresis_delay_high;
+    falling_edge_threshold_ = hysteresis_low;
+    rising_edge_threshold_ = hysteresis_high;
+    falling_edge_delay_ = hysteresis_delay_low;
+    rising_edge_delay_ = hysteresis_delay_high;
 
     switch(mode_) {
     case Mode::THRESHOLD:
@@ -93,10 +93,16 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
         break;
     case Mode::HYSTERESIS:
         std::cout << "[ StanceEst ] Mode: HYSTERESIS" << std::endl;
-        std::cout << "[ StanceEst ] Hysteresis low: " << hysteresis_low_ << std::endl;
-        std::cout << "[ StanceEst ] Hysteresis high: " << hysteresis_high_ << std::endl;
-        std::cout << "[ StanceEst ] Hysteresis delay low: " << hysteresis_delay_low_ << std::endl;
-        std::cout << "[ StanceEst ] Hysteresis delay high: " << hysteresis_delay_high_ << std::endl;
+        std::cout << "[ StanceEst ] Hysteresis low: " << falling_edge_threshold_ << std::endl;
+        std::cout << "[ StanceEst ] Hysteresis high: " << rising_edge_threshold_ << std::endl;
+        std::cout << "[ StanceEst ] Hysteresis delay low (ns): " << falling_edge_delay_ << std::endl;
+        std::cout << "[ StanceEst ] Hysteresis delay high (ns): " << rising_edge_delay_ << std::endl;
+        for(size_t i = 0; i < 4; i++){
+          force_triggers_[LegID(i)].setParameters(falling_edge_threshold_,
+                                                  rising_edge_threshold_,
+                                                  falling_edge_delay_,
+                                                  rising_edge_delay_);
+        }
         break;
     case Mode::REGRESSION:
         std::cout << "[ StanceEst ] Mode: REGRESSION" << std::endl;
@@ -141,15 +147,30 @@ void StanceEstimator::updateStat(double sample,
     }
 }
 
+void StanceEstimator::setJointStates(const uint64_t& nsec,
+                                     const JointState &q,
+                                     const JointState &qd,
+                                     const JointState &tau,
+                                     const Quaterniond &orient,
+                                     const JointState &qdd,
+                                     const Vector3d &xd,
+                                     const Vector3d &xdd,
+                                     const Vector3d &omega,
+                                     const Vector3d &omegad)
+{
+  nsec_ = nsec;
+  setJointStates(q, qd, tau, orient, qdd, xd, xdd, omega, omegad);
+}
+
 void StanceEstimator::setJointStates(const JointState &q,
-                    const JointState &qd,
-                    const JointState &tau,
-                    const Quaterniond &orient,
-                    const JointState &qdd,
-                    const Vector3d &xd,
-                    const Vector3d &xdd,
-                    const Vector3d &omega,
-                    const Vector3d &omegad)  {
+                                     const JointState &qd,
+                                     const JointState &tau,
+                                     const Quaterniond &orient,
+                                     const JointState &qdd,
+                                     const Vector3d &xd,
+                                     const Vector3d &xdd,
+                                     const Vector3d &omega,
+                                     const Vector3d &omegad) {
   q_ = q;
   qd_ = qd;
   qdd_ = qdd;
@@ -185,7 +206,8 @@ bool StanceEstimator::getStance(LegBoolMap &stance,
             stance_probability[leg_id] = stance[leg_id];
             break;
         case Mode::HYSTERESIS:
-            stance[leg_id] = grf_[leg_id](Z) > force_threshold_ ? true : false;
+            force_triggers_[leg_id].updateState(nsec_, grf_[leg_id](Z));
+            stance[leg_id] = force_triggers_[leg_id].getState();
             stance_probability[leg_id] = stance[leg_id];
             break;
         case Mode::REGRESSION:

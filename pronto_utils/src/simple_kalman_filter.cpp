@@ -2,7 +2,7 @@
 // 28 joints - 0.46 msec
 
 
-#include "filter_tools/simple_kalman_filter.hpp"
+#include "pronto_utils/simple_kalman_filter.hpp"
 
 using namespace Eigen;
 using namespace std;
