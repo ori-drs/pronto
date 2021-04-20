@@ -1,5 +1,7 @@
 ![](pronto_core/doc/pronto_logotype_se.svg)
 
+![CI](https://github.com/ori-drs/pronto/workflows/CI/badge.svg)
+
 ## Introduction
 Pronto is an efficient, versatile and modular EKF state estimator for both
 proprioceptive (inertial, kinematics) and exteroceptive (LIDAR, camera) sensor

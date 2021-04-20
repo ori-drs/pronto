@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(filter_tools)
+project(pronto_utils)
 
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED)
 find_package(Eigen3)
 include_directories(${EIGEN3_INCLUDE_DIRS})
+
+include_directories(include)
 
 set(FILTER_TOOLS_LIB ${PROJECT_NAME})
 set(BACKLASH_FILTER_LIB backlash_filter)
@@ -17,11 +19,20 @@ catkin_package(INCLUDE_DIRS include
                          ${BACKLASH_FILTER_LIB}
                DEPENDS EIGEN3)
 
-include_directories(include)
-
 add_library(${PROJECT_NAME} src/Filter.cpp
                             src/HeavyLowPassFilter.cpp
-                            src/SignalTap.cpp)
+                            #src/SignalTap.cpp
+                            src/DataFileLogger.cpp
+                            src/BipolarSchmittTrigger.cpp
+                            src/MedianFilter.cpp
+                            src/RateChange.cpp
+                            src/TrapezoidalInt.cpp
+                            src/DistributedDiff.cpp
+                            src/NumericalDiff.cpp
+                            src/ExpireTimer.cpp
+                            src/SchmittTrigger.cpp
+                            src/BipolarSchmittTrigger.cpp
+                            src/Gaussian.cpp)
 
 add_library(${KALMAN_FILTER_LIB} src/alpha_filter.cpp
                                  src/kalman_filter.cpp

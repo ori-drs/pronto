@@ -5,7 +5,7 @@
 #include "pronto_biped_core/leg_estimate.hpp"
 #include "pronto_biped_core/legodo_common.hpp"
 #include "pronto_biped_core/biped_forward_kinematics.hpp"
-#include <filter_tools/torque_adjustment.hpp> // torque adjustment
+#include <pronto_utils/torque_adjustment.hpp> // torque adjustment
 
 namespace pronto {
 namespace biped {

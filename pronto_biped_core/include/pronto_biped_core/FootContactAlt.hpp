@@ -1,6 +1,6 @@
 #pragma once
 
-#include <filter_tools/SignalTap.hpp>
+#include <pronto_utils/SchmittTrigger.hpp>
 #include <cstdint>
 
 #include "pronto_biped_core/definitions.hpp"
@@ -57,9 +57,8 @@ private:
   SchmittTrigger* left_contact_state_strong_;
   SchmittTrigger* right_contact_state_strong_;
 
-  bool verbose_;
-
+  int verbose_ = 0;  // Checked against different levels in cpp
 };
 
-}
-}
+}  // namespace biped
+}  // namespace pronto

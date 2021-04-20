@@ -1,5 +1,6 @@
 #include "pronto_biped_core/FootContactAlt.hpp"
 #include <iostream>
+#include <sstream>
 using namespace pronto::biped;
 using namespace std;
 
@@ -47,8 +48,8 @@ ContactStatusID FootContactAlt::detectFootTransition(int64_t utime, float leftz,
   bool lf_state_last = (bool) left_contact_state_strong_->getState();
   bool rf_state_last = (bool) right_contact_state_strong_->getState();
   
-  left_contact_state_strong_->UpdateState(utime, leftz);
-  right_contact_state_strong_->UpdateState(utime, rightz);  
+  left_contact_state_strong_->updateState(utime, leftz);
+  right_contact_state_strong_->updateState(utime, rightz);
   
   bool lf_state = (bool) left_contact_state_strong_->getState();
   bool rf_state = (bool) right_contact_state_strong_->getState();

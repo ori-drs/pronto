@@ -13,7 +13,7 @@ bool jointStateFromROS(const sensor_msgs::JointState& msg,
 {
     // if the size of the joint state message does not match our own,
     // we silently return an invalid update
-    if(static_cast<const sensor_msgs::JointState&>(msg).position.size() != q.rows()*q.cols()){
+    if(static_cast<int>(static_cast<const sensor_msgs::JointState&>(msg).position.size()) != q.rows()*q.cols()){
         ROS_WARN_STREAM_THROTTLE(1, "Joint State is expected " << \
                                  q.rows()*q.cols() << " joints but "\
                                  << msg.position.size() << " are provided.");

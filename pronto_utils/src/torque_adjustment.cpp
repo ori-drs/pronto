@@ -1,6 +1,6 @@
 // This class implements a torque adjustment suggested by IHMC
 
-#include "filter_tools/torque_adjustment.hpp"
+#include "pronto_utils/torque_adjustment.hpp"
 #include <cmath>
 #include <algorithm>    // std::find
 
