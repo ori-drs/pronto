@@ -72,7 +72,8 @@ Update* LidarOdometryModule::processMessage(const LidarOdometryUpdate *msg,
 #endif
     // at this point, the mode is either position or position_orient
     if (mode_ == LidarOdometryMode::POSITION) {
-      z_meas.head<3>() = t1_body_vo_.translation();
+      z_meas.head<3>() = t0_body_filter_.translation() + msg->relative_pose.translation();
+      // z_meas.head<3>() = t1_body_vo_.translation();
       std::cerr << "SENDING LIDAR ODOMETRY POSITION UPDATE" << std::endl;
       return new RBISIndexedMeasurement(RigidBodyState::positionInds(),
                                         z_meas,
