@@ -74,14 +74,14 @@ public:
 
 
 public:
-    bool estimatePose(const uint64_t utime,
-                      const JointState& q,
-                      const LegBoolMap& stance_legs,
-                      const LegScalarMap& stance_prob,
-                      Vector3d& position,
-                      Matrix3d& pos_covariance,
-                      Quaterniond& orientation,
-                      Matrix3d& orient_covariance) override {
+    bool estimatePose(const uint64_t /*utime*/,
+                      const JointState& /*q*/,
+                      const LegBoolMap& /*stance_legs*/,
+                      const LegScalarMap& /*stance_prob*/,
+                      Vector3d& /*position*/,
+                      Matrix3d& /*pos_covariance*/,
+                      Quaterniond& /*orientation*/,
+                      Matrix3d& /*orient_covariance*/) override {
       std::cerr << "Function not implemented yet!" << std::endl;
       return false;
     }
@@ -100,13 +100,13 @@ public:
         velocity = xd_b_;
         covariance = vel_cov_;
     }
-    void getPosition(Vector3d& position, Matrix3d& covariance) override
+    void getPosition(Vector3d& /*position*/, Matrix3d& /*covariance*/) override
     {
-        std::cerr << "Function not implemented yet!" << std::endl;
+        std::cerr << "[LegOdometer::getPosition] Function not implemented yet!" << std::endl;
     }
-    void getOrientation(Quaterniond& orientation, Matrix3d& covariance) override
+    void getOrientation(Quaterniond& /*orientation*/, Matrix3d& /*covariance*/) override
     {
-        std::cerr << "Function not implemented yet!" << std::endl;
+        std::cerr << "[LegOdometer::getOrientation] Function not implemented yet!" << std::endl;
     }
 
     /**
