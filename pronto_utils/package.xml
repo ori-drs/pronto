@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>pronto_utils</name>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <description>Description</description>
   <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
   <author email="mfallon@robots.ox.ac.uk">Maurice Fallon</author>
