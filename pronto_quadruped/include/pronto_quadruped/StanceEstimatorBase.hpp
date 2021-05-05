@@ -77,7 +77,7 @@ public:
   /**
    * @brief set joint states (including the floating base's) from which
    * the stance can be computed using the equations of motion
-   * @param[in] time an absolute time, measured in seconds
+   * @param[in] absolute time in nanoseconds
    * @param[in] q joint position
    * @param[in] qd joint velocity
    * @param[in] tau joint torque
@@ -89,6 +89,31 @@ public:
    * @param[in] omegad base angular acceleration (optional)
    * @return a data structure which associates a boolean to each leg,
    * indicating whether the foot is in stance (true) or in swing (false).
+   */
+  virtual void setJointStates(const uint64_t& nsec,
+                              const JointState &q,
+                              const JointState &qd,
+                              const JointState &tau,
+                              const Quaterniond & orient,
+                              const JointState &qdd = JointState::Constant(0),
+                              const Vector3d& xd = Vector3d(0, 0, 0),
+                              const Vector3d & xdd  = Vector3d(0, 0, 0),
+                              const Vector3d & omega  = Vector3d(0, 0, 0),
+                              const Vector3d & omegad = Vector3d(0, 0, 0)) {
+  }
+
+  /**
+   * @brief setJointStates
+   * @param q
+   * @param qd
+   * @param tau
+   * @param orient
+   * @param qdd
+   * @param xd
+   * @param xdd
+   * @param omega
+   * @param omegad
+   * @deprecated
    */
   virtual void setJointStates(const JointState &q,
                               const JointState &qd,

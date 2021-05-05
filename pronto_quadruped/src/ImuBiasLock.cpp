@@ -22,7 +22,7 @@
  */
 #include "pronto_quadruped/ImuBiasLock.hpp"
 #include <pronto_core/rotations.hpp>
-
+#include <iostream>
 namespace pronto {
 namespace quadruped {
 
@@ -44,6 +44,10 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
   eps_ = cfg.velocity_threshold_;
   torque_threshold_ = cfg.torque_threshold_;
   dt_ = cfg.dt_;
+
+  bias_transform_ = Eigen::Isometry3d::Identity();
+  gravity_transform_ = Eigen::Isometry3d::Identity();
+
 }
 
 RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
@@ -58,13 +62,13 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
   current_accel_ = ins_to_body_.rotation()*msg->acceleration;
   current_accel_corrected_ = current_accel_ - (rotation::skewHat((current_omega_ - previous_omega_) / dt_) + rotation::skewHat(current_omega_)*rotation::skewHat(current_omega_))*ins_to_body_.translation();
   previous_omega_ = current_omega_;
-  if(do_record){
+  if(do_record_){
     gyro_bias_history_.push_back(current_omega_);
     accel_bias_history_.push_back(current_accel_corrected_);
     if(gyro_bias_history_.size() > max_size){
-      // std::cout << "Stop recording (size too big)" << std::endl;
-      // std::cout << gyro_bias_history_.size() << std::endl;
-      do_record = false;
+      std::cout << "Stop recording (size too big)" << std::endl;
+      std::cout << gyro_bias_history_.size() << std::endl;
+      do_record_ = false;
     } else {
       return nullptr;
     }
@@ -72,10 +76,10 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
 
   // if we stop recording and the history is not empty but too short,
   // we just forget it
-  if(!do_record && !gyro_bias_history_.empty()) {
+  if(!do_record_ && !gyro_bias_history_.empty()) {
     if(gyro_bias_history_.size() < min_size)
     {
-      // std::cerr << "Cleaning too short history " << gyro_bias_history_.size() << " < " << min_size << std::endl;
+      std::cerr << "Cleaning too short history " << gyro_bias_history_.size() << " < " << min_size << std::endl;
       gyro_bias_history_.clear();
       accel_bias_history_.clear();
       return nullptr;
@@ -83,15 +87,11 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
 
     // if we stop recording and history is not empty or history is too big
     // it's time to compute the bias and free it up
-
-
     gyro_bias_ = getBias(gyro_bias_history_);
     accel_bias_ = getBias(accel_bias_history_);
 
-
     //the gravity vector points in the negative z axis
     quat_g_vec.setFromTwoVectors(accel_bias_.normalized(), gravity_vector_.normalized());
-
 
     accel_bias_ -= prior.orientation().inverse()*gravity_vector_;
     gyro_bias_history_.clear();
@@ -117,15 +117,15 @@ bool ImuBiasLock::processMessageInit(const ImuMeasurement *msg,
 }
 
 void ImuBiasLock::processSecondaryMessage(const pronto::JointState &msg){
-  is_static = isStatic(msg);
+  is_static_ = isStatic(msg);
 
-  if(do_record && !is_static){
-//    std::cerr << " history is " << gyro_bias_history_.size() << " long" << std::endl;
-//    std::cerr << "+++++++++++++++++++ STOP RECORDING" << std::endl;
-      do_record = false;
-  } else if (!do_record && is_static){
-//    std::cerr << "+++++++++++++++++++ START RECORDING" << std::endl;
-      do_record = true;
+  if(do_record_ && !is_static_){
+   std::cout << " history is " << gyro_bias_history_.size() << " long" << std::endl;
+   std::cout << "+++++++++++++++++++ STOP ESTIMATING" << std::endl;
+      do_record_ = false;
+  } else if (!do_record_ && is_static_){
+   std::cout << "+++++++++++++++++++ ESTIMATING BIAS" << std::endl;
+      do_record_ = true;
   }
 }
 
@@ -133,31 +133,31 @@ bool ImuBiasLock::isStatic(const pronto::JointState &state)
 {
   // check if we are in four contact (poor's man version, knee torque threshoold)
   if(state.joint_effort.size() < 12){
-//    std::cerr << "++++++++++++++ not enough joints " << state.joint_effort.size() << " < " << torque_threshold_<< std::endl;
+//    std::cout << "++++++++++++++ not enough joints " << state.joint_effort.size() << " < " << torque_threshold_<< std::endl;
     return false;
   }
 
   if(std::abs(state.joint_effort[2]) < torque_threshold_){
-//    std::cerr << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[2]) << " < " << torque_threshold_ << std::endl;
+  //  std::cout << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[2]) << " < " << torque_threshold_ << std::endl;
     return false;
   }
   if(std::abs(state.joint_effort[5]) < torque_threshold_){
-//    std::cerr << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[5]) << " < " << torque_threshold_ << std::endl;
+  //  std::cout << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[5]) << " < " << torque_threshold_ << std::endl;
     return false;
   }
   if(std::abs(state.joint_effort[8]) < torque_threshold_){
-//    std::cerr << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[8]) << " < " << torque_threshold_ << std::endl;
+  //  std::cout << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[8]) << " < " << torque_threshold_ << std::endl;
     return false;
   }
   if(std::abs(state.joint_effort[11]) < torque_threshold_){
-//    std::cerr << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[11]) << " < " << torque_threshold_ << std::endl;
+  //  std::cout << "++++++++++++++ not enough torque " << std::abs(state.joint_effort[11]) << " < " << torque_threshold_ << std::endl;
     return false;
   }
 
   // check that joint velocities are not bigger than eps
   for (auto el : state.joint_velocity){
     if (std::abs(el) > eps_){
-//      std::cerr << "++++++++++++++ too much velocity " << std::abs(el) << " > " << eps_ << std::endl;
+    //  std::cout << "++++++++++++++ too much velocity " << std::abs(el) << " > " << eps_ << std::endl;
       return false;
     }
   }

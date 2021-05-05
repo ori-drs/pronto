@@ -89,12 +89,16 @@ public:
         return bias_transform_;
     }
 
+    inline bool getRecordStatus() {
+        return do_record_;
+    }
+
 
 protected:
     std::vector <Eigen::Vector3d> gyro_bias_history_;
     std::vector <Eigen::Vector3d> accel_bias_history_;
-    bool do_record = true;
-    bool is_static = false;
+    bool do_record_ = true;
+    bool is_static_ = false;
     size_t max_size = 3000;
     size_t min_size = 500;
 

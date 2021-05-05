@@ -10,8 +10,8 @@
 #include <Eigen/StdVector>
 
 #include <boost/shared_ptr.hpp>
-#include <filter_tools/Filter.hpp>
-#include <filter_tools/SignalTap.hpp> // SchmittTrigger
+#include <pronto_utils/Filter.hpp>
+#include <pronto_utils/SchmittTrigger.hpp>
 
 #include "pronto_biped_core/definitions.hpp"
 

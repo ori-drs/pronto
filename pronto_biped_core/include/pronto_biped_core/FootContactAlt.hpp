@@ -1,6 +1,6 @@
 #pragma once
 
-#include <filter_tools/SignalTap.hpp>
+#include <pronto_utils/SchmittTrigger.hpp>
 #include <cstdint>
 
 #include "pronto_biped_core/definitions.hpp"

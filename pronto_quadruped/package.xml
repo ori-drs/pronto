@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>pronto_quadruped</name>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <description>The pronto_quadruped package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
@@ -52,6 +52,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>pronto_quadruped_commons</depend>
   <depend>pronto_core</depend>
+  <depend>pronto_utils</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

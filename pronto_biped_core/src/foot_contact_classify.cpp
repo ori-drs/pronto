@@ -64,14 +64,14 @@ float FootContactClassifier::update(const int64_t &utime,
   }
 
   // 1. Determine Weak or Strong Contact:
-  left_contact_state_weak_->UpdateState(utime, left_force_filtered);
-  right_contact_state_weak_->UpdateState(utime, right_force_filtered);
+  left_contact_state_weak_->updateState(utime, left_force_filtered);
+  right_contact_state_weak_->updateState(utime, right_force_filtered);
 
   bool lf_state = (bool) left_contact_state_weak_->getState();
   bool rf_state = (bool) right_contact_state_weak_->getState();
 
-  left_contact_state_strong_->UpdateState(utime, left_force_filtered);
-  right_contact_state_strong_->UpdateState(utime, right_force_filtered);
+  left_contact_state_strong_->updateState(utime, left_force_filtered);
+  right_contact_state_strong_->updateState(utime, right_force_filtered);
 
   bool lf_state_high = (bool) left_contact_state_strong_->getState();
   bool rf_state_high = (bool) right_contact_state_strong_->getState();

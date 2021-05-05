@@ -274,7 +274,7 @@ LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::Jo
     }
     getPreviousState(est);
 
-    stance_estimator_.setJointStates(q_, qd_, tau_, orientation_,
+    stance_estimator_.setJointStates(nsec_, q_, qd_, tau_, orientation_,
                                      // optional arguments starts from here
                                      // note passing previous value for velocity
                                      qdd_, xd_, xdd_, omega_, omegad_);

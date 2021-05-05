@@ -3,7 +3,7 @@
 #include <fstream>      // std::ofstream
 
 #include <map>
-#include <filter_tools/simple_kalman_filter.hpp> // SimpleKalmanFilter
+#include <pronto_utils/simple_kalman_filter.hpp> // SimpleKalmanFilter
 
 #include "pronto_biped_core/FootContact.hpp"
 #include "pronto_biped_core/FootContactAlt.hpp"

@@ -32,6 +32,7 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <eigen_conversions/eigen_msg.h>
+#include <geometry_msgs/PointStamped.h>
 
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -65,6 +66,7 @@ protected:
   visualization_msgs::Marker imu_arrow_;
   visualization_msgs::Marker base_arrow_;
   visualization_msgs::Marker base_more_arrow_;
+  ros::Publisher status_pub_;
   ros::Publisher marker_pub_;
   ros::Publisher base_marker_pub_;
   ros::Publisher base_more_marker_pub_;
@@ -113,6 +115,7 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
     ROS_WARN_STREAM("Couldn't read dt. Using default: " << cfg.dt_);
   }
 
+  status_pub_ = nh_.advertise<geometry_msgs::PointStamped>("/state_estimator_pronto/recording_bias",100);
   marker_pub_ = nh_.advertise<visualization_msgs::Marker>("/state_estimator_pronto/imu_arrows",100);
   base_marker_pub_ = nh_.advertise<visualization_msgs::Marker>("/state_estimator_pronto/base_arrow",100);
   base_more_marker_pub_ = nh_.advertise<visualization_msgs::Marker>("/state_estimator_pronto/base_more_arrow",100);
@@ -191,7 +194,6 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
   Eigen::Isometry3d gravity_transform = bias_lock_module_->getGravityTransform();
   Eigen::Isometry3d bias_transform = bias_lock_module_->getBiasTransform();
 
-
   geometry_msgs::TransformStamped msg_temp = tf2::eigenToTransform(gravity_transform);
   msg_temp.child_frame_id = "gravity";
   msg_temp.header.frame_id = "base";
@@ -205,6 +207,14 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
   msg_temp.header.stamp = msg->header.stamp;
 
   broadcaster_.sendTransform(msg_temp);
+
+  geometry_msgs::PointStamped state_msg;
+  state_msg.header.stamp = msg->header.stamp;
+  state_msg.point.x = int(bias_lock_module_->getRecordStatus());
+  state_msg.point.y = state_msg.point.x;
+  state_msg.point.z = state_msg.point.x;
+  status_pub_.publish(state_msg);
+
 
   return bias_lock_module_->processMessage(&bias_lock_imu_msg_, est);
 }
