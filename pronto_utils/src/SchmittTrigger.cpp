@@ -48,7 +48,7 @@ void SchmittTrigger::updateState(uint64_t present_time, double value) {
     return;
   }
 
-  bool verbose = true;
+  bool verbose = false;
 
   stored_value = value;
 
@@ -59,7 +59,7 @@ void SchmittTrigger::updateState(uint64_t present_time, double value) {
   // The timing logic should be rewritten with ExpireTimer at the next opportune moment
   if (current_status) {
     if (value <= falling_edge_threshold){
-      std::cout << "below threshold\n";
+      if(verbose) std::cout << "below threshold\n";
       if (timer > falling_edge_time_delay) {
         if (verbose) std::cout << "high state -> low trigger\n";
         current_status = false;
