@@ -41,6 +41,7 @@ namespace quadruped {
 class FeetJacobians
 {
 public:
+    FeetJacobians() {}
     virtual ~FeetJacobians() {}
 
     /**
@@ -59,12 +60,10 @@ public:
     virtual FootJac getFootJacobianRH(const JointState& q) = 0;
     virtual FootJac getFootJacobian(const JointState& q, const LegID& leg) = 0;
 
-  virtual FootJac getFootJacobianAngular(const pronto::quadruped::JointState& q,
+    virtual FootJac getFootJacobianAngular(const pronto::quadruped::JointState& q,
                                          const pronto::quadruped::LegID& leg) = 0;
     ///@}
 };
 
-
-}
-}
-
+}  // namespace quadruped
+}  // namespace pronto

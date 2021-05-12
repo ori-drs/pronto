@@ -42,6 +42,7 @@ namespace quadruped {
 class ForwardKinematics
 {
 public:
+    ForwardKinematics() {}
     virtual ~ForwardKinematics() {}
 
     virtual Vector3d getFootPosLF(const JointState& q) = 0;
