@@ -52,15 +52,14 @@ public:
     LegodoHandlerBase(ros::NodeHandle& nh,
                       StanceEstimatorBase& fcf,
                       LegOdometerBase& fj);
+    virtual ~LegodoHandlerBase() = default;
 
 protected:
     StanceEstimatorBase& stance_estimator_;
     LegOdometerBase& leg_odometer_;
 
-    Eigen::Vector3d r_legodo;
-    Eigen::Vector3d R_legodo_init;
-    Eigen::Vector3d r_legodo_init;
-    Eigen::Matrix3d cov_legodo;
+    Eigen::Vector3d r_legodo_;
+    Eigen::Matrix3d cov_legodo_;
 
     JointState q_;
     JointState qd_;
@@ -70,11 +69,11 @@ protected:
     RBIS head_state_;
     RBIM head_cov_;
 
-    Eigen::Vector3d xd_;
-    Eigen::Vector3d xdd_;
-    Eigen::Vector3d omega_;
-    Eigen::Vector3d omegad_;
-    Eigen::Quaterniond orientation_;
+    Eigen::Vector3d xd_;               ///< Linear velocity of the base frame, expressed in inertial frame
+    Eigen::Vector3d xdd_;              ///< Net linear acceleration of the base frame without gravity, expressed in inertial frame
+    Eigen::Vector3d omega_;            ///< Angular velocity of the base, expressed in base frame
+    Eigen::Vector3d omegad_;           ///< Angular acceleration of the base, expressed in base frame
+    Eigen::Quaterniond orientation_;   ///< Orientation of the base with respect to the inertial frame, expressed in base frame
 
     LegBoolMap stance_;
     LegScalarMap stance_prob_;
@@ -117,6 +116,7 @@ public:
     LegodoHandlerROS(ros::NodeHandle& nh,
                      StanceEstimatorBase &stance_est,
                      LegOdometerBase &legodo);
+    virtual ~LegodoHandlerROS() = default;
 
     Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
@@ -136,6 +136,7 @@ public:
   ForceSensorLegodoHandlerROS(ros::NodeHandle& nh,
                               StanceEstimatorBase& stance_est,
                               LegOdometerBase& legodo);
+  virtual ~ForceSensorLegodoHandlerROS() = default;
 
   Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
@@ -157,6 +158,7 @@ public:
   FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
                              StanceEstimatorBase& stance_est,
                              LegOdometerBase& legodo);
+  virtual ~FootSensorLegodoHandlerROS() = default;
 
   Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
