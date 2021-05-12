@@ -6,14 +6,7 @@
   <maintainer email="mcamurri@robots.ox.ac.uk">Marco Camurri</maintainer>
   <author email="mfallon@robots.ox.ac.uk">Maurice Fallon</author>
   <author email="mcamurri@robots.ox.ac.uk">Marco Camurri</author>
-
-
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>LGPLv2</license>
-
-
+  <license>LGPLv2.1</license>
   <buildtool_depend>catkin</buildtool_depend>
-
-  <!-- The export tag contains other, unspecified, tags -->
-  <export />
+  <depend>eigen</depend>
 </package>
