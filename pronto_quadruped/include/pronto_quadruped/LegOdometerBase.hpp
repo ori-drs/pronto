@@ -62,7 +62,7 @@ public:
      * @param[in] stance_prob a data structure indicating how likely a leg is
      * on the ground (from 0 to 1)
      * @param[out] position robot absolute position, expressed in an absolute
-     * in a absolute reference frame
+     * reference frame
      * @param[out] pos_covariance covariance associated to the position
      * @param[out] orientation quaternion describing the absolute attitude of
      * the robot, expressed in world frame

@@ -34,11 +34,5 @@ bool jointStateFromROS(const sensor_msgs::JointState& msg,
     return true;
 }
 
-
-}
-}
-
-
-
-
-
+}  // namespace quadruped
+}  // namespace pronto

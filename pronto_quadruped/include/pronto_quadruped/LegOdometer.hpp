@@ -129,7 +129,7 @@ public:
     void setGrf(const LegVectorMap& grf) override;
 
     // Configuration methods
-    virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
+    virtual void setMode(const SigmaMode s_mode, const AverageMode a_mode);
     virtual void getMode(SigmaMode& s_mode, AverageMode& a_mode);
     virtual std::string printMode();
     void setSpeedLimit(const double& limit) override;
@@ -161,7 +161,7 @@ protected:
     LegVectorMap base_vel_leg_;
     LegVectorMap foot_pos_;
 
-    Eigen::Vector3d xd_b_; // estimated velocity, base frame
+    Eigen::Vector3d xd_b_;  ///< estimated velocity, base frame
 
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;

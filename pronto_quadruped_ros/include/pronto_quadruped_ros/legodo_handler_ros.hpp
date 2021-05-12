@@ -45,7 +45,7 @@ class LegodoHandlerBase {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    using  LegScalarMap = LegDataMap<double>;
+    using LegScalarMap = LegDataMap<double>;
     using Update = RBISUpdateInterface;
 
 public:
@@ -113,8 +113,6 @@ protected:
 class LegodoHandlerROS : public pronto::SensingModule<sensor_msgs::JointState>,
                          public LegodoHandlerBase
 {
-
-
 public:
     LegodoHandlerROS(ros::NodeHandle& nh,
                      StanceEstimatorBase &stance_est,
@@ -149,7 +147,6 @@ public:
                           RBIM &init_cov) override;
 
   void processSecondaryMessage(const pronto_msgs::QuadrupedForceTorqueSensors &msg) override;
-
 };
 
 class FootSensorLegodoHandlerROS : public LegodoHandlerBase,
@@ -171,7 +168,6 @@ public:
                           RBIM &init_cov) override;
 
   void processSecondaryMessage(const pronto_msgs::QuadrupedStance &msg) override;
-
 };
 
 }  // namespace quadruped
