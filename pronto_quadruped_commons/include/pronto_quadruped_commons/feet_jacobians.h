@@ -54,10 +54,10 @@ public:
      * takes the identifier of the leg of interest.
      */
     ///@{
-    virtual FootJac getFootJacobianLF(const JointState& q) = 0;
-    virtual FootJac getFootJacobianRF(const JointState& q) = 0;
-    virtual FootJac getFootJacobianLH(const JointState& q) = 0;
-    virtual FootJac getFootJacobianRH(const JointState& q) = 0;
+    virtual FootJac getFootJacobianLF(const JointState& q) { return getFootJacobian(q, LegID::LF); }
+    virtual FootJac getFootJacobianRF(const JointState& q) { return getFootJacobian(q, LegID::RF); }
+    virtual FootJac getFootJacobianLH(const JointState& q) { return getFootJacobian(q, LegID::LH); }
+    virtual FootJac getFootJacobianRH(const JointState& q) { return getFootJacobian(q, LegID::RH); }
     virtual FootJac getFootJacobian(const JointState& q, const LegID& leg) = 0;
 
     virtual FootJac getFootJacobianAngular(const pronto::quadruped::JointState& q,
