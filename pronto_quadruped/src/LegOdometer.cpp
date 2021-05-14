@@ -162,8 +162,8 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     vel_cov_ = initial_vel_cov_;
 
     // Recording foot position and base velocity from legs
+    foot_pos_ = forward_kinematics_.getFeetPos(q);
     for(int leg = LF; leg <= RH; leg++){
-        foot_pos_[LegID(leg)] =  forward_kinematics_.getFootPos(q, LegID(leg));
         base_vel_leg_[LegID(leg)] = - feet_jacobians_.getFootJacobian(q, LegID(leg))
                             * qd.block<3,1>(leg * 3, 0)
                             - omega.cross(foot_pos_[LegID(leg)]);
@@ -283,7 +283,7 @@ bool LegOdometer::estimateVelocity(const uint64_t utime,
     var_velocity << vel_std_(0) * vel_std_(0), vel_std_(1) * vel_std_(1), vel_std_(2) * vel_std_(2);
 
     if(debug_) {
-        double impact =  2 * 0.00109375 * abs(grf_delta_.mean());
+        double impact =  2 * 0.00109375 * std::abs(grf_delta_.mean());  // TODO: What is the magic number
         if(impact < 0.001 || std::isnan(impact)) {
             impact = 0.0;
             beta = 1;

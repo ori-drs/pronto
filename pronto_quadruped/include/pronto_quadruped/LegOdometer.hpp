@@ -159,7 +159,7 @@ protected:
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;
 
-    double speed_limit_; // upper limit of the absolute norm of the linear velocity
+    double speed_limit_; // upper limit of the absolute norm of the linear velocity [m/s]
 };
 } // namespace quadruped
 } // namespace pronto

@@ -147,8 +147,6 @@ public:
     virtual void setInitVelocityStd(const Vector3d& vel_std) = 0;
     virtual void setInitPositionCov(const Matrix3d& pos_cov) = 0;
 
-    // virtual void getAngularVelocity(Vector3d& omega, Matrix3d& covariance) = 0;
-
     virtual void getVelocitiesFromLegs(LegVectorMap & vd) = 0;
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 
