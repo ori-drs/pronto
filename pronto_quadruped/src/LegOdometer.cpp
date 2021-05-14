@@ -150,10 +150,6 @@ void LegOdometer::getFeetPositions(LegVectorMap &jd) {
     jd = foot_pos_;
 }
 
-void LegOdometer::setGrfDelta(const LegScalarMap &grf_delta){
-    grf_delta_ << grf_delta[0] , grf_delta[1] , grf_delta[2], grf_delta[3];
-}
-
 bool LegOdometer::estimateVelocity(const uint64_t utime,
                                    const JointState &q,
                                    const JointState &qd,

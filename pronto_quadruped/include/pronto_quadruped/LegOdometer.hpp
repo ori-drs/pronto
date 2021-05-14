@@ -109,13 +109,6 @@ public:
         std::cerr << "[LegOdometer::getOrientation] Function not implemented yet!" << std::endl;
     }
 
-    /**
-     * @brief setGrfDelta sets the latest computed Delta between the current
-     * and the previous GRF. This is relevant to compute the covariance
-     * if the mode IMPACT_SIGMA is used.
-     * @param grf_delta
-     */
-    virtual void setGrfDelta(const LegScalarMap& grf_delta);
 
     // Debugging methods
     void getVelocitiesFromLegs(LegVectorMap & vd) override;
