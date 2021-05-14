@@ -13,10 +13,13 @@ bool jointStateFromROS(const sensor_msgs::JointState& msg,
 {
     // if the size of the joint state message does not match our own,
     // we silently return an invalid update
-    if(static_cast<int>(static_cast<const sensor_msgs::JointState&>(msg).position.size()) != q.rows()*q.cols()){
+    if (static_cast<int>(static_cast<const sensor_msgs::JointState&>(msg).position.size()) != q.size() ||
+        static_cast<int>(static_cast<const sensor_msgs::JointState&>(msg).velocity.size()) != q.size() ||
+        static_cast<int>(static_cast<const sensor_msgs::JointState&>(msg).effort.size()) != q.size()){
         ROS_WARN_STREAM_THROTTLE(1, "Joint State is expected " << \
-                                 q.rows()*q.cols() << " joints but "\
-                                 << msg.position.size() << " are provided.");
+                                 q.size() << " joints but "\
+                                 << msg.position.size() << " / " << msg.velocity.size() << " / " << msg.effort.size()
+                                 << " are provided.");
         return false;
     }
     // store message time in microseconds
@@ -30,7 +33,8 @@ bool jointStateFromROS(const sensor_msgs::JointState& msg,
     //qd = Eigen::Map<const JointState>(msg.velocity.data());
     //tau = Eigen::Map<const JointState>(msg.effort.data());
 
-    qdd = JointState::Zero(); // TODO compute the acceleration
+    qdd.setZero(); // TODO compute the acceleration
+
     return true;
 }
 
