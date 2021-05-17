@@ -69,5 +69,5 @@ LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
     }
 }
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto
