@@ -30,9 +30,9 @@ namespace quadruped {
 
 StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  double force_threshold) :
-    force_threshold_(force_threshold),
-    mode_(Mode::THRESHOLD),
-    feet_contact_forces_(feet_contact_forces)
+  force_threshold_(force_threshold),
+  feet_contact_forces_(feet_contact_forces),
+  mode_(Mode::THRESHOLD)
 {
     // Initializing the statistics member
     stat.cluster_size = 16;
@@ -54,12 +54,12 @@ StanceEstimator::StanceEstimator(FeetContactForces& feet_contact_forces,
                                  const double &force_threshold,
                                  const double &hysteresis_low,
                                  const double &hysteresis_high) :
-    mode_(mode),
-    force_threshold_(force_threshold),
-    falling_edge_threshold_(hysteresis_low),
-    rising_edge_threshold_(hysteresis_high),
-    beta_(beta),
-    feet_contact_forces_(feet_contact_forces)
+  force_threshold_(force_threshold),
+  falling_edge_threshold_(hysteresis_low),
+  rising_edge_threshold_(hysteresis_high),
+  beta_(beta),
+  feet_contact_forces_(feet_contact_forces),
+  mode_(mode)
 {
 }
 
@@ -107,7 +107,7 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
     case Mode::REGRESSION:
         std::cout << "[ StanceEst ] Mode: REGRESSION" << std::endl;
         std::cout << "[ StanceEst ] Beta: [";
-        for(int i = 0; i < beta.size(); i++) {
+        for(size_t i = 0; i < beta.size(); i++) {
             std::cout << beta_[i];
             if(i == beta.size() - 1) {
                 std::cout << "]" << std::endl;

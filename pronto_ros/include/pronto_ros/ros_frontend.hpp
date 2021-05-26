@@ -49,7 +49,7 @@ public:
                           bool subscribe = true);
 
     template<class MsgT, class SecondaryMsgT>
-    inline void addSecondarySensingModule(DualSensingModule<MsgT, SecondaryMsgT>& module,
+    inline void addSecondarySensingModule(DualSensingModule<MsgT, SecondaryMsgT>& /*module*/,
                                           const SensorId& sensor_id,
                                           const std::string& topic,
                                           bool subscribe)

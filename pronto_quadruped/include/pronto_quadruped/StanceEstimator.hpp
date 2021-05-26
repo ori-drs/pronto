@@ -188,8 +188,9 @@ private:
     GRFShortStat gss[4];
 
 protected:
-    Mode mode_ = Mode::THRESHOLD;
     FeetContactForces& feet_contact_forces_;
+    Mode mode_;
+
     LegVectorMap grf_;
     LegBoolMap stance_;
     uint64_t nsec_; // time in nanoseconds
