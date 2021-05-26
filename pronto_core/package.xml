@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>pronto_core</name>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <description>
     The pronto_core package contains the EKF and the main 
     modules to perform state estimation, including: inertial, gps, optical
