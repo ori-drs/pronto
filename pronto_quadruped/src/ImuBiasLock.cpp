@@ -120,11 +120,11 @@ void ImuBiasLock::processSecondaryMessage(const pronto::JointState &msg){
   is_static_ = isStatic(msg);
 
   if(do_record_ && !is_static_){
-   std::cout << " history is " << gyro_bias_history_.size() << " long" << std::endl;
-   std::cout << "+++++++++++++++++++ STOP ESTIMATING" << std::endl;
+      // std::cout << " history is " << gyro_bias_history_.size() << " long" << std::endl;
+      // std::cout << "+++++++++++++++++++ STOP ESTIMATING" << std::endl;
       do_record_ = false;
   } else if (!do_record_ && is_static_){
-   std::cout << "+++++++++++++++++++ ESTIMATING BIAS" << std::endl;
+      // std::cout << "+++++++++++++++++++ ESTIMATING BIAS" << std::endl;
       do_record_ = true;
   }
 }

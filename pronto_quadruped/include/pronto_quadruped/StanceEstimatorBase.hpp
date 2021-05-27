@@ -71,7 +71,7 @@ public:
     return false;
   }
 
-  virtual void setStance(const LegBoolMap& stance) {
+  virtual void setStance(const LegBoolMap& /*stance*/) {
   }
 
   /**
@@ -90,16 +90,16 @@ public:
    * @return a data structure which associates a boolean to each leg,
    * indicating whether the foot is in stance (true) or in swing (false).
    */
-  virtual void setJointStates(const uint64_t& nsec,
-                              const JointState &q,
-                              const JointState &qd,
-                              const JointState &tau,
-                              const Quaterniond & orient,
-                              const JointState &qdd = JointState::Constant(0),
-                              const Vector3d& xd = Vector3d(0, 0, 0),
-                              const Vector3d & xdd  = Vector3d(0, 0, 0),
-                              const Vector3d & omega  = Vector3d(0, 0, 0),
-                              const Vector3d & omegad = Vector3d(0, 0, 0)) {
+  virtual void setJointStates(const uint64_t& /*nsec*/,
+                              const JointState& /*q*/,
+                              const JointState& /*qd*/,
+                              const JointState& /*tau*/,
+                              const Quaterniond& /*orient*/,
+                              const JointState& /*qdd*/ = JointState::Constant(0),
+                              const Vector3d& /*xd*/ = Vector3d(0, 0, 0),
+                              const Vector3d& /*xdd*/  = Vector3d(0, 0, 0),
+                              const Vector3d& /*omega*/  = Vector3d(0, 0, 0),
+                              const Vector3d& /*omegad*/ = Vector3d(0, 0, 0)) {
   }
 
   /**
@@ -115,18 +115,18 @@ public:
    * @param omegad
    * @deprecated
    */
-  virtual void setJointStates(const JointState &q,
-                              const JointState &qd,
-                              const JointState &tau,
-                              const Quaterniond & orient,
-                              const JointState &qdd = JointState::Constant(0),
-                              const Vector3d& xd = Vector3d(0, 0, 0),
-                              const Vector3d & xdd  = Vector3d(0, 0, 0),
-                              const Vector3d & omega  = Vector3d(0, 0, 0),
-                              const Vector3d & omegad = Vector3d(0, 0, 0)) {
+  virtual void setJointStates(const JointState& /*q*/,
+                              const JointState& /*qd*/,
+                              const JointState& /*tau*/,
+                              const Quaterniond& /*orient*/,
+                              const JointState& /*qdd*/ = JointState::Constant(0),
+                              const Vector3d& /*xd*/ = Vector3d(0, 0, 0),
+                              const Vector3d& /*xdd*/  = Vector3d(0, 0, 0),
+                              const Vector3d& /*omega*/  = Vector3d(0, 0, 0),
+                              const Vector3d& /*omegad*/ = Vector3d(0, 0, 0)) {
   }
 
-  virtual void setGRF(const LegVectorMap& grf) {
+  virtual void setGRF(const LegVectorMap& /*grf*/) {
   }
 
   virtual bool getGRF(LegVectorMap& grf) = 0;
