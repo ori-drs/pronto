@@ -21,7 +21,7 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
     while(nh_.ok()){
         try{
             geometry_msgs::TransformStamped temp_transform;
-            temp_transform = tf_imu_to_body_buffer_.lookupTransform(imu_frame, base_frame, ros::Time(0));
+            temp_transform = tf_imu_to_body_buffer_.lookupTransform(base_frame, imu_frame, ros::Time(0));
 
             tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
             ROS_INFO_STREAM("IMU to base transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");
