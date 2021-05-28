@@ -39,6 +39,7 @@ TEST(InsModule, ballisticTrajectory) {
         Eigen::Array3d(sigma_Delta_xy_init, sigma_Delta_xy_init, sigma_Delta_z_init).square();
 
     Eigen::Vector3d init_chi_cov_diag = Eigen::Array3d(sigma_chi_xy_init, sigma_chi_xy_init, sigma_chi_z_init).square();
+    init_covariance.setZero();
 
     //set all the sub-blocks of the covariance matrix
     init_covariance.block<3, 3>(RBIS::velocity_ind, RBIS::velocity_ind) = std::pow(sigma_vb_init,2) * Eigen::Matrix3d::Identity();
