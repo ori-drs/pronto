@@ -81,7 +81,7 @@ in Frontiers on Robotics and AI, 2020 ([PDF](https://www.frontiersin.org/article
 }
 ```
 
-Previous related publications include:
+### Previous publications
 
 *S. Nobili, M. Camurri, V. Barasuol, M. Focchi, D.G. Caldwell, C. Semini, M. Fallon*  
 **Heterogeneous Sensor Fusion for Accurate State Estimation of Dynamic Legged Robots**  
@@ -155,16 +155,17 @@ month={May},}
 
 ## Credits
 
-Originally Developed by Adam Bry, Abe Bachrach and Nicholas Roy of the
+- Originally Developed by Adam Bry, Abe Bachrach and Nicholas Roy of the
 [MIT Robust Robotics Group](http://groups.csail.mit.edu/rrg/) for Micro Aerial Vehicles.
 
-Extended to support humanoid motion by Maurice Fallon with the help of
+- Extended to support humanoid motion by Maurice Fallon with the help of
 the [MIT DARPA Robotics Challenge Team](http://www.drc.mit.edu).
 
-Support for quadruped robots, full ROS conversion and logo design by 
+- Support for quadruped robots, full ROS conversion and logo design by 
 Marco Camurri  ([IIT Dynamic Legged System Lab](http://dls.iit.it) and [ORI Dynamic Robot Systems Group](https://ori.ox.ac.uk/labs/drs/))
 
-Additional contributions from: Andy Barry, Pat Marion, Dehann Fourie, Marco Frigerio, Michele Focchi, Benoit Casseau.
+### Additional contributors
+Andy Barry, Pat Marion, Dehann Fourie, Marco Frigerio, Michele Focchi, Benoit Casseau, Russell Buchanan, Wolfgang Merkt
 
 ## License
 Pronto is released under the LGPL v2.1 license. Please see the LICENSE file attached to
