@@ -72,7 +72,7 @@ YawLockHandlerROS::YawLockHandlerROS(ros::NodeHandle &nh, std::string urdf_strin
 
   while(nh_.ok()){
     try{
-      geometry_msgs::TransformStamped temp_transform = tfBuffer.lookupTransform(imu_frame, base_frame,
+      geometry_msgs::TransformStamped temp_transform = tfBuffer.lookupTransform(base_frame, imu_frame,
                                                                                 ros::Time(0));
 
       tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
