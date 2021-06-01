@@ -379,7 +379,7 @@ LegodoHandlerBase::Update * ForceSensorLegodoHandlerROS::processMessage(const se
   return computeVelocity();
 }
 
-bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState */*msg*/, const std::map<std::string, bool> &/*sensor_initialized*/, const RBIS &/*default_state*/, const RBIM &/*default_cov*/, RBIS &/*init_state*/, RBIM &/*init_cov*/){
+bool ForceSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState* /*msg*/, const std::map<std::string, bool>& /*sensor_initialized*/, const RBIS& /*default_state*/, const RBIM& /*default_cov*/, RBIS& /*init_state*/, RBIM& /*init_cov*/){
   return true;
 }
 
