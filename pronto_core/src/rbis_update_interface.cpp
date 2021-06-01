@@ -1,4 +1,5 @@
 #include "pronto_core/rbis_update_interface.hpp"
+#include "pronto_core/rotations.hpp"
 #include <iostream>
 
 namespace pronto {
@@ -39,13 +40,13 @@ void RBISResetUpdate::updateFilter(const RBIS & prior_state, const RBIM & prior_
     std::cerr << "?????????????????????" << std::endl;
 
     std::cerr << "Prior gyro bias: " << prior_state.gyroBias().transpose() << std::endl;
-    Eigen::Vector3d rpy = eigen_utils::getEulerAngles(prior_state.orientation()) * 180.0 / M_PI;
+    Eigen::Vector3d rpy = rotation::getEulerAngles(prior_state.orientation()) * 180.0 / M_PI;
     std::cerr << "Prior accel bias: " << prior_state.accelBias().transpose() << std::endl;
     std::cerr << "Prior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
 
     std::cerr << "Posterior gyro bias: " << posterior_state.gyroBias().transpose() << std::endl;
     std::cerr << "Posterior accel bias: " << posterior_state.accelBias().transpose() << std::endl;
-    rpy = eigen_utils::getEulerAngles(posterior_state.orientation()) * 180.0 / M_PI;
+    rpy = rotation::getEulerAngles(posterior_state.orientation()) * 180.0 / M_PI;
     std::cerr << "Posterior roll, pitch, yaw [deg]: " << rpy.transpose() << std::endl;
 
 
