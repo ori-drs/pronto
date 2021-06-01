@@ -47,7 +47,7 @@ public:
 public:
     ImuBiasLock(const Eigen::Isometry3d& ins_to_body_ = Eigen::Isometry3d::Identity(),
                 const ImuBiasLockConfig& cfg = ImuBiasLockConfig());
-    virtual ~ImuBiasLock()  {}
+    virtual ~ImuBiasLock() {}
 
     RBISUpdateInterface* processMessage(const ImuMeasurement *msg,
                                         StateEstimator *est) override;

@@ -147,12 +147,33 @@ public:
     virtual void setInitVelocityStd(const Vector3d& vel_std) = 0;
     virtual void setInitPositionCov(const Matrix3d& pos_cov) = 0;
 
+    /**
+     * @brief Returns the latest estimated base velocity based on each individual leg velocity
+     * 
+     * @param[out] velocity of the base as determined from the leg
+     */
     virtual void getVelocitiesFromLegs(LegVectorMap & vd) = 0;
+
+    /**
+     * @brief Returns the latest estimated foot positions
+     * 
+     * @param[out] position of each foot as LegVectorMap 
+     */
     virtual void getFeetPositions(LegVectorMap & jd) = 0;
 
-  virtual void setGrf(const LegVectorMap& grf) = 0;
+    /**
+     * @brief Sets the ground reaction force in world-aligned orientation from external estimation
+     * 
+     * @param[in] grf ground reaction forces in world-aligned orientation
+     */
+    virtual void setGrf(const LegVectorMap& grf) = 0;
 
-  virtual void setSpeedLimit(const double& /*limit*/) {}
+    /**
+     * @brief Sets the speed limit above which odometry estimates are rejected
+     * 
+     * @param[in] limit velocity limit in m/s
+     */
+    virtual void setSpeedLimit(const double& /*limit*/) {}
 };
 } // namespace quadruped
 } // namespace pronto
