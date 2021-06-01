@@ -127,6 +127,9 @@ public:
     virtual std::string printMode();
     void setSpeedLimit(const double& limit) override;
 
+    FeetJacobians& getFeetJacobians() const { return feet_jacobians_; }
+    ForwardKinematics& getForwardKinematics() const { return forward_kinematics_; }
+
 protected:
     FeetJacobians& feet_jacobians_;
     ForwardKinematics& forward_kinematics_;
