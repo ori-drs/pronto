@@ -89,23 +89,19 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
 
   nh_.getParam(ins_param_prefix + "frame", imu_frame);
   std::string base_frame = "base";
+  nh.param<std::string>("base_link_name", base_frame, "base");
   Eigen::Isometry3d ins_to_body = Eigen::Isometry3d::Identity();
-  ins_to_body.translation() << 0.038, 0.062, 0.184;
-  ins_to_body.rotate(Eigen::Quaterniond(0,0,1,0));
-
-  while(nh_.ok()){
-      try{
-            geometry_msgs::TransformStamped temp_transform = tfBuffer.lookupTransform(base_frame, imu_frame,
-                                     ros::Time(0));
-
-            tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
-            ROS_INFO_STREAM("IMU to base transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");
-            break;
-          }
-          catch (const tf2::TransformException& ex){
-            ROS_ERROR("%s",ex.what());
-            ros::Duration(1.0).sleep();
-          }
+  while(nh_.ok()) {
+    try {
+      geometry_msgs::TransformStamped temp_transform = tfBuffer.lookupTransform(base_frame, imu_frame, ros::Time(0));
+      tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
+      ROS_INFO_STREAM("IMU (" << imu_frame <<") to base (" << base_frame << ") transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");
+      break;
+    }
+    catch (const tf2::TransformException& ex) {
+      ROS_ERROR("%s", ex.what());
+      ros::Duration(1.0).sleep();
+    }
   }
 
   quadruped::ImuBiasLockConfig cfg;
@@ -132,14 +128,14 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
   imu_arrow_.type = visualization_msgs::Marker::ARROW;
 
   imu_arrow_.action = visualization_msgs::Marker::ADD;
-  imu_arrow_.header.frame_id = "imu_link";
+  imu_arrow_.header.frame_id = imu_frame;
   imu_arrow_.points.resize(2);
   imu_arrow_.points[0].x = 0;
   imu_arrow_.points[0].y = 0;
   imu_arrow_.points[0].z = 0;
 
   base_arrow_ = imu_arrow_;
-  base_arrow_.header.frame_id = "base";
+  base_arrow_.header.frame_id = base_frame;
   base_arrow_.color.r = 0;
   base_arrow_.color.g = 1;
   bias_lock_module_.reset(new quadruped::ImuBiasLock(ins_to_body, cfg));
@@ -151,7 +147,6 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
 {  
   msgToImuMeasurement(*msg, bias_lock_imu_msg_);
   imu_arrow_.header.stamp = msg->header.stamp;
-
 
   imu_arrow_.points[1].x = 0.1*msg->linear_acceleration.x;
   imu_arrow_.points[1].y = 0.1*msg->linear_acceleration.y;
@@ -197,14 +192,14 @@ RBISUpdateInterface* ImuBiasLockBaseROS<JointStateT>::processMessage(const senso
 
   geometry_msgs::TransformStamped msg_temp = tf2::eigenToTransform(gravity_transform);
   msg_temp.child_frame_id = "gravity";
-  msg_temp.header.frame_id = "base";
+  msg_temp.header.frame_id = base_arrow_.header.frame_id;
   msg_temp.header.stamp = msg->header.stamp;
 
   broadcaster_.sendTransform(msg_temp);
 
   msg_temp = tf2::eigenToTransform(bias_transform);
   msg_temp.child_frame_id = "bias";
-  msg_temp.header.frame_id = "base";
+  msg_temp.header.frame_id = base_arrow_.header.frame_id;
   msg_temp.header.stamp = msg->header.stamp;
 
   broadcaster_.sendTransform(msg_temp);
