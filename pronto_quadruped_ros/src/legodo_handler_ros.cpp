@@ -160,13 +160,13 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
       prior_accel_msg.header.frame_id = base_link_name_;
       prior_accel_msg.header.stamp = ros::Time().fromNSec(nsec_);
-      prior_accel_msg.accel.linear.x = xdd_(0);
-      prior_accel_msg.accel.linear.y = xdd_(1);
-      prior_accel_msg.accel.linear.z = xdd_(2);
+      prior_accel_msg.accel.linear.x = xdd_.x();
+      prior_accel_msg.accel.linear.y = xdd_.y();
+      prior_accel_msg.accel.linear.z = xdd_.z();
 
-      prior_accel_msg.accel.angular.x = omegad_(0);
-      prior_accel_msg.accel.angular.y = omegad_(1);
-      prior_accel_msg.accel.angular.z = omegad_(2);
+      prior_accel_msg.accel.angular.x = omegad_.x();
+      prior_accel_msg.accel.angular.y = omegad_.y();
+      prior_accel_msg.accel.angular.z = omegad_.z();
 
       prior_accel_debug_.publish(prior_accel_msg);
 
@@ -190,13 +190,13 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       geometry_msgs::TwistStamped prior_vel_msg;
       prior_vel_msg.header.frame_id = base_link_name_;
       prior_vel_msg.header.stamp = ros::Time().fromNSec(nsec_);
-      prior_vel_msg.twist.linear.x = xd_(0);
-      prior_vel_msg.twist.linear.y = xd_(1);
-      prior_vel_msg.twist.linear.z = xd_(2);
+      prior_vel_msg.twist.linear.x = xd_.x();
+      prior_vel_msg.twist.linear.y = xd_.y();
+      prior_vel_msg.twist.linear.z = xd_.z();
 
-      prior_vel_msg.twist.angular.x = omega_(0);
-      prior_vel_msg.twist.angular.y = omega_(1);
-      prior_vel_msg.twist.angular.z = omega_(2);
+      prior_vel_msg.twist.angular.x = omega_.x();
+      prior_vel_msg.twist.angular.y = omega_.y();
+      prior_vel_msg.twist.angular.z = omega_.z();
       prior_velocity_debug_.publish(prior_vel_msg);
   }
 
@@ -238,16 +238,16 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
           // publish the estimated velocity for each individual leg
           for(int i=0; i<4; i++){
-              twist.twist.linear.x = veldebug[LegID(i)](0);
-              twist.twist.linear.y = veldebug[LegID(i)](1);
-              twist.twist.linear.z = veldebug[LegID(i)](2);
+              twist.twist.linear.x = veldebug[LegID(i)].x();
+              twist.twist.linear.y = veldebug[LegID(i)].y();
+              twist.twist.linear.z = veldebug[LegID(i)].z();
               vel_debug_[i].publish(twist);
           }
           // publish the estimated velocity from the leg odometer
           // before it gets passed to the filter
-          twist.twist.linear.x = xd_(0);
-          twist.twist.linear.y = xd_(1);
-          twist.twist.linear.z = xd_(2);
+          twist.twist.linear.x = xd_.x();
+          twist.twist.linear.y = xd_.y();
+          twist.twist.linear.z = xd_.z();
 
           vel_raw_.publish(twist);
       }
@@ -291,12 +291,12 @@ LegodoHandlerROS::Update* LegodoHandlerROS::processMessage(const sensor_msgs::Jo
     return computeVelocity();
 }
 
-bool LegodoHandlerROS::processMessageInit(const sensor_msgs::JointState */*msg*/,
-                                          const std::map<std::string, bool> &/*sensor_initialized*/,
-                                          const RBIS &/*default_state*/,
-                                          const RBIM &/*default_cov*/,
-                                          RBIS &/*init_state*/,
-                                          RBIM &/*init_cov*/)
+bool LegodoHandlerROS::processMessageInit(const sensor_msgs::JointState* /*msg*/,
+                                          const std::map<std::string, bool>& /*sensor_initialized*/,
+                                          const RBIS& /*default_state*/,
+                                          const RBIM& /*default_cov*/,
+                                          RBIS& /*init_state*/,
+                                          RBIM& /*init_cov*/)
 {
     // do nothing for now, we don't expect to initialize with the leg odometry
     return true;
@@ -309,12 +309,12 @@ FootSensorLegodoHandlerROS::FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
 {
 }
 
-bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState */*msg*/,
-                                                    const std::map<std::string, bool> &/*sensor_initialized*/,
-                                                    const RBIS &/*default_state*/,
-                                                    const RBIM &/*default_cov*/,
-                                                    RBIS &/*init_state*/,
-                                                    RBIM &/*init_cov*/)
+bool FootSensorLegodoHandlerROS::processMessageInit(const sensor_msgs::JointState* /*msg*/,
+                                                    const std::map<std::string, bool>& /*sensor_initialized*/,
+                                                    const RBIS& /*default_state*/,
+                                                    const RBIM& /*default_cov*/,
+                                                    RBIS& /*init_state*/,
+                                                    RBIM& /*init_cov*/)
 {
   return true;
 }
