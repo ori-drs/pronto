@@ -88,8 +88,10 @@ protected:
     uint16_t downsample_factor_;
     uint64_t utime_offset_;
 
+    // Debug Publishers
     std::vector<ros::Publisher> vel_debug_;
     std::vector<ros::Publisher> grf_debug_;
+    std::vector<ros::Publisher> grf_in_foot_frame_debug_;
     ros::Publisher vel_raw_;
     ros::Publisher prior_joint_accel_debug_;
     ros::Publisher prior_velocity_debug_;

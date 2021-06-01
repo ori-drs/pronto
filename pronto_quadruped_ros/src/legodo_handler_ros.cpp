@@ -85,6 +85,7 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
         for(int i=0; i<4; i++){
             vel_debug_.push_back(nh.advertise<geometry_msgs::TwistStamped>(leg_names[i] + "_veldebug",10));
             grf_debug_.push_back(nh.advertise<geometry_msgs::WrenchStamped>(leg_names[i]+ "_grf", 10));
+            grf_in_foot_frame_debug_.push_back(nh.advertise<geometry_msgs::WrenchStamped>(leg_names[i]+ "_grf_in_foot", 10));
         }
 
         vel_raw_ = nh.advertise<geometry_msgs::TwistStamped>("vel_raw", 10);
@@ -144,10 +145,21 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       wrench_msg_.header.stamp = ros::Time().fromNSec(nsec_);
       stance_msg_.header.stamp = wrench_msg_.header.stamp;
       for(int i = 0; i<4; i++){
-          wrench_msg_.wrench.force.x = grf[LegID(i)](0);
-          wrench_msg_.wrench.force.y = grf[LegID(i)](1);
-          wrench_msg_.wrench.force.z = grf[LegID(i)](2);
+          // Publish GRF in world-aligned frame (for plotting)
+          wrench_msg_.header.frame_id = "";
+          wrench_msg_.wrench.force.x = grf[LegID(i)].x();
+          wrench_msg_.wrench.force.y = grf[LegID(i)].y();
+          wrench_msg_.wrench.force.z = grf[LegID(i)].z();
           grf_debug_[i].publish(wrench_msg_);
+
+          // Publish GRF in locally-aligned (foot) frame (for visualisation)
+          Eigen::Matrix3d R = static_cast<LegOdometer*>(&leg_odometer_)->getForwardKinematics().getFootOrientation(q_, LegID(i));
+          Eigen::Vector3d grf_in_foot_frame = R.transpose() * grf[LegID(i)];
+          wrench_msg_.header.frame_id = foot_names_[i];
+          wrench_msg_.wrench.force.x = grf_in_foot_frame.x();
+          wrench_msg_.wrench.force.y = grf_in_foot_frame.y();
+          wrench_msg_.wrench.force.z = grf_in_foot_frame.z();
+          grf_in_foot_frame_debug_[i].publish(wrench_msg_);
       }
       stance_msg_.lf = stance_[LegID::LF] * 0.4;
       stance_msg_.rf = stance_[LegID::RF] * 0.3;
