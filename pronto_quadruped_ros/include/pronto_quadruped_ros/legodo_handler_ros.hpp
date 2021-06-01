@@ -58,6 +58,9 @@ protected:
     StanceEstimatorBase& stance_estimator_;
     LegOdometerBase& leg_odometer_;
 
+    std::string base_link_name_;           ///< Name of the base_link
+    std::vector<std::string> foot_names_;  ///< Name of the feet frames (in LF, RF, LH, RH order)
+
     Eigen::Vector3d r_legodo_;
     Eigen::Matrix3d cov_legodo_;
 

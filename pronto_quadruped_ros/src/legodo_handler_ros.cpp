@@ -73,6 +73,13 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     // }
     // imu_sub_ = nh_.subscribe(imu_topic_, 100, &LegodoHandlerROS::imuCallback, this);
 
+    nh.param<std::string>("base_link_name", base_link_name_, "base");
+    foot_names_.resize(4);
+    nh.param<std::string>("LF_FOOT_name", foot_names_[0], "LF_FOOT");
+    nh.param<std::string>("RF_FOOT_name", foot_names_[1], "RF_FOOT");
+    nh.param<std::string>("LH_FOOT_name", foot_names_[2], "LH_FOOT");
+    nh.param<std::string>("RH_FOOT_name", foot_names_[3], "RH_FOOT");
+
     const std::vector<std::string> leg_names = {"lf", "rf", "lh", "rh"};
     if(debug_){
         for(int i=0; i<4; i++){
@@ -151,7 +158,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
       // Publish prior accel
       geometry_msgs::AccelStamped prior_accel_msg;
 
-      prior_accel_msg.header.frame_id = "base";  // TODO: Expose base frame as parameter
+      prior_accel_msg.header.frame_id = base_link_name_;
       prior_accel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_accel_msg.accel.linear.x = xdd_(0);
       prior_accel_msg.accel.linear.y = xdd_(1);
@@ -181,7 +188,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
 
       // Publish prior velocity
       geometry_msgs::TwistStamped prior_vel_msg;
-      prior_vel_msg.header.frame_id = "base";  // TODO: Expose base frame as parameter
+      prior_vel_msg.header.frame_id = base_link_name_;
       prior_vel_msg.header.stamp = ros::Time().fromNSec(nsec_);
       prior_vel_msg.twist.linear.x = xd_(0);
       prior_vel_msg.twist.linear.y = xd_(1);
