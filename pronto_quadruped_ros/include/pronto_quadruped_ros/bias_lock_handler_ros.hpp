@@ -93,6 +93,7 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
   Eigen::Isometry3d ins_to_body = Eigen::Isometry3d::Identity();
   while(nh_.ok()) {
     try {
+      // lookupTransform API is : target_frame, source_frame
       geometry_msgs::TransformStamped temp_transform = tfBuffer.lookupTransform(base_frame, imu_frame, ros::Time(0));
       tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
       ROS_INFO_STREAM("IMU (" << imu_frame <<") to base (" << base_frame << ") transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");

@@ -16,19 +16,18 @@ InsHandlerROS::InsHandlerROS(ros::NodeHandle &nh) : nh_(nh)
     std::string imu_frame = "imu";
 
     nh_.getParam(ins_param_prefix + "frame", imu_frame);
-    const std::string base_frame = "base";
-    Eigen::Affine3d ins_to_body;
-    while(nh_.ok()){
-        try{
-            geometry_msgs::TransformStamped temp_transform;
-            temp_transform = tf_imu_to_body_buffer_.lookupTransform(base_frame, imu_frame, ros::Time(0));
-
+    std::string base_frame = "base";
+    nh_.param<std::string>("base_link_name", base_frame, "base");
+    Eigen::Isometry3d ins_to_body = Eigen::Isometry3d::Identity();
+    while(nh_.ok()) {
+        try {
+            geometry_msgs::TransformStamped temp_transform = tf_imu_to_body_buffer_.lookupTransform(base_frame, imu_frame, ros::Time(0));
             tf::transformMsgToEigen(temp_transform.transform, ins_to_body);
-            ROS_INFO_STREAM("IMU to base transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");
-
+            ROS_INFO_STREAM("IMU (" << imu_frame <<") to base (" << base_frame << ") transform: translation=(" << ins_to_body.translation().transpose() << "), rotation=(" << ins_to_body.rotation() << ")");
             break;
-        } catch (const tf2::TransformException& ex){
-            ROS_ERROR("%s",ex.what());
+        }
+        catch (const tf2::TransformException& ex) {
+            ROS_ERROR("%s", ex.what());
             ros::Duration(1.0).sleep();
         }
     }
