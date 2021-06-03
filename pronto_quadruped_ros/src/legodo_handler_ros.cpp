@@ -153,7 +153,8 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           grf_debug_[i].publish(wrench_msg_);
 
           // Publish GRF in locally-aligned (foot) frame (for visualisation)
-          Eigen::Matrix3d R = static_cast<LegOdometer*>(&leg_odometer_)->getForwardKinematics().getFootOrientation(q_, LegID(i));
+          // TODO: Fix the upstream API to not require a cast
+          Eigen::Matrix3d R = reinterpret_cast<LegOdometer*>(&leg_odometer_)->getForwardKinematics().getFootOrientation(q_, LegID(i));
           Eigen::Vector3d grf_in_foot_frame = R.transpose() * grf[LegID(i)];
           wrench_msg_.header.frame_id = foot_names_[i];
           wrench_msg_.wrench.force.x = grf_in_foot_frame.x();
@@ -257,6 +258,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
           }
           // publish the estimated velocity from the leg odometer
           // before it gets passed to the filter
+          twist.header.frame_id = base_link_name_;
           twist.twist.linear.x = xd_.x();
           twist.twist.linear.y = xd_.y();
           twist.twist.linear.z = xd_.z();
@@ -269,8 +271,9 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                                 cov_legodo_,
                                                 Update::legodo,
                                                 utime_);
+  } else {
+    ROS_WARN("[LegodoHandlerBase::computeVelocity] Could not estimate velocity");
   }
-  //std::cerr << "[LegodoHandlerBase::computeVelocity] Something went wrong!" << std::endl;
   return nullptr;
 }
 

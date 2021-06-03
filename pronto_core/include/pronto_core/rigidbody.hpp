@@ -23,7 +23,7 @@ static const Eigen::Vector3d g_vec = -g_val * Eigen::Vector3d::UnitZ();
  *
  * The chi part of the state vector represents attitude perturbations (exponential coordinates)
  *
- * velocity, angular velocity, and acceleration are tracked in body coordiates
+ * velocity, angular velocity, and acceleration are tracked in body coordinates
  * acceleration is the "sensed" acceleration including the gravity vector (what an IMU onboard would measure)
  */
 class RigidBodyState {
@@ -173,13 +173,11 @@ public:
   }
 
   static Eigen::Affine3d getTransTwistUnscaled(const Eigen::Vector3d & unscaledAngularVelocity,
-      const Eigen::Vector3d & unscailedLinearVelocity);
+      const Eigen::Vector3d & unscaledLinearVelocity);
 
   static Eigen::Affine3d getTransTwist(const Eigen::Vector3d & angularVelocity, const Eigen::Vector3d & linearVelocity,
       double time);
 
   friend std::ostream& operator<<(std::ostream& output, const RigidBodyState & state);
 };
-
-}
-
+}  // namespace pronto

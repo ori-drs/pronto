@@ -54,10 +54,26 @@ public:
      * takes the identifier of the leg of interest.
      */
     ///@{
+    [[deprecated("This method is deprecated and will be removed. Please use getFootJacobian(q, leg) instead.")]]
     virtual FootJac getFootJacobianLF(const JointState& q) { return getFootJacobian(q, LegID::LF); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootJacobian(q, leg) instead.")]]
     virtual FootJac getFootJacobianRF(const JointState& q) { return getFootJacobian(q, LegID::RF); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootJacobian(q, leg) instead.")]]
     virtual FootJac getFootJacobianLH(const JointState& q) { return getFootJacobian(q, LegID::LH); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootJacobian(q, leg) instead.")]]
     virtual FootJac getFootJacobianRH(const JointState& q) { return getFootJacobian(q, LegID::RH); }
+
+    /**
+     * @brief Get the 3x3 Foot Jacobian
+     * 
+     * This function returns the 3x3 Jacobian that multiplied by the
+     * velocity of the leg joints yields the linear velocity of the foot,
+     * expressed in the base reference frame.
+     * 
+     * @param[in] q Joint congiruation
+     * @param[in] leg Leg identifier
+     * @return FootJac 3x3 foot jacobian
+     */
     virtual FootJac getFootJacobian(const JointState& q, const LegID& leg) = 0;
 
     virtual FootJac getFootJacobianAngular(const pronto::quadruped::JointState& q,
