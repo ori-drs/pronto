@@ -109,13 +109,6 @@ public:
         std::cerr << "[LegOdometer::getOrientation] Function not implemented yet!" << std::endl;
     }
 
-    /**
-     * @brief setGrfDelta sets the latest computed Delta between the current
-     * and the previous GRF. This is relevant to compute the covariance
-     * if the mode IMPACT_SIGMA is used.
-     * @param grf_delta
-     */
-    virtual void setGrfDelta(const LegScalarMap& grf_delta);
 
     // Debugging methods
     void getVelocitiesFromLegs(LegVectorMap & vd) override;
@@ -129,10 +122,13 @@ public:
     void setGrf(const LegVectorMap& grf) override;
 
     // Configuration methods
-    virtual void setMode(const SigmaMode  s_mode, const AverageMode a_mode);
+    virtual void setMode(const SigmaMode s_mode, const AverageMode a_mode);
     virtual void getMode(SigmaMode& s_mode, AverageMode& a_mode);
     virtual std::string printMode();
     void setSpeedLimit(const double& limit) override;
+
+    FeetJacobians& getFeetJacobians() const { return feet_jacobians_; }
+    ForwardKinematics& getForwardKinematics() const { return forward_kinematics_; }
 
 protected:
     FeetJacobians& feet_jacobians_;
@@ -161,12 +157,12 @@ protected:
     LegVectorMap base_vel_leg_;
     LegVectorMap foot_pos_;
 
-    Eigen::Vector3d xd_b_; // estimated velocity, base frame
+    Eigen::Vector3d xd_b_;  ///< estimated velocity, base frame
 
     Eigen::Array4d grf_delta_;
     Eigen::Array4d grf_;
 
-    double speed_limit_; // upper limit of the absolute norm of the linear velocity
+    double speed_limit_; // upper limit of the absolute norm of the linear velocity [m/s]
 };
 } // namespace quadruped
 } // namespace pronto

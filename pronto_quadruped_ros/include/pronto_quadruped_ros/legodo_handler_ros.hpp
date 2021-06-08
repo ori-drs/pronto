@@ -45,22 +45,24 @@ class LegodoHandlerBase {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 public:
-    using  LegScalarMap = LegDataMap<double>;
+    using LegScalarMap = LegDataMap<double>;
     using Update = RBISUpdateInterface;
 
 public:
     LegodoHandlerBase(ros::NodeHandle& nh,
                       StanceEstimatorBase& fcf,
                       LegOdometerBase& fj);
+    virtual ~LegodoHandlerBase() = default;
 
 protected:
     StanceEstimatorBase& stance_estimator_;
     LegOdometerBase& leg_odometer_;
 
-    Eigen::Vector3d r_legodo;
-    Eigen::Vector3d R_legodo_init;
-    Eigen::Vector3d r_legodo_init;
-    Eigen::Matrix3d cov_legodo;
+    std::string base_link_name_;           ///< Name of the base_link
+    std::vector<std::string> foot_names_;  ///< Name of the feet frames (in LF, RF, LH, RH order)
+
+    Eigen::Vector3d r_legodo_;
+    Eigen::Matrix3d cov_legodo_;
 
     JointState q_;
     JointState qd_;
@@ -70,11 +72,11 @@ protected:
     RBIS head_state_;
     RBIM head_cov_;
 
-    Eigen::Vector3d xd_;
-    Eigen::Vector3d xdd_;
-    Eigen::Vector3d omega_;
-    Eigen::Vector3d omegad_;
-    Eigen::Quaterniond orientation_;
+    Eigen::Vector3d xd_;               ///< Linear velocity of the base frame, expressed in inertial frame
+    Eigen::Vector3d xdd_;              ///< Net linear acceleration of the base frame without gravity, expressed in inertial frame
+    Eigen::Vector3d omega_;            ///< Angular velocity of the base, expressed in base frame
+    Eigen::Vector3d omegad_;           ///< Angular acceleration of the base, expressed in base frame
+    Eigen::Quaterniond orientation_;   ///< Orientation of the base with respect to the inertial frame, expressed in base frame
 
     LegBoolMap stance_;
     LegScalarMap stance_prob_;
@@ -86,8 +88,10 @@ protected:
     uint16_t downsample_factor_;
     uint64_t utime_offset_;
 
+    // Debug Publishers
     std::vector<ros::Publisher> vel_debug_;
     std::vector<ros::Publisher> grf_debug_;
+    std::vector<ros::Publisher> grf_in_foot_frame_debug_;
     ros::Publisher vel_raw_;
     ros::Publisher prior_joint_accel_debug_;
     ros::Publisher prior_velocity_debug_;
@@ -113,12 +117,11 @@ protected:
 class LegodoHandlerROS : public pronto::SensingModule<sensor_msgs::JointState>,
                          public LegodoHandlerBase
 {
-
-
 public:
     LegodoHandlerROS(ros::NodeHandle& nh,
                      StanceEstimatorBase &stance_est,
                      LegOdometerBase &legodo);
+    virtual ~LegodoHandlerROS() = default;
 
     Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
@@ -138,6 +141,7 @@ public:
   ForceSensorLegodoHandlerROS(ros::NodeHandle& nh,
                               StanceEstimatorBase& stance_est,
                               LegOdometerBase& legodo);
+  virtual ~ForceSensorLegodoHandlerROS() = default;
 
   Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
@@ -149,7 +153,6 @@ public:
                           RBIM &init_cov) override;
 
   void processSecondaryMessage(const pronto_msgs::QuadrupedForceTorqueSensors &msg) override;
-
 };
 
 class FootSensorLegodoHandlerROS : public LegodoHandlerBase,
@@ -160,6 +163,7 @@ public:
   FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
                              StanceEstimatorBase& stance_est,
                              LegOdometerBase& legodo);
+  virtual ~FootSensorLegodoHandlerROS() = default;
 
   Update * processMessage(const sensor_msgs::JointState *msg, StateEstimator *est) override;
 
@@ -171,7 +175,6 @@ public:
                           RBIM &init_cov) override;
 
   void processSecondaryMessage(const pronto_msgs::QuadrupedStance &msg) override;
-
 };
 
 }  // namespace quadruped

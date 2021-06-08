@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>pronto_core</name>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <description>
     The pronto_core package contains the EKF and the main 
     modules to perform state estimation, including: inertial, gps, optical
@@ -19,9 +19,4 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <test_depend>rosunit</test_depend>
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
 </package>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>pronto_quadruped_ros</name>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <description>The pronto_quadruped_ros package</description>
 
   <author email="mcamurri@robots.ox.ac.uk">Marco Camurri</author>
@@ -23,9 +23,4 @@
   <depend>pronto_msgs</depend>
   <depend>visualization_msgs</depend>
   <depend>eigen_conversions</depend>
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
-
-  </export>
 </package>

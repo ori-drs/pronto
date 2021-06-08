@@ -47,7 +47,7 @@ public:
 public:
     ImuBiasLock(const Eigen::Isometry3d& ins_to_body_ = Eigen::Isometry3d::Identity(),
                 const ImuBiasLockConfig& cfg = ImuBiasLockConfig());
-    inline virtual ~ImuBiasLock()  {}
+    virtual ~ImuBiasLock() {}
 
     RBISUpdateInterface* processMessage(const ImuMeasurement *msg,
                                         StateEstimator *est) override;
@@ -61,36 +61,36 @@ public:
 
     void processSecondaryMessage(const pronto::JointState& msg) override;
 public:
-    inline Eigen::Vector3d getCurrentOmega() {
+    inline Eigen::Vector3d getCurrentOmega() const {
       return current_omega_;
     }
-    inline Eigen::Vector3d getCurrentAccel() {
+    inline Eigen::Vector3d getCurrentAccel() const {
       return current_accel_;
     }
-    inline Eigen::Vector3d getCurrentCorrectedAccel() {
+    inline Eigen::Vector3d getCurrentCorrectedAccel() const {
       return current_accel_corrected_;
     }
 
-    inline Eigen::Vector3d getCurrentAccelBias(){
+    inline Eigen::Vector3d getCurrentAccelBias() const {
       return accel_bias_;
     }
-    inline Eigen::Vector3d getCurrentProperAccelBias(){
+    inline Eigen::Vector3d getCurrentProperAccelBias() const {
       return proper_accel_bias_;
     }
-    inline Eigen::Quaterniond getGVec(){
+    inline Eigen::Quaterniond getGVec() const {
       return quat_g_vec;
     }
 
-    inline Eigen::Isometry3d getGravityTransform() {
-        return gravity_transform_;
+    inline Eigen::Isometry3d getGravityTransform() const {
+      return gravity_transform_;
     }
 
-    inline Eigen::Isometry3d getBiasTransform() {
-        return bias_transform_;
+    inline Eigen::Isometry3d getBiasTransform() const {
+      return bias_transform_;
     }
 
-    inline bool getRecordStatus() {
-        return do_record_;
+    inline bool getRecordStatus() const {
+      return do_record_;
     }
 
 
@@ -126,7 +126,6 @@ protected:
     bool isStatic(const pronto::JointState& state);
     Eigen::Vector3d getBias(const std::vector<Eigen::Vector3d>& history) const;
     Eigen::Matrix3d getBiasCovariance(const std::vector<Eigen::Vector3d>& history) const;
-
 };
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

@@ -96,9 +96,5 @@ static const JointIdentifiers orderedJointIDs[jointsCount] =
 
 static const LinkIdentifiers orderedLinkIDs[linksCount] =
     {TRUNK,LF_HIPASSEMBLY,LF_UPPERLEG,LF_LOWERLEG,RF_HIPASSEMBLY,RF_UPPERLEG,RF_LOWERLEG,LH_HIPASSEMBLY,LH_UPPERLEG,LH_LOWERLEG,RH_HIPASSEMBLY,RH_UPPERLEG,RH_LOWERLEG};
-
-
-
 }
 }
-
