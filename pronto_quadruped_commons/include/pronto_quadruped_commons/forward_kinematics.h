@@ -45,18 +45,18 @@ public:
     ForwardKinematics() = default;
     virtual ~ForwardKinematics() = default;
 
-    virtual Vector3d getFootPosLF(const JointState& q) = 0;
-    virtual Vector3d getFootPosRF(const JointState& q) = 0;
-    virtual Vector3d getFootPosLH(const JointState& q) = 0;
-    virtual Vector3d getFootPosRH(const JointState& q) = 0;
+    virtual Vector3d getFootPosLF(const JointState& q) { return getFootPos(q, LegID::LF); }
+    virtual Vector3d getFootPosRF(const JointState& q) { return getFootPos(q, LegID::RF); }
+    virtual Vector3d getFootPosLH(const JointState& q) { return getFootPos(q, LegID::LH); }
+    virtual Vector3d getFootPosRH(const JointState& q) { return getFootPos(q, LegID::RH); }
     virtual Vector3d getFootPos  (const JointState& q, const LegID& leg) = 0;
     inline virtual LegVectorMap getFeetPos(const JointState& q)
     {
         LegVectorMap feetPos(Vector3d::Zero());
-        feetPos[quadruped::LF] = getFootPosLF(q);
-        feetPos[quadruped::RF] = getFootPosRF(q);
-        feetPos[quadruped::LH] = getFootPosLH(q);
-        feetPos[quadruped::RH] = getFootPosRH(q);
+        feetPos[quadruped::LF] = getFootPos(q, LegID::LF);
+        feetPos[quadruped::RF] = getFootPos(q, LegID::RF);
+        feetPos[quadruped::LH] = getFootPos(q, LegID::LH);
+        feetPos[quadruped::RH] = getFootPos(q, LegID::RH);
         return feetPos;
     }
     virtual Matrix3d getFootOrientation(const JointState& q, const LegID& leg) = 0;
