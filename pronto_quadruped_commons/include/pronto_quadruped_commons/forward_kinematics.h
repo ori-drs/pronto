@@ -45,9 +45,13 @@ public:
     ForwardKinematics() = default;
     virtual ~ForwardKinematics() = default;
 
+    [[deprecated("This method is deprecated and will be removed. Please use getFootPos(q, LegID::LF) instead.")]]
     virtual Vector3d getFootPosLF(const JointState& q) { return getFootPos(q, LegID::LF); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootPos(q, LegID::RF) instead.")]]
     virtual Vector3d getFootPosRF(const JointState& q) { return getFootPos(q, LegID::RF); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootPos(q, LegID::LH) instead.")]]
     virtual Vector3d getFootPosLH(const JointState& q) { return getFootPos(q, LegID::LH); }
+    [[deprecated("This method is deprecated and will be removed. Please use getFootPos(q, LegID::RH) instead.")]]
     virtual Vector3d getFootPosRH(const JointState& q) { return getFootPos(q, LegID::RH); }
     virtual Vector3d getFootPos  (const JointState& q, const LegID& leg) = 0;
     inline virtual LegVectorMap getFeetPos(const JointState& q)

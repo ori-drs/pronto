@@ -62,16 +62,8 @@ public:
     FeetContactForces() {}
     virtual ~FeetContactForces() {}
 
-/**/
     /**
-     * @brief getFootGRF computes the Ground Reaction Forces at the foot of a
-     * specific leg, according to the dynamic equation:
-     * \f[
-     * \mathbf{f} =\Big(J_{c,q}\Big)^{\dagger} \Big(-{\tau} +
-     * h_q(\mathbf{q}, \dot{\mathbf{q}}) + F^T(\mathbf{q})
-     * [\ddot{\mathbf{x}}\;\; \dot{{\omega}}]^T +
-     *  M(\mathbf{q})\ddot{\mathbf{q}}\Big)
-     * \f]
+     * @brief Same as getFootGRF() but with returns Vector3d object. Overloaded by default.
      *
      * @param[in] q Joint position, (measured by encoders)
      * @param[in] qd Joint velocity (computed from encoder positions)
@@ -96,10 +88,90 @@ public:
                                 const Vector3d& xd = Vector3d::Zero(),
                                 const Vector3d& xdd = Vector3d::Zero(),
                                 const Vector3d& omega = Vector3d::Zero(),
-                                const Vector3d& omegad = Vector3d::Zero()) = 0;
+                                const Vector3d& omegad = Vector3d::Zero()) {
+        Vector3d res;
+        (void)getFootGRF(q, qd, tau, orient, leg, res, qdd, xd, xdd, omega, omegad);
+        return res;
+    }
 
     /**
-     * @brief same as getFootGRF() but with output as parameter
+     * @brief Same as getFootGRF() but returns GRF for all legs
+     * 
+     * @param[in] q Joint position, (measured by encoders)
+     * @param[in] qd Joint velocity (computed from encoder positions)
+     * @param[in] tau Joint torque (computed/measured by force/torque sensors)
+     * @param[in] orient Base orientation, expressed in world frame as Quaternion
+     * @param[out] feet_grf data structure which associates the force at the
+     * end effector for each leg
+     * @param[in] qdd Joint acceleration (computed from encoder position)
+     * @param[in] xd Base linear velocity (estimated)
+     * @param[in] xdd Base absolute acceleration (computed from IMU).
+     * Note that this is NOT the proper acceleration (i.e., the IMU values)!
+     * @param[in] omega Base angular velocity (measured from IMU)
+     * @param[in] omegad Base angular acceleration (derived from IMU gyro)
+     * @return a boolean indicating whether the computation was successful or
+     * not
+     */
+    virtual bool getFeetGRF(const JointState& q,
+                            const JointState& qd,
+                            const JointState& tau,
+                            const Quaterniond& orient,
+                            LegVectorMap& feet_grf,
+                            const JointState& qdd = JointState::Zero(),
+                            const Vector3d& xd = Vector3d::Zero(),
+                            const Vector3d& xdd = Vector3d::Zero(),
+                            const Vector3d& omega = Vector3d::Zero(),
+                            const Vector3d& omegad = Vector3d::Zero()) {
+        bool res_lf = getFootGRF(q, qd, tau, orient, LegID::LF, feet_grf[LegID::LF], qdd, xd, xdd, omega, omegad);
+        bool res_rf = getFootGRF(q, qd, tau, orient, LegID::RF, feet_grf[LegID::RF], qdd, xd, xdd, omega, omegad);
+        bool res_lh = getFootGRF(q, qd, tau, orient, LegID::LH, feet_grf[LegID::LH], qdd, xd, xdd, omega, omegad);
+        bool res_rh = getFootGRF(q, qd, tau, orient, LegID::RH, feet_grf[LegID::RH], qdd, xd, xdd, omega, omegad);
+
+        return (res_lf && res_rf && res_lh && res_rh);
+    }
+
+    /**
+     * @brief Same as getFootGRF() but returns GRF for all legs as a LegVectorMap
+     * 
+     * @param[in] q Joint position, (measured by encoders)
+     * @param[in] qd Joint velocity (computed from encoder positions)
+     * @param[in] tau Joint torque (computed/measured by force/torque sensors)
+     * @param[in] orient Base orientation, expressed in world frame as Quaternion
+     * @param[out] feet_grf data structure which associates the force at the
+     * end effector for each leg
+     * @param[in] qdd Joint acceleration (computed from encoder position)
+     * @param[in] xd Base linear velocity (estimated)
+     * @param[in] xdd Base absolute acceleration (computed from IMU).
+     * Note that this is NOT the proper acceleration (i.e., the IMU values)!
+     * @param[in] omega Base angular velocity (measured from IMU)
+     * @param[in] omegad Base angular acceleration (derived from IMU gyro)
+     * @return a data structure which associates the force at the
+     * end effector for each leg
+     */
+    virtual LegVectorMap getFeetGRF(const JointState& q,
+                                    const JointState& qd,
+                                    const JointState& tau,
+                                    const Quaterniond& orient,
+                                    const JointState& qdd = JointState::Zero(),
+                                    const Vector3d& xd = Vector3d::Zero(),
+                                    const Vector3d& xdd = Vector3d::Zero(),
+                                    const Vector3d& omega = Vector3d::Zero(),
+                                    const Vector3d& omegad = Vector3d::Zero()) {
+        LegVectorMap res;
+        (void)getFeetGRF(q, qd, tau, orient, res, qdd, xd, xdd, omega, omegad);
+        return res;
+    }
+
+    /**
+     * @brief getFootGRF computes the Ground Reaction Forces at the foot of a
+     * specific leg, according to the dynamic equation:
+     * \f[
+     * \mathbf{f} =\Big(J_{c,q}\Big)^{\dagger} \Big(-{\tau} +
+     * h_q(\mathbf{q}, \dot{\mathbf{q}}) + F^T(\mathbf{q})
+     * [\ddot{\mathbf{x}}\;\; \dot{{\omega}}]^T +
+     *  M(\mathbf{q})\ddot{\mathbf{q}}\Big)
+     * \f]
+     * 
      * @param[in] q Joint position, (measured by encoders)
      * @param[in] qd Joint velocity (computed from encoder positions)
      * @param[in] tau Joint torque (computed/measured by force/torque sensors)
@@ -126,61 +198,6 @@ public:
                             const Vector3d& xdd = Vector3d::Zero(),
                             const Vector3d& omega = Vector3d::Zero(),
                             const Vector3d& omegad = Vector3d::Zero()) = 0;
-
-    /**
-     * @brief same as getFootGRF() but for all legs
-     * @param[in] q Joint position, (measured by encoders)
-     * @param[in] qd Joint velocity (computed from encoder positions)
-     * @param[in] tau Joint torque (computed/measured by force/torque sensors)
-     * @param[in] orient Base orientation, expressed in world frame as Quaternion
-     * @param[out] feet_grf data structure which associates the force at the
-     * end effector for each leg
-     * @param[in] qdd Joint acceleration (computed from encoder position)
-     * @param[in] xd Base linear velocity (estimated)
-     * @param[in] xdd Base absolute acceleration (computed from IMU).
-     * Note that this is NOT the proper acceleration (i.e., the IMU values)!
-     * @param[in] omega Base angular velocity (measured from IMU)
-     * @param[in] omegad Base angular acceleration (derived from IMU gyro)
-     * @return a boolean indicating whether the computation was successful or
-     * not
-     */
-    virtual bool getFeetGRF(const JointState& q,
-                            const JointState& qd,
-                            const JointState& tau,
-                            const Quaterniond& orient,
-                            LegVectorMap& feet_grf,
-                            const JointState& qdd = JointState::Zero(),
-                            const Vector3d& xd = Vector3d::Zero(),
-                            const Vector3d& xdd = Vector3d::Zero(),
-                            const Vector3d& omega = Vector3d::Zero(),
-                            const Vector3d& omegad = Vector3d::Zero()) = 0;
-
-    /**
-     * @brief same as getFootGRF() but for all legs
-     * @param[in] q Joint position, (measured by encoders)
-     * @param[in] qd Joint velocity (computed from encoder positions)
-     * @param[in] tau Joint torque (computed/measured by force/torque sensors)
-     * @param[in] orient Base orientation, expressed in world frame as Quaternion
-     * @param[out] feet_grf data structure which associates the force at the
-     * end effector for each leg
-     * @param[in] qdd Joint acceleration (computed from encoder position)
-     * @param[in] xd Base linear velocity (estimated)
-     * @param[in] xdd Base absolute acceleration (computed from IMU).
-     * Note that this is NOT the proper acceleration (i.e., the IMU values)!
-     * @param[in] omega Base angular velocity (measured from IMU)
-     * @param[in] omegad Base angular acceleration (derived from IMU gyro)
-     * @return a data structure which associates the force at the
-     * end effector for each leg
-     */
-    virtual LegVectorMap getFeetGRF(const JointState& q,
-                                    const JointState& qd,
-                                    const JointState& tau,
-                                    const Quaterniond& orient,
-                                    const JointState& qdd = JointState::Zero(),
-                                    const Vector3d& xd = Vector3d::Zero(),
-                                    const Vector3d& xdd = Vector3d::Zero(),
-                                    const Vector3d& omega = Vector3d::Zero(),
-                                    const Vector3d& omegad = Vector3d::Zero()) = 0;
 
     /**
      * @brief setContactPoint sets the contact point w.r.t. the center of the ball foot (in foot frame)
