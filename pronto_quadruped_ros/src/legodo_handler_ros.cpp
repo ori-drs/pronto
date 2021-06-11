@@ -272,7 +272,7 @@ LegodoHandlerBase::Update* LegodoHandlerBase::computeVelocity(){
                                                 Update::legodo,
                                                 utime_);
   } else {
-    ROS_WARN("[LegodoHandlerBase::computeVelocity] Could not estimate velocity");
+    ROS_WARN_THROTTLE(1, "[LegodoHandlerBase::computeVelocity] Could not estimate velocity");
   }
   return nullptr;
 }
