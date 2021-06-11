@@ -68,7 +68,7 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
     gyro_bias_history_.push_back(current_omega_);
     accel_bias_history_.push_back(current_accel_corrected_);
     if(gyro_bias_history_.size() > max_size){
-      std::cout << "Stop recording (size too big)" << "\n";
+      std::cout << "Stop recording (size too big)\n";
       std::cout << gyro_bias_history_.size() << "\n";
       do_record_ = false;
     } else {
@@ -123,12 +123,12 @@ void ImuBiasLock::processSecondaryMessage(const pronto::JointState &msg){
 
   if(do_record_ && !is_static_){
       if (debug_) {
-        std::cout << " history is " << gyro_bias_history_.size() << " long" << "\n";
-        std::cout << "+++++++++++++++++++ STOP ESTIMATING" << "\n";
+        std::cout << " history is " << gyro_bias_history_.size() << " long\n";
+        std::cout << "+++++++++++++++++++ STOP ESTIMATING\n";
       }
       do_record_ = false;
   } else if (!do_record_ && is_static_){
-      if (debug_) std::cout << "+++++++++++++++++++ ESTIMATING BIAS" << "\n";
+      if (debug_) std::cout << "+++++++++++++++++++ ESTIMATING BIAS\n";
       do_record_ = true;
   }
 }
@@ -137,7 +137,7 @@ bool ImuBiasLock::isStatic(const pronto::JointState &state)
 {
   // check if we are in four contact (poor's man version, knee torque threshold)
   if(state.joint_effort.size() < 12){
-    std::cerr << "++++++++++++++ not enough joints " << state.joint_effort.size() << " < 12 !!!" << "\n";
+    std::cerr << "++++++++++++++ not enough joints " << state.joint_effort.size() << " < 12 !!!\n";
     return false;
   }
 

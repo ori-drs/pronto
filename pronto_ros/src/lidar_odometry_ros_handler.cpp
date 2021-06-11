@@ -7,7 +7,7 @@ LidarOdometryHandlerROS::LidarOdometryHandlerROS(ros::NodeHandle& nh) : use_meas
   std::string prefix = "scan_matcher/";
   std::string mode_str = "pos";
   if(!nh.getParam(prefix + "mode", mode_str)){
-    ROS_WARN_STREAM("Couldn't read param \"" << prefix << "mode" << "\". Using position.");
+    ROS_WARN_STREAM("Couldn't read param \"" << prefix << "mode\". Using position.");
   }
   if(mode_str.compare("position") == 0){
     cfg_.mode = LidarOdometryMode::POSITION;

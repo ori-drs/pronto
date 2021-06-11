@@ -35,7 +35,7 @@ LegOdometerROS::LegOdometerROS(ros::NodeHandle &nh,
     std::string legodo_prefix = "legodo/";
     int legodo_mode;
     if(!nh_.getParam(legodo_prefix + "legodo_mode", legodo_mode)){
-        ROS_WARN_STREAM("Could not get param \"" << legodo_prefix + "legodo_mode\"" << ". Using default.");
+        ROS_WARN_STREAM("Could not get param \"" << legodo_prefix + "legodo_mode\". Using default.");
     }
 
     // # STATIC_SIGMA 0x00, VAR_SIGMA 0x01, IMPACT_SIGMA 0x02, WEIGHTED_AVG 0x04, ALPHA_FILTER : 0x08, KALMAN_FILTER : 0x10
