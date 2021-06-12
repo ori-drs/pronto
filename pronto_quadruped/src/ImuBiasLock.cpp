@@ -169,26 +169,25 @@ bool ImuBiasLock::isStatic(const pronto::JointState &state)
   return true;
 }
 
-Eigen::Matrix3d ImuBiasLock::getBiasCovariance(const std::vector<Eigen::Vector3d> &history) const{
-  {
-      Eigen::Vector3d mean = getBias(history);
-      Eigen::Matrix3d covariance(Eigen::Matrix3d::Zero());
+Eigen::Matrix3d ImuBiasLock::getBiasCovariance(const std::vector<Eigen::Vector3d> &history) const
+{
+  Eigen::Vector3d mean = getBias(history);
+  Eigen::Matrix3d covariance(Eigen::Matrix3d::Zero());
 
-      for( auto el : history){
-          covariance += (el - mean) * (el - mean).transpose();
-      }
-
-      return covariance / ((double)(history.size() - 1));
+  for( auto el : history){
+    covariance += (el - mean) * (el - mean).transpose();
   }
+
+  return covariance / ((double)(history.size() - 1));
 }
 
 Eigen::Vector3d ImuBiasLock::getBias(const std::vector<Eigen::Vector3d> &history) const
 {
-       Eigen::Vector3d bias(Eigen::Vector3d::Zero());
-       for(auto& el : history) {
-           bias += el;
-       }
-       return bias / ((double)history.size());
+  Eigen::Vector3d bias(Eigen::Vector3d::Zero());
+  for(auto& el : history) {
+    bias += el;
+  }
+  return bias / ((double)history.size());
 }
 
 }  // namespace quadruped
