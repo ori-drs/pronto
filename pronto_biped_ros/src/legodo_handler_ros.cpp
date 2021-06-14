@@ -211,6 +211,5 @@ void LegOdometryHandler::forceTorqueCallback(const pronto_msgs::BipedForceTorque
   legodo_module_->setForceTorque(ft_msg_);
 }
 
-}
-}
-
+}  // namespace biped
+}  // namespace pronto

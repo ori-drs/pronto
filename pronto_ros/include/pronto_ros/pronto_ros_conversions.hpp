@@ -53,4 +53,4 @@ void lidarOdometryFromROS(const pronto_msgs::LidarOdometryUpdate& ros_msg,
 void forceTorqueFromROS(const pronto_msgs::BipedForceTorqueSensors& ros_msg,
                         pronto::ForceTorqueSensorArray& msg);
 
-}
+}  // namespace pronto

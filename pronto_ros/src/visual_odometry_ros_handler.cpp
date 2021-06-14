@@ -103,4 +103,4 @@ bool VisualOdometryHandlerROS::processMessageInit(const pronto_msgs::VisualOdome
   return true;
 }
 
-}
+}  // namespace pronto

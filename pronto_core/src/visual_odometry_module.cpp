@@ -87,4 +87,4 @@ bool VisualOdometryModule::processMessageInit(const VisualOdometryUpdate *msg,
     // we shouldn't initialize from VO
     return true;
 }
-}
+}  // namespace pronto
