@@ -144,6 +144,17 @@ void jointStateFromROS(const sensor_msgs::JointState &ros_msg, JointState &msg){
   msg.joint_name = std::move(ros_msg.name);
 }
 
+void jointStateWithAccelerationFromROS(const pronto_msgs::JointStateWithAcceleration &ros_msg, JointState &msg){
+  // it is caller's responsibility to check that both joint states have same
+  // size
+  msg.utime = ros_msg.header.stamp.toNSec() / 1000;
+  msg.joint_position = std::move(ros_msg.position);
+  msg.joint_velocity = std::move(ros_msg.velocity);
+  msg.joint_acceleration = std::move(ros_msg.acceleration);
+  msg.joint_effort = std::move(ros_msg.effort);
+  msg.joint_name = std::move(ros_msg.name);
+}
+
 void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
                            VisualOdometryUpdate& msg){
   msg.curr_utime = ros_msg.curr_timestamp.toNSec() / 1000;

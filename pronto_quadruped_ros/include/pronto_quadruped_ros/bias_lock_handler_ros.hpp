@@ -33,6 +33,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <geometry_msgs/PointStamped.h>
+#include <pronto_msgs/JointStateWithAcceleration.h>
 
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -254,6 +255,15 @@ public:
 
 
     void processSecondaryMessage(const sensor_msgs::JointState& msg) override;
+};
+
+class ImuBiasLockWithAccelerationROS : public ImuBiasLockBaseROS<pronto_msgs::JointStateWithAcceleration>
+{
+public:
+    ImuBiasLockWithAccelerationROS(ros::NodeHandle& nh) : ImuBiasLockBaseROS<pronto_msgs::JointStateWithAcceleration>(nh) {}
+    virtual ~ImuBiasLockWithAccelerationROS() = default;
+
+    void processSecondaryMessage(const pronto_msgs::JointStateWithAcceleration& msg) override;
 };
 
 }  // namespace quadruped
