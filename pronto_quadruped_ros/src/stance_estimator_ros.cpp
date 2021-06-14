@@ -87,5 +87,5 @@ StanceEstimatorROS::StanceEstimatorROS(ros::NodeHandle &nh,
     setParams(beta, stance_threshold, hysteresis_low, hysteresis_high, stance_hysteresis_delay_low, stance_hysteresis_delay_high);
 }
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

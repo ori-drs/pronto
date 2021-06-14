@@ -95,6 +95,7 @@ public:
 
 
 protected:
+    bool debug_ = false;
     std::vector <Eigen::Vector3d> gyro_bias_history_;
     std::vector <Eigen::Vector3d> accel_bias_history_;
     bool do_record_ = true;

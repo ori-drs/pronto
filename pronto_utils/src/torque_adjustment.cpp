@@ -56,7 +56,7 @@ void TorqueAdjustment::processSample(const std::vector<std::string>& names,
       exit(-1);
     }else{
 
-      // std::cout << "adjust " << names[pos] << " " << pos << " " << "using " << jointsToFilter[i] << " " << i << "\n";
+      // std::cout << "adjust " << names[pos] << " " << pos << " using " << jointsToFilter[i] << " " << i << "\n";
       // Apply correction. don't do the correction if filterGains_[i] is zero, NaN, or infinite.
       if (std::isnormal(filterGains_[i])) {
         positions[pos] -= magnitudeLimit( efforts[pos] / filterGains_[i]);

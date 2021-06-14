@@ -8,7 +8,7 @@ VisualOdometryHandlerROS::VisualOdometryHandlerROS(ros::NodeHandle& nh) {
   VisualOdometryConfig cfg;
   std::string mode_str = "pos";
   if(!nh.getParam(prefix + "mode", mode_str)){
-    ROS_WARN_STREAM("Couldn't read param \"" << prefix << "mode" << "\". Using position.");
+    ROS_WARN_STREAM("Couldn't read param \"" << prefix << "mode\". Using position.");
   }
   if(mode_str.compare("pos") == 0){
     cfg.mode = VisualOdometryMode::MODE_POSITION;
@@ -103,4 +103,4 @@ bool VisualOdometryHandlerROS::processMessageInit(const pronto_msgs::VisualOdome
   return true;
 }
 
-}
+}  // namespace pronto
