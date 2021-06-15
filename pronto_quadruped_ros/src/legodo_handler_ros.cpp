@@ -317,6 +317,27 @@ bool LegodoHandlerROS::processMessageInit(const sensor_msgs::JointState* /*msg*/
     return true;
 }
 
+LegodoHandlerWithAccelerationROS::Update* LegodoHandlerWithAccelerationROS::processMessage(const pronto_msgs::JointStateWithAcceleration *msg, StateEstimator *est)
+{
+    nsec_ = msg->header.stamp.toNSec(); // save nsecs for later.
+    utime_ = 1e-3 * nsec_;  // A lot of internals still assume microseconds
+    // TODO: transition from microseconds to nanoseconds everywhere
+    if(!jointStateWithAccelerationFromROS(*msg, utime_, q_, qd_, qdd_, tau_)){
+      ROS_WARN_STREAM("[LegodoHandlerWithAccelerationROS::processMessage] Could not process joint state from ROS!");
+      return nullptr;
+    }
+    getPreviousState(est);
+
+    stance_estimator_.setJointStates(nsec_, q_, qd_, tau_, orientation_,
+                                     // optional arguments starts from here
+                                     // note passing previous value for velocity
+                                     qdd_, xd_, xdd_, omega_, omegad_);
+
+    stance_estimator_.getStance(stance_, stance_prob_);
+
+    return computeVelocity();
+}
+
 FootSensorLegodoHandlerROS::FootSensorLegodoHandlerROS(ros::NodeHandle& nh,
                                                        StanceEstimatorBase& stance_est,
                                                        LegOdometerBase& legodo)

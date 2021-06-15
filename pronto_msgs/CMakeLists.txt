@@ -8,7 +8,8 @@ add_message_files(FILES  VisualOdometryUpdate.msg
                          GPSData.msg
                          IndexedMeasurement.msg
                          QuadrupedStance.msg
-			 LidarOdometryUpdate.msg
+                         JointStateWithAcceleration.msg
+                         LidarOdometryUpdate.msg
                          ControllerFootContact.msg
                          BipedForceTorqueSensors.msg
                          QuadrupedForceTorqueSensors.msg

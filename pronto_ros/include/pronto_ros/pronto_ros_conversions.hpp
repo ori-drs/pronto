@@ -13,6 +13,7 @@
 #include <pronto_msgs/VisualOdometryUpdate.h>
 #include <pronto_msgs/LidarOdometryUpdate.h>
 #include <pronto_msgs/BipedForceTorqueSensors.h>
+#include <pronto_msgs/JointStateWithAcceleration.h>
 
 namespace pronto {
 
@@ -43,6 +44,8 @@ void rigidTransformFromROS(const geometry_msgs::TransformStamped& msg,
 
 void jointStateFromROS(const sensor_msgs::JointState& ros_msg,
                        JointState& msg);
+
+void jointStateWithAccelerationFromROS(const pronto_msgs::JointStateWithAcceleration& ros_msg, JointState& msg);
 
 void visualOdometryFromROS(const pronto_msgs::VisualOdometryUpdate& ros_msg,
                            VisualOdometryUpdate& msg);

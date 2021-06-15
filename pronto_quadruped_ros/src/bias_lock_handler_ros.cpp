@@ -65,3 +65,9 @@ void ImuBiasLockROS::processSecondaryMessage(const sensor_msgs::JointState &msg)
   jointStateFromROS(msg, bias_lock_js_msg_);
   bias_lock_module_->processSecondaryMessage(bias_lock_js_msg_);
 }
+
+// pronto_msgs/JointStateWithAcceleration (includes acceleration)
+void ImuBiasLockWithAccelerationROS::processSecondaryMessage(const pronto_msgs::JointStateWithAcceleration &msg) {
+  jointStateWithAccelerationFromROS(msg, bias_lock_js_msg_);
+  bias_lock_module_->processSecondaryMessage(bias_lock_js_msg_);
+}

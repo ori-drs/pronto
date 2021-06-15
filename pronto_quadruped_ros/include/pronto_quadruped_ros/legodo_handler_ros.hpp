@@ -30,6 +30,7 @@
 #include <pronto_quadruped/LegOdometerBase.hpp>
 #include <pronto_quadruped/DataLogger.hpp>
 
+#include <pronto_msgs/JointStateWithAcceleration.h>
 #include <pronto_msgs/QuadrupedStance.h>
 #include <pronto_msgs/QuadrupedForceTorqueSensors.h>
 #include <pronto_msgs/VelocityWithSigmaBounds.h>
@@ -131,6 +132,25 @@ public:
                             const RBIM &default_cov,
                             RBIS &init_state,
                             RBIM &init_cov) override;
+};
+
+class LegodoHandlerWithAccelerationROS : public pronto::SensingModule<pronto_msgs::JointStateWithAcceleration>,
+                                           public LegodoHandlerBase
+{
+public:
+    LegodoHandlerWithAccelerationROS(ros::NodeHandle& nh,
+                                       StanceEstimatorBase &stance_est,
+                                       LegOdometerBase &legodo) : LegodoHandlerBase(nh, stance_est, legodo) {}
+    virtual ~LegodoHandlerWithAccelerationROS() = default;
+
+    Update * processMessage(const pronto_msgs::JointStateWithAcceleration *msg, StateEstimator *est) override;
+
+    bool processMessageInit(const pronto_msgs::JointStateWithAcceleration* /*msg*/,
+                            const std::map<std::string, bool>& /*sensor_initialized*/,
+                            const RBIS& /*default_state*/,
+                            const RBIM& /*default_cov*/,
+                            RBIS& /*init_state*/,
+                            RBIM& /*init_cov*/) override { return true; }
 };
 
 class ForceSensorLegodoHandlerROS : public LegodoHandlerBase,
