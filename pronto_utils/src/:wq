@@ -1,4 +1,0 @@
-#include "pronto_utils/RateChange.hpp"
-
-namespace pronto {
-}
