@@ -365,8 +365,8 @@ if(sensor_id.compare("scan_matcher") == 0){
             // set twist covariance to zero
             twist_msg_.twist.covariance.assign(0);
 
-            Eigen::Matrix3d vel_cov = head_cov.block<3,3>(RBIS::velocity_ind,RBIS::velocity_ind);
-            Eigen::Matrix3d omega_cov = head_cov.block<3,3>(RBIS::angular_velocity_ind,RBIS::angular_velocity_ind);
+            Eigen::Block<RBIM, 3, 3> vel_cov = head_cov.block<3,3>(RBIS::velocity_ind,RBIS::velocity_ind);
+            Eigen::Block<RBIM, 3, 3> omega_cov = head_cov.block<3,3>(RBIS::angular_velocity_ind,RBIS::angular_velocity_ind);
 
             for(int i=0; i<3; i++){
               for(int j=0; j<3; j++){
