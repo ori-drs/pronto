@@ -77,15 +77,6 @@ void RBISIMUProcessStep::updateFilter(const RBIS & prior_state, const RBIM & pri
 #endif
 
   loglikelihood = prior_loglikelihood;
-  //    eigen_dump(prior_state);
-  //    eigen_dump(prior_cov);
-  //    eigen_dump(gyro.transpose());
-  //    eigen_dump(q_gyro);
-  //    eigen_dump(accelerometer.transpose());
-  //    eigen_dump(q_accel);
-  //    eigen_dump(posterior_state);
-  //    eigen_dump(posterior_covariance);
-  //    std::cout << std::endl;
 }
 
 void RBISIndexedMeasurement::updateFilter(const RBIS & prior_state, const RBIM & prior_cov, double prior_loglikelihood)
@@ -139,13 +130,6 @@ void RBISIndexedMeasurement::updateFilter(const RBIS & prior_state, const RBIM &
 #endif
 
   loglikelihood = prior_loglikelihood + current_loglikelihood;
-  //    eigen_dump(prior_state);
-  //    eigen_dump(prior_cov);
-  //    eigen_dump(measurement.transpose());
-  //    eigen_dump(measurement_cov);
-  //    eigen_dump(posterior_state);
-  //    eigen_dump(posterior_covariance);
-  //    std::cout << std::endl;
 }
 
 void RBISIndexedPlusOrientationMeasurement::updateFilter(const RBIS & prior_state,
