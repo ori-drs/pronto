@@ -379,7 +379,6 @@ if(sensor_id.compare("scan_matcher") == 0){
 
             // TODO insert appropriate covariance into the message
 
-
             // set twist covariance to zero
             twist_msg_.twist.covariance.assign(0);
 

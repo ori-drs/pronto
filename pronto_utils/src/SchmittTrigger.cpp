@@ -100,4 +100,4 @@ bool SchmittTrigger::getState() {
 double SchmittTrigger::getCurrentValue() {
   return stored_value;
 }
-}
+}  // namespace pronto

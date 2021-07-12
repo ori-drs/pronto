@@ -10,9 +10,8 @@ class ForceSensorStanceEstimatorROS : public ForceSensorStanceEstimator {
 public:
   ForceSensorStanceEstimatorROS(double force_threshold = 50);
   ForceSensorStanceEstimatorROS(ros::NodeHandle& nh);
-
-
+  ~ForceSensorStanceEstimatorROS() override {}
 };
 
-}
-}
+}  // namespace quadruped
+}  // namespace pronto

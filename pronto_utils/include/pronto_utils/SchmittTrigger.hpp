@@ -25,4 +25,4 @@ private:
   double rising_edge_threshold;
   bool first_call;
 };
-}
+}  // namespace pronto
