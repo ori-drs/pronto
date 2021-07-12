@@ -22,6 +22,7 @@
  */
 #include "pronto_quadruped/ImuBiasLock.hpp"
 #include <pronto_core/rotations.hpp>
+#include <pronto_core/rigidbody.hpp>  // for g_val
 #include <iostream>
 
 namespace pronto {
@@ -37,8 +38,7 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
   z_indices.block<3,1>(3,0) = RBIS::accelBiasInds();
   // roll and pitch indices
   z_indices.tail<2>(0) << RBIS::chi_ind, RBIS::chi_ind+1;
-  gravity_vector_ = Eigen::Vector3d::UnitZ() * 9.80665;
-  //9.81207
+  gravity_vector_ = Eigen::Vector3d::UnitZ() * g_val;
 
   z_covariance = CovMatrix::Zero();
 
@@ -56,13 +56,9 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
 RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
                                                  StateEstimator *est)
 {
-  RBIS prior;
-  RBIM prior_cov;
-  est->getHeadState(prior, prior_cov);
-
   current_omega_.noalias() = ins_to_body_.rotation()*msg->omega;
   current_accel_.noalias() = ins_to_body_.rotation()*msg->acceleration;
-  current_accel_corrected_ = current_accel_ - (rotation::skewHat((current_omega_ - previous_omega_) / dt_) + rotation::skewHat(current_omega_)*rotation::skewHat(current_omega_))*ins_to_body_.translation();
+  current_accel_corrected_.noalias() = current_accel_ - (rotation::skewHat((current_omega_ - previous_omega_) / dt_) + rotation::skewHat(current_omega_)*rotation::skewHat(current_omega_))*ins_to_body_.translation();
   previous_omega_ = current_omega_;
   if(do_record_){
     gyro_bias_history_.push_back(current_omega_);
@@ -86,6 +82,11 @@ RBISUpdateInterface* ImuBiasLock::processMessage(const ImuMeasurement *msg,
       accel_bias_history_.clear();
       return nullptr;
     }
+
+    // get prior
+    RBIS prior;
+    RBIM prior_cov;
+    est->getHeadState(prior, prior_cov);
 
     // if we stop recording and history is not empty or history is too big
     // it's time to compute the bias and free it up
