@@ -96,7 +96,7 @@ public:
                     const double& hysteresis_low = 50,
                     const double& hysteresis_high = 150);
 
-    virtual ~StanceEstimator();
+    virtual ~StanceEstimator() = default;
 
     /**
      * @brief setJointStates
@@ -143,8 +143,6 @@ public:
 
     bool getGRF(LegVectorMap& grf) override;
 
-
-
     void getGrf_W(LegVectorMap& leg_status);
 
     void getGrfDelta(LegDataMap<double>& grfDelta){
@@ -171,7 +169,6 @@ private:
     LegVectorMap grForce_W;
     LegVectorMap grForce_des;
     LegDataMap<double> grForceDelta;
-
 
     double force_threshold_;
     double falling_edge_threshold_;

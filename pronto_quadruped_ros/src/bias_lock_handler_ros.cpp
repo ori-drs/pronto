@@ -35,10 +35,11 @@ RBISUpdateInterface* ImuBiasLockROS::processMessage(const sensor_msgs::Imu *msg,
 {
   msgToImuMeasurement(*msg, bias_lock_imu_msg_);
   RBISUpdateInterface* update = bias_lock_module_->processMessage(&bias_lock_imu_msg_, est);
-  RBIS head_state;
-  RBIM head_cov;
-  est->getHeadState(head_state, head_cov);
+
   if(update != nullptr){
+    RBIS head_state;
+    RBIM head_cov;
+    est->getHeadState(head_state, head_cov);
     ROS_INFO_STREAM("Bias update. Prior accel bias: " << head_state.accelBias().transpose() << std::endl
                               <<  "Prior gyro bias: " << head_state.gyroBias().transpose());
   }

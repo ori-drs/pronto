@@ -61,38 +61,37 @@ public:
 
     void processSecondaryMessage(const pronto::JointState& msg) override;
 public:
-    inline Eigen::Vector3d getCurrentOmega() const {
+    const Eigen::Vector3d& getCurrentOmega() const {
       return current_omega_;
     }
-    inline Eigen::Vector3d getCurrentAccel() const {
+    const Eigen::Vector3d& getCurrentAccel() const {
       return current_accel_;
     }
-    inline Eigen::Vector3d getCurrentCorrectedAccel() const {
+    const Eigen::Vector3d& getCurrentCorrectedAccel() const {
       return current_accel_corrected_;
     }
 
-    inline Eigen::Vector3d getCurrentAccelBias() const {
+    const Eigen::Vector3d& getCurrentAccelBias() const {
       return accel_bias_;
     }
-    inline Eigen::Vector3d getCurrentProperAccelBias() const {
+    const Eigen::Vector3d& getCurrentProperAccelBias() const {
       return proper_accel_bias_;
     }
-    inline Eigen::Quaterniond getGVec() const {
+    const Eigen::Quaterniond& getGVec() const {
       return quat_g_vec;
     }
 
-    inline Eigen::Isometry3d getGravityTransform() const {
+    const Eigen::Isometry3d& getGravityTransform() const {
       return gravity_transform_;
     }
 
-    inline Eigen::Isometry3d getBiasTransform() const {
+    const Eigen::Isometry3d& getBiasTransform() const {
       return bias_transform_;
     }
 
     inline bool getRecordStatus() const {
       return do_record_;
     }
-
 
 protected:
     bool debug_ = false;

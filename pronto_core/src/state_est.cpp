@@ -166,9 +166,6 @@ void StateEstimator::getHeadState(RBIS & head_state, RBIM & head_cov) const
   RBISUpdateInterface * head_update = history.updateMap.rbegin()->second;
   head_state = head_update->posterior_state;
   head_cov = head_update->posterior_covariance;
-
-//  eigen_dump(head_state);
-//  eigen_dump(head_cov);
 }
 
 void StateEstimator::getHeadState(const uint64_t& utime,

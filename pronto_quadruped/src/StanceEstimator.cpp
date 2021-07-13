@@ -119,8 +119,6 @@ void StanceEstimator::setParams(const std::vector<double> &beta,
     }
 }
 
-StanceEstimator::~StanceEstimator() {}
-
 void StanceEstimator::updateStat(double sample,
                                  bool is_stance,
                                  int index) {

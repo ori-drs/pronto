@@ -108,7 +108,6 @@ protected:
     void initializeState();
     void initializeCovariance();
 
-
 private:
     ros::NodeHandle& nh_;
     std::shared_ptr<StateEstimator> state_est_;
@@ -149,14 +148,10 @@ private:
 
     bool filter_initialized_ = false;
     bool verbose_ = false;
-
-
 };
-}
+}  // namespace pronto
 
 namespace pronto {
-
-
 template <class MsgT>
 void ROSFrontEnd::addInitModule(SensingModule<MsgT>& module,
                                 const SensorId& sensor_id,
@@ -280,7 +275,7 @@ template <class MsgT>
 void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& sensor_id)
 {
 #if DEBUG_MODE
-        ROS_INFO_STREAM("Callback for sensor " << sensor_id);
+    ROS_INFO_STREAM("Callback for sensor " << sensor_id);
 #endif
     // this is a generic templated callback that does the same for every module:
     // if the module is initialized and the filter is ready
@@ -291,19 +286,7 @@ void ROSFrontEnd::callback(boost::shared_ptr<MsgT const> msg, const SensorId& se
         // function to get the update
         // Record start time
 #if DEBUG_MODE
-
         auto start = std::chrono::high_resolution_clock::now();
-
-        std::cerr << sensor_id << " module address: " << active_modules_[sensor_id] << std::endl;
-        std::cerr << "message address " << msg.get() << std::endl;
-        std::cerr << "state estimator address " << state_est_.get() << std::endl;
-        std::cerr << "Before cast to SensingModule<" <<type_name<MsgT>() <<">*" << std::endl;
-        SensingModule<MsgT>* temp = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id]);
-        std::cerr << "after cast before call" << std::endl;
-        std::cerr << "address " << temp << std::endl;
-        temp->processMessage(msg.get(), state_est_.get());
-        std::cerr << "after call" << std::endl;
-
 #endif
         RBISUpdateInterface* update = static_cast<SensingModule<MsgT>*>(active_modules_[sensor_id])->processMessage(msg.get(), state_est_.get());
 #if DEBUG_MODE
@@ -379,12 +362,11 @@ if(sensor_id.compare("scan_matcher") == 0){
 
             // TODO insert appropriate covariance into the message
 
-
             // set twist covariance to zero
             twist_msg_.twist.covariance.assign(0);
 
-            Eigen::Matrix3d vel_cov = head_cov.block<3,3>(RBIS::velocity_ind,RBIS::velocity_ind);
-            Eigen::Matrix3d omega_cov = head_cov.block<3,3>(RBIS::angular_velocity_ind,RBIS::angular_velocity_ind);
+            Eigen::Block<RBIM, 3, 3> vel_cov = head_cov.block<3,3>(RBIS::velocity_ind,RBIS::velocity_ind);
+            Eigen::Block<RBIM, 3, 3> omega_cov = head_cov.block<3,3>(RBIS::angular_velocity_ind,RBIS::angular_velocity_ind);
 
             for(int i=0; i<3; i++){
               for(int j=0; j<3; j++){
@@ -433,8 +415,8 @@ if(sensor_id.compare("scan_matcher") == 0){
         }
 #if DEBUG_MODE
         else {
-                   ROS_WARN("NOT Publish head sensor ID");
-               }
+            ROS_WARN("NOT Publish head sensor ID");
+        }
         end = std::chrono::high_resolution_clock::now();
 
         ROS_INFO_STREAM("Time elapsed till the end: " << std::chrono::duration_cast<std::chrono::microseconds>(end -start).count());

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2019 University of Oxford
+/* Copyright (c) 2018-2021 University of Oxford
  * All rights reserved.
  *
  * Author: Marco Camurri (mcamurri@robots.ox.ac.uk)
@@ -40,7 +40,7 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     stance_estimator_(stance_est),
     leg_odometer_(legodo)
 {
-    std::string prefix = "legodo/";
+    const std::string prefix = "legodo/";
 
     nh.getParam(prefix + "downsample_factor", (int&)downsample_factor_);
     nh.getParam(prefix + "utime_offset", (int&)utime_offset_);
@@ -67,12 +67,7 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     Eigen::Vector3d r_legodo_init(r_vx, r_vy, r_vz);
     leg_odometer_.setInitVelocityStd(r_legodo_init);
 
-    // not subscribing to IMU messages to get omega and stuff for now
-    // if(!nh_.getParam(prefix + "imu_topic", imu_topic_)){
-    //     ROS_WARN_STREAM("Couldn't get the IMU topic. Using default: " << imu_topic_);
-    // }
-    // imu_sub_ = nh_.subscribe(imu_topic_, 100, &LegodoHandlerROS::imuCallback, this);
-
+    // Get link name settings for debug topic publishing
     nh.param<std::string>("base_link_name", base_link_name_, "base");
     foot_names_.resize(4);
     nh.param<std::string>("LF_FOOT_name", foot_names_[0], "LF_FOOT");
@@ -80,6 +75,8 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
     nh.param<std::string>("LH_FOOT_name", foot_names_[2], "LH_FOOT");
     nh.param<std::string>("RH_FOOT_name", foot_names_[3], "RH_FOOT");
 
+    // Determine whether to publish debug topics
+    nh.param<bool>(prefix + "publish_debug_topics", debug_, true);
     const std::vector<std::string> leg_names = {"lf", "rf", "lh", "rh"};
     if(debug_){
         for(int i=0; i<4; i++){
@@ -95,18 +92,25 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
         prior_velocity_debug_ = nh.advertise<geometry_msgs::TwistStamped>("prior_vel", 10);
         vel_sigma_bounds_pub_ = nh.advertise<pronto_msgs::VelocityWithSigmaBounds>("vel_sigma_bounds", 10);
 
-        dl_pose_ = std::make_unique<pronto::DataLogger>("prontopos.txt");
-        dl_pose_->setStartFromZero(false);
-        dl_vel_ = std::make_unique<pronto::DataLogger>("prontovel.txt");
-        dl_vel_->setStartFromZero(false);
-
-        dl_vel_sigma_ = std::make_unique<pronto::DataLogger>("velsigma.txt");
-        dl_vel_->setStartFromZero(false);
-
         wrench_msg_.wrench.torque.x = 0;
         wrench_msg_.wrench.torque.y = 0;
         wrench_msg_.wrench.torque.z = 0;
     }
+
+    // Determine whether to log to file (consumes significant blocking cycles!)
+    nh.param<bool>(prefix + "output_log_to_file", output_log_to_file_, true);
+    if (output_log_to_file_) {
+      dl_pose_ = std::make_unique<pronto::DataLogger>("prontopos.txt");
+      dl_pose_->setStartFromZero(false);
+      dl_vel_ = std::make_unique<pronto::DataLogger>("prontovel.txt");
+      dl_vel_->setStartFromZero(false);
+
+      dl_vel_sigma_ = std::make_unique<pronto::DataLogger>("velsigma.txt");
+      dl_vel_->setStartFromZero(false);
+    }
+
+    ROS_INFO_STREAM("[LegodoHandler] Publishing debug topics:       " << std::boolalpha << debug_ << "\n" <<
+                    "                Writing output to text files?  " << output_log_to_file_);
 }
 
 void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
@@ -123,18 +127,19 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     omegad_ = Eigen::Vector3d::Zero(); // TODO retrieve angular acceleration
 
     orientation_ = head_state_.orientation();
-    if(debug_){
-      double time = ((double)head_state_.utime)*1e-6;
-        dl_pose_->addSampleCSV(time, head_state_.position(), orientation_);
-        dl_vel_->addSample(time, head_state_.velocity(), head_state_.angularVelocity());
 
-        Eigen::Block<RBIM, 3, 3> vel_cov = head_cov_.block<3,3>(RBIS::velocity_ind, RBIS::velocity_ind);
-        Eigen::Block<RBIM, 3, 3> omega_cov = head_cov_.block<3,3>(RBIS::angular_velocity_ind, RBIS::angular_velocity_ind);
+    // Write log to file
+    if(output_log_to_file_) {
+      double time = static_cast<double>(head_state_.utime) * 1e-6;
+      dl_pose_->addSampleCSV(time, head_state_.position(), orientation_);
+      dl_vel_->addSample(time, head_state_.velocity(), head_state_.angularVelocity());
 
-        Vector3d vel_sigma = vel_cov.diagonal().array().sqrt().matrix();
-        Vector3d omega_sigma = omega_cov.diagonal().array().sqrt().matrix();
+      Eigen::Block<RBIM, 3, 3> vel_cov = head_cov_.block<3,3>(RBIS::velocity_ind, RBIS::velocity_ind);
+      Eigen::Block<RBIM, 3, 3> omega_cov = head_cov_.block<3,3>(RBIS::angular_velocity_ind, RBIS::angular_velocity_ind);
 
-        dl_vel_sigma_->addSample(time, vel_sigma, omega_sigma);
+      Vector3d vel_sigma = vel_cov.diagonal().array().sqrt().matrix();
+      Vector3d omega_sigma = omega_cov.diagonal().array().sqrt().matrix();
+      dl_vel_sigma_->addSample(time, vel_sigma, omega_sigma);
     }
 }
 

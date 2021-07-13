@@ -166,10 +166,6 @@ double matrixMeasurementGetKandCovDelta(const Eigen::MatrixXd & R,
   int m = R.rows();
 
   MatrixXd S(m, m);
-//  eigen_dump(R);
-//  eigen_dump(S);
-//  eigen_dump(C);
-//  eigen_dump(cov);
   S = R;
   S.noalias() += C * cov * C.transpose();
 

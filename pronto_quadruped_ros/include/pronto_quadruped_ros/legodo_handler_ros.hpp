@@ -99,7 +99,8 @@ protected:
     ros::Publisher prior_accel_debug_;
     ros::Publisher vel_sigma_bounds_pub_;
 
-    bool debug_ = true;
+    bool debug_ = true;  // Debug output including CSV output
+    bool output_log_to_file_ = true;
     geometry_msgs::WrenchStamped wrench_msg_;
     pronto_msgs::QuadrupedStance stance_msg_;
     ros::Publisher stance_pub_;
