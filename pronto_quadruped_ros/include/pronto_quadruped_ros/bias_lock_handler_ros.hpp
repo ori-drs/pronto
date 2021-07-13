@@ -113,6 +113,7 @@ ImuBiasLockBaseROS<JointStateT>::ImuBiasLockBaseROS(ros::NodeHandle& nh) : nh_(n
   quadruped::ImuBiasLockConfig cfg;
   nh_.getParam(lock_param_prefix + "torque_threshold", cfg.torque_threshold_);
   nh_.getParam(lock_param_prefix + "velocity_threshold", cfg.velocity_threshold_);
+  nh_.param<bool>(lock_param_prefix + "verbose", cfg.verbose_, false);
 
   if(!nh_.getParam(ins_param_prefix + "timestep_dt", cfg.dt_)){
     ROS_WARN_STREAM("Couldn't read dt. Using default: " << cfg.dt_);
