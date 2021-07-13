@@ -134,14 +134,14 @@ void LegodoHandlerBase::getPreviousState(const StateEstimator *est)
     if(output_log_to_file_) {
       double time = static_cast<double>(head_state_.utime) * 1e-6;
       dl_pose_->addSampleCSV(time, head_state_.position(), orientation_);
-      dl_vel_->addSample(time, head_state_.velocity(), head_state_.angularVelocity());
+      dl_vel_->addSampleCSV(time, head_state_.velocity(), head_state_.angularVelocity());
 
       Eigen::Block<RBIM, 3, 3> vel_cov = head_cov_.block<3,3>(RBIS::velocity_ind, RBIS::velocity_ind);
       Eigen::Block<RBIM, 3, 3> omega_cov = head_cov_.block<3,3>(RBIS::angular_velocity_ind, RBIS::angular_velocity_ind);
 
       Vector3d vel_sigma = vel_cov.diagonal().array().sqrt().matrix();
       Vector3d omega_sigma = omega_cov.diagonal().array().sqrt().matrix();
-      dl_vel_sigma_->addSample(time, vel_sigma, omega_sigma);
+      dl_vel_sigma_->addSampleCSV(time, vel_sigma, omega_sigma);
     }
 }
 
