@@ -42,8 +42,10 @@ LegodoHandlerBase::LegodoHandlerBase(ros::NodeHandle &nh,
 {
     const std::string prefix = "legodo/";
 
-    nh.getParam(prefix + "downsample_factor", (int&)downsample_factor_);
-    nh.getParam(prefix + "utime_offset", (int&)utime_offset_);
+    nh.param<int>(prefix + "downsample_factor", (int&)downsample_factor_, 1);
+    nh.param<int>(prefix + "utime_offset", (int&)utime_offset_, 0);
+    ROS_INFO_STREAM("[LegodoHandler] downsample_factor = " << downsample_factor_ << "\n" <<
+                    "                utime_offset =      " << utime_offset_);
 
     double r_vx;
     double r_vy;
