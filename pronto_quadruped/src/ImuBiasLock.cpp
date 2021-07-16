@@ -45,6 +45,7 @@ ImuBiasLock::ImuBiasLock(const Eigen::Isometry3d& ins_to_body,
   eps_ = cfg.velocity_threshold_;
   torque_threshold_ = cfg.torque_threshold_;
   dt_ = cfg.dt_;
+  debug_ = cfg.verbose_;
 
   bias_transform_ = Eigen::Isometry3d::Identity();
   gravity_transform_ = Eigen::Isometry3d::Identity();

@@ -32,6 +32,7 @@ struct ImuBiasLockConfig {
   double torque_threshold_ = 13;
   double velocity_threshold_ = 0.006;
   double dt_ = 0.0025;
+  bool verbose_ = false;
 };
 
 class ImuBiasLock : public DualSensingModule<ImuMeasurement,pronto::JointState>
@@ -95,8 +96,8 @@ public:
 
 protected:
     bool debug_ = false;
-    std::vector <Eigen::Vector3d> gyro_bias_history_;
-    std::vector <Eigen::Vector3d> accel_bias_history_;
+    std::vector<Eigen::Vector3d> gyro_bias_history_;
+    std::vector<Eigen::Vector3d> accel_bias_history_;
     bool do_record_ = true;
     bool is_static_ = false;
     size_t max_size = 3000;

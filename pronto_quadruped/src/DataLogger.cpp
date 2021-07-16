@@ -122,7 +122,6 @@ void DataLogger::addSample(const double &time, const Eigen::Vector3d &vec) {
         << vec(0) << "\t "
         << vec(1) << "\t "
         << vec(2) << std::endl;
-
 }
 
 void DataLogger::addSample(const double& time,
@@ -143,7 +142,6 @@ void DataLogger::addSample(const double& time,
         << rpy(0) * 180.0 / M_PI << "\t"
         << rpy(1) * 180.0 / M_PI << "\t"
         << rpy(2) * 180.0 / M_PI << "\t" << std::endl;
-
 }
 
 void DataLogger::addSample(const double& time,
@@ -185,9 +183,26 @@ void DataLogger::addSample(const double& time,
         << velocity(2) << "\t"
         << omega(0) << "\t"
         << omega(1) << "\t"
-        << omega(2) << "\t" << std::endl;
+        << omega(2) << std::endl;
 }
 
+void DataLogger::addSampleCSV(const double& time,
+                              const Eigen::Vector3d& velocity,
+                              const Eigen::Vector3d& omega){
+    if(start_from_zero && is_first_time) {
+        first_time = time;
+        is_first_time = false;
+    }
+
+    ofs << setprecision(14)
+        << time - first_time << ","
+        << velocity(0) << ","
+        << velocity(1) << ","
+        << velocity(2) << ","
+        << omega(0) << ","
+        << omega(1) << ","
+        << omega(2) << std::endl;
+}
 
 void DataLogger::addSample(double time, LegDataMap<Eigen::Vector3d> leg_vectors) {
     if(start_from_zero && is_first_time) {

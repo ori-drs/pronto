@@ -125,6 +125,16 @@ public:
                    const Eigen::Vector3d& omega);
 
     /**
+     * @brief writes the velocity of a rigid body at a specific time.
+     * @param time an absolute time (in seconds)
+     * @param velocity body velocity espressed in the body frame
+     * @param omega angular velocity of the body, in the body frame
+     */
+    void addSampleCSV(const double& time,
+                      const Eigen::Vector3d& velocity,
+                      const Eigen::Vector3d& omega);
+
+    /**
      * @brief writes the pose of a rigid body at a specific time.
      * @param time an absolute time (in seconds)
      * @param x x-component of the body position
