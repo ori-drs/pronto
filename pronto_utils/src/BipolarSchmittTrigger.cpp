@@ -1,5 +1,6 @@
 #include "pronto_utils/BipolarSchmittTrigger.hpp"
 #include <iostream>
+#include <cmath>
 
 namespace pronto {
 
