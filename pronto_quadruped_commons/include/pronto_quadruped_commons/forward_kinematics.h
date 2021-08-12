@@ -45,7 +45,7 @@ public:
     ForwardKinematics() = default;
     virtual ~ForwardKinematics() = default;
 
-    virtual Vector3d getFootPos  (const JointState& q, const LegID& leg) = 0;
+    virtual Vector3d getFootPos(const JointState& q, const LegID& leg) = 0;
     inline virtual LegVectorMap getFeetPos(const JointState& q)
     {
         LegVectorMap feetPos(Vector3d::Zero());
@@ -56,9 +56,6 @@ public:
         return feetPos;
     }
     virtual Matrix3d getFootOrientation(const JointState& q, const LegID& leg) = 0;
-    virtual Vector3d getShinPos(const JointState& q,
-                                const double& contact_pos,
-                                const LegID& leg) = 0;
 };
 
 }  // namespace quadruped
