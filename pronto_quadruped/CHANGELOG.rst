@@ -2,8 +2,8 @@
 Changelog for package pronto_quadruped
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2021-08-12)
+------------------
 * Unify logging format to CSV and remove getShinPos (`#38 <https://github.com/ori-drs/pronto/issues/38>`_)
 * Add option to bias_lock to set verbose/debug flag from ROS params
 * DataLogger: Add addSampleCSV for twists
