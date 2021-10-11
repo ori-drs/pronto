@@ -198,13 +198,6 @@ public:
                             const Vector3d& xdd = Vector3d::Zero(),
                             const Vector3d& omega = Vector3d::Zero(),
                             const Vector3d& omegad = Vector3d::Zero()) = 0;
-
-    /**
-     * @brief setContactPoint sets the contact point w.r.t. the center of the ball foot (in foot frame)
-     * @param foot_x
-     * @param foot_y
-     */
-    virtual void setContactPoint(LegID leg, double foot_x, double foot_y) = 0;
 };
 }  // namespace quadruped
 }  // namespace pronto
