@@ -148,6 +148,8 @@ RBISUpdateInterface * YawLockModule::processMessage(const ImuMeasurement *msg,
                                           RBISUpdateInterface::yawlock,
                                           msg->utime);
       }
+  default:
+    return nullptr;
   }
 }
 
