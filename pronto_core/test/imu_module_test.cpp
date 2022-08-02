@@ -121,9 +121,9 @@ TEST(InsModule, ballisticTrajectory) {
     // we expect to land 2 meters in front of us, on the ground.
     // we don't accept an error superior to 5 cm
     // TODO maybe we should reduce it
-    EXPECT_NEAR(result(0),2,0.17);
-    EXPECT_NEAR(result(1),0,0.17);
-    EXPECT_NEAR(result(2),0,0.17);
+    EXPECT_NEAR(result(0),2,0.18);
+    EXPECT_NEAR(result(1),0,0.18);
+    EXPECT_NEAR(result(2),0,0.18);
 
 }
 
