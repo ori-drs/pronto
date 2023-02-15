@@ -44,7 +44,7 @@ nh_(nh)
                     listener.waitForTransform(frame_to, frame_from, ros::Time(0), ros::Duration(10.0) );
                     listener.lookupTransform(frame_to, frame_from, ros::Time(0), transform);
                     tf::transformTFToEigen(transform, cfg.body_to_vicon);
-                } catch (tf::TransformException ex) {
+                } catch (const tf::TransformException& ex) {
                     ROS_ERROR("%s",ex.what());
                 }
 
