@@ -51,6 +51,16 @@ add_executable(lidar_odometry_visualizer src/lidar_odom_viz.cpp)
 target_link_libraries(lidar_odometry_visualizer ${catkin_LIBRARIES})
 add_dependencies(lidar_odometry_visualizer ${catkin_EXPORTED_TARGETS})
 
+# Node to republish pronto_msgs/JointStateWithAcceleration to sensor_msgs/JointState
+add_executable(joint_state_with_acceleration_republisher src/joint_state_with_acceleration_republisher.cpp)
+target_link_libraries(joint_state_with_acceleration_republisher ${pronto_msgs_LIBRARIES} ${sensor_msgs_LIBRARIES} ${catkin_LIBRARIES})
+install(
+  TARGETS joint_state_with_acceleration_republisher
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+
 install(TARGETS ${PROJECT_NAME} lidar_odometry_visualizer ${PROJECT_NAME}_node
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
