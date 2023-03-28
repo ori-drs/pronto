@@ -7,7 +7,6 @@ namespace quadruped {
 ForceSensorStanceEstimatorROS::ForceSensorStanceEstimatorROS(double force_threshold)
   : ForceSensorStanceEstimator(force_threshold)
 {
-
 }
 
 ForceSensorStanceEstimatorROS::ForceSensorStanceEstimatorROS(ros::NodeHandle &nh)
@@ -17,8 +16,8 @@ ForceSensorStanceEstimatorROS::ForceSensorStanceEstimatorROS(ros::NodeHandle &nh
   double stance_threshold;
   nh.getParam(legodo_prefix + "stance_threshold", stance_threshold);
   force_threshold_ = stance_threshold;
+  ROS_INFO_STREAM("[ForceSensorStanceEstimator] Stance threshold: " << force_threshold_);
 }
 
-
-}
-}
+}  // namespace quadruped
+}  // namespace pronto
