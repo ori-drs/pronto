@@ -265,7 +265,6 @@ void ROSFrontEnd::initCallback(std::shared_ptr<MsgT> msg, const SensorId& sensor
     }
     if(initialized_list_.count(sensor_id) > 0 && !initialized_list_[sensor_id])
     {
-       msg->header.set__stamp(nh_->get_clock()->now());
         initialized_list_[sensor_id] = static_cast<SensingModule<MsgT>*>(init_modules_[sensor_id])->processMessageInit(
             msg.get(),
             initialized_list_,
@@ -311,7 +310,6 @@ void ROSFrontEnd::callback(std::shared_ptr<MsgT> msg, const SensorId& sensor_id)
         // appropriate casting to the right type and call to the process message
         // function to get the update
         // Record start time
-       msg->header.set__stamp(nh_->get_clock()->now());
 #if DEBUG_MODE
         auto start = std::chrono::high_resolution_clock::now();
 #endif
@@ -451,7 +449,6 @@ void ROSFrontEnd::callback(std::shared_ptr<MsgT> msg, const SensorId& sensor_id)
 template <class PrimaryMsgT, class SecondaryMsgT>
 void ROSFrontEnd::secondaryCallback(std::shared_ptr<SecondaryMsgT > msg, const SensorId& sensor_id)
 {
-   msg->header.set__stamp(nh_->get_clock()->now());
     auto a = dynamic_cast<DualSensingModule<PrimaryMsgT,SecondaryMsgT>*>(static_cast<SensingModule<PrimaryMsgT>*>(active_modules_[sensor_id]));
     a->processSecondaryMessage(*msg);
 }
