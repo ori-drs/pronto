@@ -17,8 +17,11 @@
 #include "pi3hat_moteus_int_msgs/msg/joints_states.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 
+#include <algorithm>
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
+#include <string>
+#include <vector>
 #include "pinocchio/algorithm/model.hpp"
 
 
@@ -36,7 +39,6 @@ namespace pronto
         class Pronto_Ros2 : public rclcpp::Node
         {
             using SensorList = std::vector<std::string>;
-            using SensorSet = std::unordered_set<std::string>;
             public:
             Pronto_Ros2():
             Node("Pronto_ROS2_Node")
@@ -69,13 +71,17 @@ namespace pronto
                 RCLCPP_INFO_STREAM(get_logger(),init_sensors_.size()<<" "<<active_sensors_.size());
                 for(auto &init:init_sensors_)
                 {
-                    all_sensors_.insert(init);
+                    if (std::find(all_sensors_.begin(), all_sensors_.end(), init) == all_sensors_.end()) {
+                        all_sensors_.push_back(init);
+                    }
                     RCLCPP_INFO_STREAM(get_logger(),"Init sensor "<<init.c_str());
                 }
                 for(auto &active:active_sensors_)
                 {
                     RCLCPP_INFO_STREAM(get_logger(),"Active sensor "<<active.c_str());
-                    all_sensors_.insert(active);
+                    if (std::find(all_sensors_.begin(), all_sensors_.end(), active) == all_sensors_.end()) {
+                        all_sensors_.push_back(active);
+                    }
                 }
 
 
@@ -165,7 +171,7 @@ namespace pronto
                 // create front end
                 ros_fe_ = std::make_shared<pronto::ROSFrontEnd>(this->shared_from_this(),true);
 
-                for (SensorSet::iterator it = all_sensors_.begin(); it != all_sensors_.end(); ++it)
+                for (SensorList::iterator it = all_sensors_.begin(); it != all_sensors_.end(); ++it)
                 {
                     RCLCPP_INFO(get_logger(),"allocate sensor %s",it->c_str());
                     declare_parameter<bool>(*it + ".roll_forward_on_receive",false);
@@ -341,7 +347,7 @@ namespace pronto
             private:
                 SensorList init_sensors_;
                 SensorList active_sensors_;
-                SensorSet all_sensors_;
+                SensorList all_sensors_;
                 std::string urdf_file_;
 
                 //declare the mammal utils stuff and the ros_frontend
